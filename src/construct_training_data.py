@@ -41,14 +41,13 @@ def main():
     total_num_neg = 0
     total_num_pos = 0
 
+    outfn = './data/clinical_bert_reference_set.txt'
+    outfh = open(outfn, 'w')
+    writer = csv.writer(outfh)
+    writer.writerow(['drug', 'llt_id', 'llt', 'class', 'string'])
+
     for drug in all_drugs:
         print(f"Generating refernece data for: {drug}")
-
-        outfn = './data/clinical_bert_reference_set.txt'
-        outfh = open(outfn, 'w')
-        writer = csv.writer(outfh)
-        writer.writerow(['drug', 'llt_id', 'llt', 'class', 'string'])
-
 
         # ADVERSE REACTIONS Section
         final_ref_fn = './data/200_manual_annotations_csv/FinalReferenceStandard200Labels.csv'
