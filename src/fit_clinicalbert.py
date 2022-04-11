@@ -192,12 +192,12 @@ if __name__ == '__main__':
 
     print("Saving the model to file...")
 
-    torch.save(model.state_dict(), f'./models/{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
+    torch.save(model.state_dict(), f'./models/final_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
 
     print("Loading the model from file...")
 
     loaded_model = ClinicalBertClassifier()
-    loaded_model.load_state_dict(torch.load(f'./models/{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
+    loaded_model.load_state_dict(torch.load(f'./models/final_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
 
     print("Evaluating the model on the held out test set...")
     evaluate(loaded_model, df_test)
