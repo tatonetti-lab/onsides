@@ -21,7 +21,7 @@ print(len(df))
 
 labels = {'not_event': 0, 'is_event': 1}
 
-print(f"Loading ClinicalBERT tokenizer and model...")
+print(f"Loading ClinicalBERT tokenizer...")
 tokenizer = AutoTokenizer.from_pretrained("emilyalsentzer/Bio_ClinicalBERT")
 
 class Dataset(torch.utils.data.Dataset):
@@ -84,6 +84,8 @@ def train(model, train_data, val_data, learning_rate, epochs):
 
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
+
+    print(f"Using device: {device}")
 
     criterion = nn.CrossEntropyLoss()
     optimizer = Adam(model.parameters(), lr=learning_rate)
