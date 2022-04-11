@@ -141,12 +141,43 @@ def train(model, train_data, val_data, learning_rate, epochs):
                 | Val Loss: {total_loss_val / len(val_data): .3f} \
                 | Val Accuracy: {total_acc_val / len(val_data): .3f}')
 
+def evaluate(model, test_data):
+
+    test = Dataset(test_data)
+
+    test_dataloader = torch.utils.data.DataLoader(test, batch_size=2)
+
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda" if use_cuda else "cpu")
+
+    if use_cuda:
+
+        model = model.cuda()
+
+    total_acc_test = 0
+    with torch.no_grad():
+
+        for test_input, test_label in test_dataloader:
+
+              test_label = test_label.to(device)
+              mask = test_input['attention_mask'].to(device)
+              input_id = test_input['input_ids'].squeeze(1).to(device)
+
+              output = model(input_id, mask)
+
+              acc = (output.argmax(dim=1) == test_label).sum().item()
+              total_acc_test += acc
+
+    print(f'Test Accuracy: {total_acc_test / len(test_data): .3f}')
+
 if __name__ == '__main__':
 
 
     print("Splitting data into training, validation, and testing...")
-    np.random.seed(222)
-    df_train, df_val, df_test = np.split(df.sample(frac=1, random_state=24),
+    np_random_seed = 222
+    random_state = 24
+    np.random.seed(np_random_seed)
+    df_train, df_val, df_test = np.split(df.sample(frac=1, random_state=random_state),
                                          [int(0.8*len(df)), int(0.9*len(df))])
 
     print(len(df_train), len(df_val), len(df_test))
@@ -155,4 +186,18 @@ if __name__ == '__main__':
     model = ClinicalBertClassifier()
     LR = 1e-6
 
+    print("Fitting the model...")
+
     train(model, df_train, df_val, LR, EPOCHS)
+
+    print("Saving the model to file...")
+
+    torch.save(model.state_dict(), f'./models/{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
+
+    print("Loading the model from file...")
+
+    loaded_model = ClinicalBertClassifier()
+    loaded_model.load_state_dict(torch.load(f'./models/{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
+
+    print("Evaluating the model on the held out test set...")
+    evaluate(loaded_model, df_test)

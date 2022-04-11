@@ -1,7 +1,7 @@
-# data directories
+# data and model directories
 data/
 data
-
+models/
 
 # OS X Files
 .DS_Store
