@@ -9,12 +9,20 @@ import fit_clinicalbert as cb
 
 model = cb.ClinicalBertClassifier()
 
-np_random_seed = 222
-random_state = 24
-EPOCHS = 5
-LR = 1e-06
+model_file = sys.argv[1]
+print(f"Loading model from {model_file}")
 
-model.load_state_dict(torch.load(f'./models/final_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
+np_random_seed = int(model_file.split('_')[1])
+random_state = int(model_file.split('_')[2])
+EPOCHS = int(model_file.split('_')[3])
+LR = model_file.split('_')[4]
+
+print(f" np_random_seed: {np_random_seed}")
+print(f" random_state: {random_state}")
+print(f" EPOCHS: {EPOCHS}")
+print(f" LR: {LR}")
+
+model.load_state_dict(torch.load(model_file))
 
 # loading and re-splitting the data
 datapath = './data/clinical_bert_reference_set.txt'
