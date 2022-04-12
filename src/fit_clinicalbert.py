@@ -181,9 +181,29 @@ if __name__ == '__main__':
     np_random_seed = 222
     random_state = 24
     np.random.seed(np_random_seed)
-    df_train, df_val, df_test = np.split(df.sample(frac=1, random_state=random_state),
-                                         [int(0.8*len(df)), int(0.9*len(df))])
 
+    # randomly select by row
+    #df_train, df_val, df_test = np.split(df.sample(frac=1, random_state=random_state),
+    #                                     [int(0.8*len(df)), int(0.9*len(df))])
+
+    # randomly select by drug/label
+    druglist = sorted(set(df['drug']))
+
+    random.seed(np_random_seed)
+    random.shuffle(druglist)
+
+    drugs_train, drugs_val, drugs_test = np.split(druglist, [int(0.8*len(druglist)), int(0.9*len(druglist))])
+
+    print(f"Split labels in train, val, test by drug:")
+    print(len(drugs_train), len(drugs_val), len(drugs_test))
+
+    df_train = df[df['drug'].isin(drugs_train)]
+    df_val = df[df['drug'].isin(drugs_val)]
+    df_test = df[df['drug'].isin(drugs_test)]
+
+    df_train.shape, df_val.shape, df_test.shape
+
+    print(f"Resulting dataframes have sizes:")
     print(len(df_train), len(df_val), len(df_test))
 
     EPOCHS = 5
@@ -196,12 +216,12 @@ if __name__ == '__main__':
 
     print("Saving the model to file...")
 
-    torch.save(model.state_dict(), f'./models/final_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
-
+    torch.save(model.state_dict(), f'./models/final-bydrug_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
+    
     print("Loading the model from file...")
 
     loaded_model = ClinicalBertClassifier()
-    loaded_model.load_state_dict(torch.load(f'./models/final_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
+    loaded_model.load_state_dict(torch.load(f'./models/final-bydrug_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
 
     print("Evaluating the model on the held out test set...")
     evaluate(loaded_model, df_test)
