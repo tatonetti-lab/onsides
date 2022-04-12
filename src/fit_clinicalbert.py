@@ -4,6 +4,7 @@ Use clinical bert to classify terms as events or not_events.
 """
 
 import torch
+import random
 from torch import nn
 from torch.optim import Adam
 from transformers import AutoTokenizer, AutoModel
