@@ -16,7 +16,9 @@ np_random_seed = int(model_file.split('_')[1])
 random_state = int(model_file.split('_')[2])
 EPOCHS = int(model_file.split('_')[3])
 LR = model_file.split('_')[4].split('.')[0]
+prefix = model_file.split('_')[0].split('/')[-1]
 
+print(f" prefix: {prefix}")
 print(f" np_random_seed: {np_random_seed}")
 print(f" random_state: {random_state}")
 print(f" EPOCHS: {EPOCHS}")
@@ -38,4 +40,4 @@ outputs = cb.evaluate(model, df_test)
 npoutputs = [x.cpu().detach().numpy() for x in outputs]
 predictions = np.vstack(npoutputs)
 
-np.savetxt(f'./results/test_pred_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
+np.savetxt(f'./results/{prefix}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
