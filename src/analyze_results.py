@@ -15,7 +15,7 @@ print(f"Loading model from {model_file}")
 np_random_seed = int(model_file.split('_')[1])
 random_state = int(model_file.split('_')[2])
 EPOCHS = int(model_file.split('_')[3])
-LR = model_file.split('_')[4]
+LR = model_file.split('_')[4].split('.')[0]
 
 print(f" np_random_seed: {np_random_seed}")
 print(f" random_state: {random_state}")
