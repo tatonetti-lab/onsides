@@ -206,7 +206,7 @@ if __name__ == '__main__':
     print(f"Resulting dataframes have sizes:")
     print(len(df_train), len(df_val), len(df_test))
 
-    EPOCHS = 5
+    EPOCHS = 25
     model = ClinicalBertClassifier()
     LR = 1e-6
 
@@ -217,7 +217,7 @@ if __name__ == '__main__':
     print("Saving the model to file...")
 
     torch.save(model.state_dict(), f'./models/final-bydrug_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
-    
+
     print("Loading the model from file...")
 
     loaded_model = ClinicalBertClassifier()
