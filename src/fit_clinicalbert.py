@@ -12,13 +12,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-print(f"Loading reference data...")
-
-datapath = './data/clinical_bert_reference_set.txt'
-df = pd.read_csv(datapath)
-print(df.head())
-print(len(df))
-
 labels = {'not_event': 0, 'is_event': 1}
 
 print(f"Loading ClinicalBERT tokenizer...")
@@ -145,7 +138,7 @@ def evaluate(model, test_data):
 
     test = Dataset(test_data)
 
-    test_dataloader = torch.utils.data.DataLoader(test, batch_size=2)
+    test_dataloader = torch.utils.data.DataLoader(test, batch_size=128)
 
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
@@ -155,6 +148,8 @@ def evaluate(model, test_data):
         model = model.cuda()
 
     total_acc_test = 0
+    outputs = list()
+
     with torch.no_grad():
 
         for test_input, test_label in test_dataloader:
@@ -164,14 +159,23 @@ def evaluate(model, test_data):
               input_id = test_input['input_ids'].squeeze(1).to(device)
 
               output = model(input_id, mask)
+              outputs.append(output)
 
               acc = (output.argmax(dim=1) == test_label).sum().item()
               total_acc_test += acc
 
     print(f'Test Accuracy: {total_acc_test / len(test_data): .3f}')
 
+    return outputs
+
 if __name__ == '__main__':
 
+    print(f"Loading reference data...")
+
+    datapath = './data/clinical_bert_reference_set.txt'
+    df = pd.read_csv(datapath)
+    print(df.head())
+    print(len(df))
 
     print("Splitting data into training, validation, and testing...")
     np_random_seed = 222
