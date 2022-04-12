@@ -2,6 +2,7 @@
 data/
 data
 models/
+results/
 
 # OS X Files
 .DS_Store
