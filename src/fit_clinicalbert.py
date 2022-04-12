@@ -202,8 +202,6 @@ if __name__ == '__main__':
     df_val = df[df['drug'].isin(drugs_val)]
     df_test = df[df['drug'].isin(drugs_test)]
 
-    df_train.shape, df_val.shape, df_test.shape
-
     print(f"Resulting dataframes have sizes:")
     print(len(df_train), len(df_val), len(df_test))
 

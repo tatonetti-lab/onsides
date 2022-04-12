@@ -30,9 +30,20 @@ model.load_state_dict(torch.load(model_file))
 datapath = './data/clinical_bert_reference_set.txt'
 df = pd.read_csv(datapath)
 
-np.random.seed(np_random_seed)
-df_train, df_val, df_test = np.split(df.sample(frac=1, random_state=random_state),
-                                     [int(0.8*len(df)), int(0.9*len(df))])
+# randomly select by drug/label
+druglist = sorted(set(df['drug']))
+
+random.seed(np_random_seed)
+random.shuffle(druglist)
+
+drugs_train, drugs_val, drugs_test = np.split(druglist, [int(0.8*len(druglist)), int(0.9*len(druglist))])
+
+print(f"Split labels in train, val, test by drug:")
+print(len(drugs_train), len(drugs_val), len(drugs_test))
+
+df_train = df[df['drug'].isin(drugs_train)]
+df_val = df[df['drug'].isin(drugs_val)]
+df_test = df[df['drug'].isin(drugs_test)]
 
 print(len(df_train), len(df_val), len(df_test))
 
