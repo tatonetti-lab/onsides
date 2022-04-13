@@ -1,17 +1,49 @@
 """
+construct_training_data.py
+
 Using the manual annotations from Demmer-Fushman et al. Scientific Data
 construct a training set for use in training a classifier.
 
 For each metnioned MedDRA term, the classifier will predict whether or not
 the term will be manually annoated as an adverse event for the drug.
 
+@author Nicholas Tatonetti, Tatonetti Lab
 """
 
 import os
 import sys
 import csv
+import argparse
 
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--method', type=int, required=True)
+
+    args = parser.parse_args()
+
+    sub_event = False
+    sub_nonsense = False
+    prepend_event = False
+
+    if args.method == 0:
+        sub_event = True
+        prepend_event = True
+    elif args.method == 1:
+        sub_event = False
+        prepend_event = True
+    elif args.method == 2:
+        sub_event = True
+        prepend_event = False
+    elif args.method == 3:
+        sub_event = False
+        prepend_event = False
+    elif args.method == 4:
+        sub_event = True
+        sub_nonsense = True
+        prepend_event = False
+    else:
+        raise Exception(f"Expected method argument to be an integer value (0, 1, 2, 3, or 4). Got {args.method}")
 
     # load preferred terms and lower level terms
     meddra_fn = './data/meddra_llt_pt_map.txt'
@@ -41,7 +73,7 @@ def main():
     total_num_neg = 0
     total_num_pos = 0
 
-    outfn = './data/clinical_bert_reference_set.txt'
+    outfn = f'./data/ref{args.method}_clinical_bert_reference_set.txt'
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
     writer.writerow(['drug', 'llt_id', 'llt', 'class', 'string'])
@@ -118,7 +150,17 @@ def main():
 
                 for i in range(len(parts)-1):
                     # print(parts[i].split()[-1*size_of_parts:])
-                    example_string = llt + ' ' + ' '.join(parts[i].split()[-1*size_of_parts:] + ['EVENT'] + parts[i+1].split()[:size_of_parts])
+                    EVENT_STRING = llt
+                    if sub_event:
+                        EVENT_STRING = 'EVENT'
+                    if sub_nonsense:
+                        EVENT_STRING = 'YIHFKEHDK'
+
+                    START_STRING = ''
+                    if prepend_event:
+                        START_STRING = llt
+
+                    example_string = llt + ' ' + ' '.join(parts[i].split()[-1*size_of_parts:] + [EVENT_STRING] + parts[i+1].split()[:size_of_parts])
                     if llt in string_annotated:
                         string_class = 'is_event'
                         num_pos += 1

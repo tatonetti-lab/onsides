@@ -69,7 +69,7 @@ class ClinicalBertClassifier(nn.Module):
 
         return final_layer
 
-def train(model, train_data, val_data, learning_rate, epochs):
+def train(model, train_data, val_data, learning_rate, epochs, model_filename):
 
     train, val = Dataset(train_data), Dataset(val_data)
 
@@ -87,6 +87,8 @@ def train(model, train_data, val_data, learning_rate, epochs):
     if use_cuda:
         model = model.cuda()
         criterion = criterion.cuda()
+
+    best_val_acc = 0.0
 
     for epoch_num in range(epochs):
 
@@ -130,10 +132,15 @@ def train(model, train_data, val_data, learning_rate, epochs):
                 acc = (output.argmax(dim=1) == val_label).sum().item()
                 total_acc_val += acc
 
-        print(f'Epochs: {epoch_num + 1} | Train Loss: {total_loss_train / len(train_data): .3f} \
-                | Train Accuracy: {total_acc_train / len(train_data): .3f} \
-                | Val Loss: {total_loss_val / len(val_data): .3f} \
-                | Val Accuracy: {total_acc_val / len(val_data): .3f}')
+                if acc > best_val_acc:
+                    best_val_acc = acc
+                    torch.save(model.state_dict(), model_filename)
+
+
+        print(f'Epochs: {epoch_num + 1} | Train Loss: {total_loss_train / len(train_data): .4f} \
+                | Train Accuracy: {total_acc_train / len(train_data): .4f} \
+                | Val Loss: {total_loss_val / len(val_data): .4f} \
+                | Val Accuracy: {total_acc_val / len(val_data): .4f}')
 
 def evaluate(model, test_data):
 
@@ -165,20 +172,27 @@ def evaluate(model, test_data):
               acc = (output.argmax(dim=1) == test_label).sum().item()
               total_acc_test += acc
 
-    print(f'Test Accuracy: {total_acc_test / len(test_data): .3f}')
+    print(f'Test Accuracy: {total_acc_test / len(test_data): .4f}')
 
     return outputs
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ref', type=str, required=True)
+
+    args = parser.parse_args()
+
     print(f"Loading reference data...")
 
-    datapath = './data/clinical_bert_reference_set.txt'
+    # datapath = './data/clinical_bert_reference_set.txt'
+    datapath = args.ref
     df = pd.read_csv(datapath)
     print(df.head())
     print(len(df))
 
     print("Splitting data into training, validation, and testing...")
+    refset = int(args.ref.split('ref')[1].split('_')[0])
     np_random_seed = 222
     random_state = 24
     np.random.seed(np_random_seed)
@@ -210,17 +224,18 @@ if __name__ == '__main__':
     LR = 1e-6
 
     print("Fitting the model...")
+    model_filename = f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_BestEpoch.pth'
 
-    train(model, df_train, df_val, LR, EPOCHS)
+    train(model, df_train, df_val, LR, EPOCHS, model_filename)
 
     print("Saving the model to file...")
 
-    torch.save(model.state_dict(), f'./models/final-bydrug_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
+    torch.save(model.state_dict(), f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
 
     print("Loading the model from file...")
 
     loaded_model = ClinicalBertClassifier()
-    loaded_model.load_state_dict(torch.load(f'./models/final-bydrug_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
+    loaded_model.load_state_dict(torch.load(f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
 
     print("Evaluating the model on the held out test set...")
     evaluate(loaded_model, df_test)
