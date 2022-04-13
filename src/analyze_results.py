@@ -6,9 +6,6 @@ import argparse
 import pandas as pd
 import numpy as np
 
-sys.path.append(os.path.abspath("./src"))
-import fit_clinicalbert as cb
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -36,6 +33,9 @@ if __name__ == '__main__':
     print(f" EPOCHS: {EPOCHS}")
     print(f" LR: {LR}")
 
+    sys.path.append(os.path.abspath("./src"))
+    import fit_clinicalbert as cb
+    
     model = cb.ClinicalBertClassifier()
     model.load_state_dict(torch.load(model_file))
 
