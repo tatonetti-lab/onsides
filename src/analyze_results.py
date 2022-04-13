@@ -65,4 +65,4 @@ if __name__ == '__main__':
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
 
-    np.savetxt(f'./results/{prefix}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
+    np.savetxt(f'./results/{prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
