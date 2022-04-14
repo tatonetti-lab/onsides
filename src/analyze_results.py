@@ -61,8 +61,23 @@ if __name__ == '__main__':
 
     print(len(df_train), len(df_val), len(df_test))
 
+    print(f"Evaluating testing data...")
     outputs = cb.evaluate(model, df_test)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
 
-    np.savetxt(f'./results/{prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
+    np.savetxt(f'./results/{prefix}-test_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
+
+    print(f"Evaluating validation data...")
+    outputs = cb.evaluate(model, df_val)
+    npoutputs = [x.cpu().detach().numpy() for x in outputs]
+    predictions = np.vstack(npoutputs)
+
+    np.savetxt(f'./results/{prefix}-valid_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
+
+    print(f"Evaluating training data...")
+    outputs = cb.evaluate(model, df_train)
+    npoutputs = [x.cpu().detach().numpy() for x in outputs]
+    predictions = np.vstack(npoutputs)
+
+    np.savetxt(f'./results/{prefix}-train_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
