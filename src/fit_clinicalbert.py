@@ -161,7 +161,7 @@ def evaluate(model, test_data):
 
     with torch.no_grad():
 
-        for test_input, test_label in test_dataloader:
+        for test_input, test_label in tqdm(test_dataloader):
 
               test_label = test_label.to(device)
               mask = test_input['attention_mask'].to(device)
