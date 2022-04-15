@@ -2,7 +2,10 @@
 predict.py
 
 Files to predict on are very large. Will have to split e.g.:
-split -C 100m --numeric-suffixes output-part1_app0_clinical_bert_application_set.txt output-part1_app0_clinical_bert_application_set_split
+
+# this split command cats the header row to each split file
+tail -n +2 output-part1_app0_clinical_bert_application_set.txt| split -d -C 100m - --filter='sh -c "{ head -n1 output-part1_app0_clinical_bert_application_set.txt; cat; } > $FILE"' output-part1_app0_clinical_bert_application_set_split
+
 """
 
 import os
@@ -64,7 +67,12 @@ if __name__ == '__main__':
     print(f" is_split: {is_split}")
     print(f" split_no: {split_no}")
     print(f" results path: {results_path}\n")
-    
+
+    if os.path.exists(results_path):
+        print(f"  > Results file already exists, will not repeat evaluation. If you want to re-generate the results, delete the file and try again.")
+        sys.exit(1)
+
+
     sys.path.append(os.path.abspath("./src"))
     import fit_clinicalbert as cb
 
