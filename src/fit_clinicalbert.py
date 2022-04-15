@@ -25,12 +25,16 @@ tokenizer = AutoTokenizer.from_pretrained(_PRETRAINED_PATH_)
 
 class Dataset(torch.utils.data.Dataset):
 
-    def __init__(self, df):
+    def __init__(self, df, examples_only=False, _max_length=128):
 
-        self.labels = [labels[label] for label in df['class']]
+        if not examples_only:
+            self.labels = [labels[label] for label in df['class']]
+        else:
+            self.labels = [0 for _ in range(len(df))]
+        
         self.texts = [tokenizer(text,
                                 padding='max_length',
-                                max_length=128,
+                                max_length=_max_length,
                                 truncation=True,
                                 return_tensors="pt") for text in df['string']]
 
