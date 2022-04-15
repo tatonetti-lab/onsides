@@ -26,7 +26,7 @@ if __name__ == '__main__':
     random_state = int(model_file.split('_')[3])
     EPOCHS = int(model_file.split('_')[4])
     LR = model_file.split('_')[5].split('.')[0]
-    
+
     prefix = model_file.split('_')[0]
 
     print(f" prefix: {prefix}")
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     import fit_clinicalbert as cb
 
     model = cb.ClinicalBertClassifier()
-    model.load_state_dict(torch.load(model_file))
+    model.load_state_dict(torch.load(model_filepath))
 
     # loading and re-splitting the data
     datapath = f'../data/ref{refset}_clinical_bert_reference_set.txt'
