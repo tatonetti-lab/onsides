@@ -18,9 +18,10 @@ import pandas as pd
 from tqdm import tqdm
 
 labels = {'not_event': 0, 'is_event': 1}
+_PRETRAINED_PATH_ = "./trained_models/Bio_ClinicalBERT"
 
 print(f"Loading ClinicalBERT tokenizer...")
-tokenizer = AutoTokenizer.from_pretrained("emilyalsentzer/Bio_ClinicalBERT")
+tokenizer = AutoTokenizer.from_pretrained(_PRETRAINED_PATH_)
 
 class Dataset(torch.utils.data.Dataset):
 
@@ -59,7 +60,7 @@ class ClinicalBertClassifier(nn.Module):
 
         super(ClinicalBertClassifier, self).__init__()
 
-        self.bert = AutoModel.from_pretrained("emilyalsentzer/Bio_ClinicalBERT")
+        self.bert = AutoModel.from_pretrained(_PRETRAINED_PATH_)
         self.dropout = nn.Dropout(dropout)
         self.linear = nn.Linear(768, 2)
         self.relu = nn.ReLU()
@@ -237,7 +238,7 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), f'./trained_models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
 
     print("Loading the model from file...")
-    
+
     loaded_model = ClinicalBertClassifier()
     loaded_model.load_state_dict(torch.load(f'./trained_models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
 
