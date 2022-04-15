@@ -1,6 +1,7 @@
 # data and model directories
 data/
 data
+trained_models/
 models/
 results/
 

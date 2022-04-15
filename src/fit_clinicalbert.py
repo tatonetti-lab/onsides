@@ -186,7 +186,7 @@ if __name__ == '__main__':
     parser.add_argument('--ref', help="relative or full path to the reference set", type=str, required=True)
 
     args = parser.parse_args()
-    
+
     print(f"Loading reference data...")
 
     # datapath = './data/clinical_bert_reference_set.txt'
@@ -228,18 +228,18 @@ if __name__ == '__main__':
     LR = 1e-6
 
     print("Fitting the model...")
-    model_filename = f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_BestEpoch.pth'
+    model_filename = f'./trained_models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_BestEpoch.pth'
 
     train(model, df_train, df_val, LR, EPOCHS, model_filename)
 
     print("Saving the model to file...")
 
-    torch.save(model.state_dict(), f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
+    torch.save(model.state_dict(), f'./trained_models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth')
 
     print("Loading the model from file...")
-
+    
     loaded_model = ClinicalBertClassifier()
-    loaded_model.load_state_dict(torch.load(f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
+    loaded_model.load_state_dict(torch.load(f'./trained_models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth'))
 
     print("Evaluating the model on the held out test set...")
     evaluate(loaded_model, df_test)
