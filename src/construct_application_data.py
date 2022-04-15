@@ -64,10 +64,11 @@ def main():
 
     # derive a drug list from the training and testing data provided
     all_drugs = set([fn.split('_')[0] for fn in os.listdir(args.dir) if fn.endswith('adverse_reactions.txt')])
+    file_prefix = os.path.split(args.dir)[-1]
 
     print(f"Found {len(all_drugs)} total drugs")
 
-    outfn = f'./data/ref{args.method}_clinical_bert_application_set.txt'
+    outfn = f'./data/{file_prefix}_app{args.method}_clinical_bert_application_set.txt'
     print(f" Application data will be written to {outfn}")
 
     outfh = open(outfn, 'w')
