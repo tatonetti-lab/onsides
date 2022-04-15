@@ -57,8 +57,8 @@ if __name__ == '__main__':
     df = pd.read_csv(args.examples)
 
     print(f"Evaluating example data...")
-    outputs = cb.evaluate(model, df)
+    outputs = cb.evaluate(model, df, examples_only=True)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
-    
+
     np.savetxt(f'./results/{prefix}_app{ex_refset}_ref{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')

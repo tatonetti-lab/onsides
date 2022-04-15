@@ -31,7 +31,7 @@ class Dataset(torch.utils.data.Dataset):
             self.labels = [labels[label] for label in df['class']]
         else:
             self.labels = [0 for _ in range(len(df))]
-        
+
         self.texts = [tokenizer(text,
                                 padding='max_length',
                                 max_length=_max_length,
@@ -151,10 +151,10 @@ def train(model, train_data, val_data, learning_rate, epochs, model_filename):
                 | Val Loss: {total_loss_val / len(val_data): .4f} \
                 | Val Accuracy: {total_acc_val / len(val_data): .4f}')
 
-def evaluate(model, test_data):
+def evaluate(model, test_data, examples_only=False):
 
-    test = Dataset(test_data)
-
+    test = Dataset(test_data, examples_only)
+    
     test_dataloader = torch.utils.data.DataLoader(test, batch_size=128)
 
     use_cuda = torch.cuda.is_available()
