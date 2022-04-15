@@ -154,7 +154,7 @@ def train(model, train_data, val_data, learning_rate, epochs, model_filename):
 def evaluate(model, test_data, examples_only=False):
 
     test = Dataset(test_data, examples_only)
-    
+
     test_dataloader = torch.utils.data.DataLoader(test, batch_size=128)
 
     use_cuda = torch.cuda.is_available()
@@ -181,8 +181,9 @@ def evaluate(model, test_data, examples_only=False):
               acc = (output.argmax(dim=1) == test_label).sum().item()
               total_acc_test += acc
 
-    print(f'Test Accuracy: {total_acc_test / len(test_data): .4f}')
-
+    if not examples_only:
+        print(f'Test Accuracy: {total_acc_test / len(test_data): .4f}')
+    
     return outputs
 
 if __name__ == '__main__':

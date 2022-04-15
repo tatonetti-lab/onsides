@@ -42,10 +42,18 @@ if __name__ == '__main__':
     ex_refset = int(ex_filename.split('_')[1].strip('app'))
     ex_prefix = ex_filename.split('_')[0]
 
+    is_split = False
+    split_no = ''
+    if ex_filename.find('split') != -1:
+        is_split = True
+        split_no = '-' + ex_filename.split('split')[1]
+
     print(f"Examples")
     print(f"-------------------")
     print(f" prefix: {ex_prefix}")
     print(f" refset: {ex_refset}")
+    print(f" is_split: {is_split}")
+    print(f" split_no: {split_no}")
 
     sys.path.append(os.path.abspath("./src"))
     import fit_clinicalbert as cb
@@ -60,5 +68,5 @@ if __name__ == '__main__':
     outputs = cb.evaluate(model, df, examples_only=True)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
-
-    np.savetxt(f'./results/{prefix}_app{ex_refset}_ref{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
+    
+    np.savetxt(f'./results/{prefix}{split_no}_app{ex_refset}_ref{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
