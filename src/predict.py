@@ -1,3 +1,10 @@
+"""
+predict.py
+
+Files to predict on are very large. Will have to split e.g.:
+split -C 100m --numeric-suffixes output-part1_app0_clinical_bert_application_set.txt output-part1_app0_clinical_bert_application_set_split
+"""
+
 import os
 import sys
 import torch
@@ -48,13 +55,16 @@ if __name__ == '__main__':
         is_split = True
         split_no = '-' + ex_filename.split('split')[1]
 
+    results_path = f'./results/{prefix}{split_no}_app{ex_refset}_ref{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv'
+
     print(f"Examples")
     print(f"-------------------")
     print(f" prefix: {ex_prefix}")
     print(f" refset: {ex_refset}")
     print(f" is_split: {is_split}")
     print(f" split_no: {split_no}")
-
+    print(f" results path: {results_path}\n")
+    
     sys.path.append(os.path.abspath("./src"))
     import fit_clinicalbert as cb
 
@@ -68,5 +78,5 @@ if __name__ == '__main__':
     outputs = cb.evaluate(model, df, examples_only=True)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
-    
-    np.savetxt(f'./results/{prefix}{split_no}_app{ex_refset}_ref{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv', predictions, delimiter=',')
+
+    np.savetxt(results_path, predictions, delimiter=',')
