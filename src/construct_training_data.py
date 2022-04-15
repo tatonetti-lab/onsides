@@ -4,10 +4,10 @@ construct_training_data.py
 Using the manual annotations from Demmer-Fushman et al. Scientific Data
 construct a training set for use in training a classifier.
 
-For each metnioned MedDRA term, the classifier will predict whether or not
-the term will be manually annoated as an adverse event for the drug.
+For each mentioned MedDRA term, the classifier will predict whether or not
+the term will be manually annotated as an adverse event for the drug.
 
-@author Nicholas Tatonetti, Tatonetti Lab
+@author Nicholas Tatonetti, Tatonetti Lab, Columbia University
 """
 
 import os
@@ -79,7 +79,7 @@ def main():
     writer.writerow(['drug', 'llt_id', 'llt', 'class', 'string'])
 
     for drug in all_drugs:
-        print(f"Generating refernece data for: {drug}")
+        print(f"Generating reference data for: {drug}")
 
         # ADVERSE REACTIONS Section
         final_ref_fn = './data/200_manual_annotations_csv/FinalReferenceStandard200Labels.csv'
@@ -160,7 +160,7 @@ def main():
                     if prepend_event:
                         START_STRING = llt
 
-                    example_string = llt + ' ' + ' '.join(parts[i].split()[-1*size_of_parts:] + [EVENT_STRING] + parts[i+1].split()[:size_of_parts])
+                    example_string = START_STRING + ' ' + ' '.join(parts[i].split()[-1*size_of_parts:] + [EVENT_STRING] + parts[i+1].split()[:size_of_parts])
                     if llt in string_annotated:
                         string_class = 'is_event'
                         num_pos += 1

@@ -183,10 +183,10 @@ def evaluate(model, test_data):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ref', type=str, required=True)
+    parser.add_argument('--ref', help="relative or full path to the reference set", type=str, required=True)
 
     args = parser.parse_args()
-
+    
     print(f"Loading reference data...")
 
     # datapath = './data/clinical_bert_reference_set.txt'
