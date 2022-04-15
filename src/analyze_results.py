@@ -13,7 +13,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    model_file = args.model
+    model_filepath = args.model
+    model_file = os.path.split(model_filepath)[-1]
+
     print(f"Loading model from {model_file}")
 
     if len(model_file.split('_')) != 6:
@@ -24,8 +26,8 @@ if __name__ == '__main__':
     random_state = int(model_file.split('_')[3])
     EPOCHS = int(model_file.split('_')[4])
     LR = model_file.split('_')[5].split('.')[0]
-
-    prefix = model_file.split('_')[0].split('/')[-1]
+    
+    prefix = model_file.split('_')[0]
 
     print(f" prefix: {prefix}")
     print(f" refset: {refset}")
