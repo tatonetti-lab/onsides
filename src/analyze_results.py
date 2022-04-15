@@ -43,7 +43,7 @@ if __name__ == '__main__':
     model.load_state_dict(torch.load(model_filepath))
 
     # loading and re-splitting the data
-    datapath = f'../data/ref{refset}_clinical_bert_reference_set.txt'
+    datapath = f'./data/ref{refset}_clinical_bert_reference_set.txt'
     df = pd.read_csv(datapath)
 
     # randomly select by drug/label
