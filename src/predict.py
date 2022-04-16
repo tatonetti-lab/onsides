@@ -1,11 +1,16 @@
 """
 predict.py
 
-Files to predict on are very large. Will have to split e.g.:
+# Files to predict on are very large. Will have to split the file first so
+# that it doesn't take forever/use up all the memory on the system.
+# NOTE: this split command cats the header row to each split file:
+tail -n +2 output-part2_app0_clinical_bert_application_set.txt| split -d -C 100m - --filter='sh -c "{ head -n1 output-part2_app0_clinical_bert_application_set.txt; cat; } > $FILE"' output-part2_app0_clinical_bert_application_set_split
 
-# this split command cats the header row to each split file
-tail -n +2 output-part1_app0_clinical_bert_application_set.txt| split -d -C 100m - --filter='sh -c "{ head -n1 output-part1_app0_clinical_bert_application_set.txt; cat; } > $FILE"' output-part1_app0_clinical_bert_application_set_split
-
+# then you can run with:
+for f in data/*split*
+do
+    CUDA_VISIBLE_DEVICES=3 python3 src/predict.py --model models/final-bydrug_0_222_24_25_1e-06.pth --examples $f
+done
 """
 
 import os
@@ -58,7 +63,7 @@ if __name__ == '__main__':
         is_split = True
         split_no = '-' + ex_filename.split('split')[1]
 
-    results_path = f'./results/{prefix}{split_no}_app{ex_refset}_ref{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv'
+    results_path = f'./results/{prefix}-{ex_prefix}{split_no}_app{ex_refset}_ref{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv'
 
     print(f"Examples")
     print(f"-------------------")
