@@ -6,6 +6,7 @@ Use clinical bert to classify terms as events or not_events.
 @author Nicholas Tatonetti, Tatonetti Lab (heavily inspired by https://towardsdatascience.com/text-classification-with-bert-in-pytorch-887965e5820f)
 """
 
+import csv
 import torch
 import random
 from torch import nn
