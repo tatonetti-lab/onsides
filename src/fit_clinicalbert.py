@@ -236,9 +236,9 @@ if __name__ == '__main__':
     filename_params = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
     if os.path.exists(final_model_filename):
-        print(f"Found final model already saved at path: {file_model_filename}")
+        print(f"Found final model already saved at path: {final_model_filename}")
         if args.ifexists == 'quit':
-            print("  Quitting. To run a replicate, use --ifexists replicate option.")
+            print("  Quitting. To run a replicate, use: --ifexists replicate")
             sys.exit(1)
         elif args.ifexists == 'replicate':
             print("  Will run a replicate, checking for any existing replicates...")
