@@ -210,6 +210,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', help="batch size to feed into the model each epoch, will need to balance with max_length to avoid memory errors", type=int, default=128)
     parser.add_argument('--epochs', help="number of epochs to train, default is 25", type=int, default=25)
     parser.add_argument('--learning-rate', help="the learning rate to use, default is 1e-6", type=float, default=1e-6)
+    parser.add_argument('--ifexists', help="what to do if model already exists with same parameters, options are 'replicate', 'overwrite', 'quit' - default is 'quit'", type=str, default='quit')
 
     args = parser.parse_args()
 
@@ -227,6 +228,29 @@ if __name__ == '__main__':
     random_state = 24
     max_length = args.max_length
     batch_size = args.batch_size
+
+    # check for existing model file
+    filename_params = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
+    final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
+    if os.path.exists(final_model_filename):
+        print("Found final model already saved at path: {file_model_filename}")
+        if args.ifexists == 'quit':
+            print("  Quiting. To run a replicate, use --ifexists replicate option.")
+            sys.exit(1)
+        elif args.ifexists == 'replicate':
+            print("  Will run a replicate, checking for any existing replicates...")
+            reps = [f for f in os.listdir('./models/') if f.find(filename_params) != 0]
+            final_model_filename = f'./models/final-bydrug_{filename_params}_rep{len(reps)}.pth'
+            print(f"    Found {len(reps)} existing models. Filename for this replicate will be: {final_model_filename}")
+        elif args.ifexists == 'overwrite':
+            print("  Option is to overwrite the exising model file.")
+            confirm = input("!!! Please confirm that you would really like to overwrite the existing file? [y/N]")
+            if confirm != 'y':
+                print("  Okay, will not overwrite the file. Quitting instead.")
+                sys.exit(1)
+        else:
+            raise Exception("ERROR: Unexpected option set for --ifexists argument: {args.ifexists}")
+
 
     np.random.seed(np_random_seed)
 
@@ -257,16 +281,16 @@ if __name__ == '__main__':
     LR = args.learning_rate
 
     print("Fitting the model...")
-    model_filename = f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}_BestEpoch.pth'
+    best_epoch_model_filename = f'./models/final-bydrug_{filename_params}_BestEpoch.pth'
 
-    training_results = train(model, df_train, df_val, LR, EPOCHS, max_length, batch_size, model_filename)
+    training_results = train(model, df_train, df_val, LR, EPOCHS, max_length, batch_size, best_epoch_model_filename)
 
     print("Saving the model to file...")
 
-    torch.save(model.state_dict(), f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth')
+    torch.save(model.state_dict(), final_model_filename)
 
     print("Saving loss and accuracies for each epoch to file...")
-    lafh = open(f'./results/epoch-results_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv', 'w')
+    lafh = open(f'./results/epoch-results_{filename_params}.csv', 'w')
     writer = csv.writer(lafh)
     writer.writerow(['epoch', 'train_loss', 'train_accuracy', 'valid_loss', 'valid_accuracy', 'epoch_time'])
     for epoch in range(EPOCHS):
@@ -276,7 +300,7 @@ if __name__ == '__main__':
     print("Loading the model from file...")
 
     loaded_model = ClinicalBertClassifier()
-    loaded_model.load_state_dict(torch.load(f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth'))
+    loaded_model.load_state_dict(torch.load(final_model_filename))
 
     print("Evaluating the model on the held out test set...")
     evaluate(loaded_model, df_test, max_length, batch_size)
