@@ -83,7 +83,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
     train, val = Dataset(train_data, _max_length=max_length), Dataset(val_data, _max_length=max_length)
 
     train_dataloader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True)
-    val_dataloader = torch.utils.data.DataLoader(val, batch_size=batcH_size)
+    val_dataloader = torch.utils.data.DataLoader(val, batch_size=batch_size)
 
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
@@ -251,6 +251,6 @@ if __name__ == '__main__':
 
     loaded_model = ClinicalBertClassifier()
     loaded_model.load_state_dict(torch.load(f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth'))
-    
+
     print("Evaluating the model on the held out test set...")
     evaluate(loaded_model, df_test, max_length, batch_size)
