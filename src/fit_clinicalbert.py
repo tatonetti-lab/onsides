@@ -230,19 +230,20 @@ if __name__ == '__main__':
     batch_size = args.batch_size
     EPOCHS = args.epochs
     LR = args.learning_rate
-    
+
     # check for existing model file
     filename_params = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
     if os.path.exists(final_model_filename):
         print("Found final model already saved at path: {file_model_filename}")
         if args.ifexists == 'quit':
-            print("  Quiting. To run a replicate, use --ifexists replicate option.")
+            print("  Quitting. To run a replicate, use --ifexists replicate option.")
             sys.exit(1)
         elif args.ifexists == 'replicate':
             print("  Will run a replicate, checking for any existing replicates...")
             reps = [f for f in os.listdir('./models/') if f.find(filename_params) != 0]
-            final_model_filename = f'./models/final-bydrug_{filename_params}_rep{len(reps)}.pth'
+            filename_params = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}_rep{len(reps)}'
+            final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
             print(f"    Found {len(reps)} existing models. Filename for this replicate will be: {final_model_filename}")
         elif args.ifexists == 'overwrite':
             print("  Option is to overwrite the exising model file.")
