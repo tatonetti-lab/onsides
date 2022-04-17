@@ -30,12 +30,17 @@ if __name__ == '__main__':
 
     resultspath = args.results
 
-    prefix = os.path.split(resultspath)[-1].split('_')[0]
-    refset = resultspath.split('_')[2]
-    np_random_seed = int(resultspath.split('_')[3])
-    random_state = int(resultspath.split('_')[4])
-    EPOCHS = int(resultspath.split('_')[5])
-    LR = resultspath.split('_')[6].split('.')[0]
+    fnnoext = os.path.split(resultspath)[-1].split('.')[0]
+    if len(fnnoext.split('_')) != 7:
+        raise Exception("Model filename not in format expected: {prefix}_{appset}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth")
+    
+    prefix = fnnoext.split('_')[0]
+    refset = fnnoext.split('_')[2]
+    np_random_seed = int(fnnoext.split('_')[3])
+    random_state = int(fnnoext.split('_')[4])
+    EPOCHS = int(fnnoext.split('_')[5])
+    LR = fnnoext.split('_')[6]
+
     threshold = max_f1_thresholds[refset][0]
 
     print(f" prefix: {prefix}")

@@ -19,6 +19,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--method', type=int, required=True)
+    parser.add_argument('--nwords', help='The number of words to grab from either side of the event mention to generate the training example', type=int, default=64)
 
     args = parser.parse_args()
 
@@ -73,7 +74,7 @@ def main():
     total_num_neg = 0
     total_num_pos = 0
 
-    outfn = f'./data/ref{args.method}_clinical_bert_reference_set.txt'
+    outfn = f'./data/ref{args.method}_nwords{args.nwords}_clinical_bert_reference_set.txt'
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
     writer.writerow(['drug', 'llt_id', 'llt', 'class', 'string'])
@@ -143,7 +144,11 @@ def main():
                 parts = ar_text.split(llt)
 
                 size_of_llt = len(llt.split())
-                size_of_parts = 64 - size_of_llt
+                # NOTE: BERT has a limit of 512 tokens, words that are not in BERTs
+                # NOTE: dictionary are split into subwords and tokenized. So the actual
+                # NOTE: number of tokens is more than the number of words. We initially
+                # NOTE: used ~128.
+                size_of_parts = args.nwords - size_of_llt
 
                 if len(parts) == 1:
                     raise Exception("Parts has length of 1 which shouldn't be possible.")

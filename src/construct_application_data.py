@@ -22,6 +22,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--method', help='Choose which example generation method to use. See code for details.', type=int, required=True)
     parser.add_argument('--dir', help='Path to the directory that contains the parsed SPL files. The program expects that there will be a file named *_adverse_reactions.txt for each label.', type=str, required=True)
+    parser.add_argument('--nwords', help='The number of words to grab from either side of the event mention to generate the training example', type=int, default=64)
 
     args = parser.parse_args()
 
@@ -68,9 +69,9 @@ def main():
 
     print(f"Found {len(all_drugs)} total drugs")
 
-    outfn = f'./data/{file_prefix}_app{args.method}_clinical_bert_application_set.txt'
+    outfn = f'./data/{file_prefix}_app{args.method}_nwords{args.nwords}_clinical_bert_application_set.txt'
     print(f" Application data will be written to {outfn}")
-
+    
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
     writer.writerow(['drug', 'llt_id', 'llt', 'string'])
@@ -104,7 +105,7 @@ def main():
                 parts = ar_text.split(llt)
 
                 size_of_llt = len(llt.split())
-                size_of_parts = 64 - size_of_llt
+                size_of_parts = args.nwords - size_of_llt
 
                 if len(parts) == 1:
                     raise Exception("Parts has length of 1 which shouldn't be possible.")

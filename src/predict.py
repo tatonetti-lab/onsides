@@ -4,10 +4,10 @@ predict.py
 # Files to predict on are very large. Will have to split the file first so
 # that it doesn't take forever/use up all the memory on the system.
 # NOTE: this split command cats the header row to each split file:
-tail -n +2 output-part2_app0_clinical_bert_application_set.txt| split -d -C 100m - --filter='sh -c "{ head -n1 output-part2_app0_clinical_bert_application_set.txt; cat; } > $FILE"' output-part2_app0_clinical_bert_application_set_split
+tail -n +2 output-part4_app0_clinical_bert_application_set.txt| split -d -C 100m - --filter='sh -c "{ head -n1 output-part4_app0_clinical_bert_application_set.txt; cat; } > $FILE"' output-part4_app0_clinical_bert_application_set_split
 
 # then you can run with:
-for f in data/*split*
+for f in data/*_split*
 do
     CUDA_VISIBLE_DEVICES=3 python3 src/predict.py --model models/final-bydrug_0_222_24_25_1e-06.pth --examples $f
 done
