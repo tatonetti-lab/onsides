@@ -151,7 +151,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
 
 
         train_losses.append(total_loss_train / len(train_data))
-        train_accuracies.append({total_acc_train / len(train_data))
+        train_accuracies.append(total_acc_train / len(train_data))
         valid_losses.append(total_loss_val / len(val_data))
         valid_accuracies.append(total_acc_val / len(val_data))
 
@@ -205,7 +205,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', help="batch size to feed into the model each epoch, will need to balance with max_length to avoid memory errors", type=int, default=128)
     parser.add_argument('--epochs', help="number of epochs to train, default is 25", type=int, default=25)
     parser.add_argument('--learning-rate', help="the learning rate to use, default is 1e-6", type=float, default=1e-6)
-    
+
     args = parser.parse_args()
 
     print(f"Loading reference data...")
