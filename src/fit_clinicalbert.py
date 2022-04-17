@@ -228,7 +228,9 @@ if __name__ == '__main__':
     random_state = 24
     max_length = args.max_length
     batch_size = args.batch_size
-
+    EPOCHS = args.epochs
+    LR = args.learning_rate
+    
     # check for existing model file
     filename_params = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
@@ -276,9 +278,7 @@ if __name__ == '__main__':
     print(f"Resulting dataframes have sizes:")
     print(len(df_train), len(df_val), len(df_test))
 
-    EPOCHS = args.epochs
     model = ClinicalBertClassifier()
-    LR = args.learning_rate
 
     print("Fitting the model...")
     best_epoch_model_filename = f'./models/final-bydrug_{filename_params}_BestEpoch.pth'
