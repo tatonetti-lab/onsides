@@ -98,6 +98,10 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
         criterion = criterion.cuda()
 
     best_val_acc = 0.0
+    train_accuracies = list()
+    train_losses = list()
+    valid_accuracies = list()
+    valid_losses = list()
 
     for epoch_num in range(epochs):
 
@@ -146,10 +150,17 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
                     torch.save(model.state_dict(), model_filename)
 
 
+        train_losses.append(total_loss_train / len(train_data))
+        train_accuracies.append({total_acc_train / len(train_data))
+        valid_losses.append(total_loss_val / len(val_data))
+        valid_accuracies.append(total_acc_val / len(val_data))
+
         print(f'Epochs: {epoch_num + 1} | Train Loss: {total_loss_train / len(train_data): .4f} \
                 | Train Accuracy: {total_acc_train / len(train_data): .4f} \
                 | Val Loss: {total_loss_val / len(val_data): .4f} \
                 | Val Accuracy: {total_acc_val / len(val_data): .4f}')
+
+    return train_losses, train_accuracies, valid_losses, valid_accuracies
 
 def evaluate(model, test_data, max_length, batch_size, examples_only=False):
 
@@ -192,7 +203,9 @@ if __name__ == '__main__':
     parser.add_argument('--ref', help="relative or full path to the reference set", type=str, required=True)
     parser.add_argument('--max-length', help="maximum number of tokens to use as input for ClinicalBERT", type=int, default=128)
     parser.add_argument('--batch-size', help="batch size to feed into the model each epoch, will need to balance with max_length to avoid memory errors", type=int, default=128)
-
+    parser.add_argument('--epochs', help="number of epochs to train, default is 25", type=int, default=25)
+    parser.add_argument('--learning-rate', help="the learning rate to use, default is 1e-6", type=float, default=1e-6)
+    
     args = parser.parse_args()
 
     print(f"Loading reference data...")
@@ -234,18 +247,26 @@ if __name__ == '__main__':
     print(f"Resulting dataframes have sizes:")
     print(len(df_train), len(df_val), len(df_test))
 
-    EPOCHS = 25
+    EPOCHS = args.epochs
     model = ClinicalBertClassifier()
-    LR = 1e-6
+    LR = args.learning_rate
 
     print("Fitting the model...")
     model_filename = f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}_BestEpoch.pth'
 
-    train(model, df_train, df_val, LR, EPOCHS, max_length, batch_size, model_filename)
+    training_results = train(model, df_train, df_val, LR, EPOCHS, max_length, batch_size, model_filename)
 
     print("Saving the model to file...")
 
     torch.save(model.state_dict(), f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth')
+
+    print("Saving loss and accuracies for each epoch to file...")
+    lafh = open(f'./results/epoch-results_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv', 'w')
+    writer = csv.writer(lafh)
+    writer.writerow(['epoch', 'train_loss', 'train_accuracy', 'valid_loss', 'valid_accuracy'])
+    for epoch in range(EPOCHS):
+        writer.writerow([epoch+1] + [training_results[i][epoch] for i in range(len(training_results))])
+    lafh.close()
 
     print("Loading the model from file...")
 
