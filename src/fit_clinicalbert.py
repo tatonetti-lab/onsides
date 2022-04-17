@@ -236,7 +236,7 @@ if __name__ == '__main__':
     filename_params = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
     if os.path.exists(final_model_filename):
-        print("Found final model already saved at path: {file_model_filename}")
+        print(f"Found final model already saved at path: {file_model_filename}")
         if args.ifexists == 'quit':
             print("  Quitting. To run a replicate, use --ifexists replicate option.")
             sys.exit(1)
@@ -253,7 +253,7 @@ if __name__ == '__main__':
                 print("  Okay, will not overwrite the file. Quitting instead.")
                 sys.exit(1)
         else:
-            raise Exception("ERROR: Unexpected option set for --ifexists argument: {args.ifexists}")
+            raise Exception(f"ERROR: Unexpected option set for --ifexists argument: {args.ifexists}")
 
 
     np.random.seed(np_random_seed)
