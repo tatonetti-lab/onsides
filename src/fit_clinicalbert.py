@@ -242,7 +242,7 @@ if __name__ == '__main__':
             sys.exit(1)
         elif args.ifexists == 'replicate':
             print("  Will run a replicate, checking for any existing replicates...")
-            reps = [f for f in os.listdir('./models/') if f.find(filename_params) != 0]
+            reps = [f for f in os.listdir('./models/') if f.find(filename_params) != -1]
             filename_params = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}_rep{len(reps)}'
             final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
             print(f"    Found {len(reps)} existing models. Filename for this replicate will be: {final_model_filename}")
