@@ -78,12 +78,12 @@ class ClinicalBertClassifier(nn.Module):
 
         return final_layer
 
-def train(model, train_data, val_data, learning_rate, epochs, max_length, model_filename):
+def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_size, model_filename):
 
     train, val = Dataset(train_data, _max_length=max_length), Dataset(val_data, _max_length=max_length)
 
-    train_dataloader = torch.utils.data.DataLoader(train, batch_size=128, shuffle=True)
-    val_dataloader = torch.utils.data.DataLoader(val, batch_size=128)
+    train_dataloader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True)
+    val_dataloader = torch.utils.data.DataLoader(val, batch_size=batcH_size)
 
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
@@ -151,11 +151,11 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, model_
                 | Val Loss: {total_loss_val / len(val_data): .4f} \
                 | Val Accuracy: {total_acc_val / len(val_data): .4f}')
 
-def evaluate(model, test_data, max_length, examples_only=False):
+def evaluate(model, test_data, max_length, batch_size, examples_only=False):
 
     test = Dataset(test_data, examples_only, _max_length=max_length)
 
-    test_dataloader = torch.utils.data.DataLoader(test, batch_size=128)
+    test_dataloader = torch.utils.data.DataLoader(test, batch_size=batch_size)
 
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
@@ -191,6 +191,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--ref', help="relative or full path to the reference set", type=str, required=True)
     parser.add_argument('--max-length', help="maximum number of tokens to use as input for ClinicalBERT", type=int, default=128)
+    parser.add_argument('--batch-size', help="batch size to feed into the model each epoch, will need to balance with max_length to avoid memory errors", type=int, default=128)
 
     args = parser.parse_args()
 
@@ -207,6 +208,7 @@ if __name__ == '__main__':
     np_random_seed = 222
     random_state = 24
     max_length = args.max_length
+    batch_size = args.batch_size
 
     np.random.seed(np_random_seed)
 
@@ -237,18 +239,18 @@ if __name__ == '__main__':
     LR = 1e-6
 
     print("Fitting the model...")
-    model_filename = f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_BestEpoch.pth'
+    model_filename = f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}_BestEpoch.pth'
 
-    train(model, df_train, df_val, LR, EPOCHS, max_length, model_filename)
+    train(model, df_train, df_val, LR, EPOCHS, max_length, batch_size, model_filename)
 
     print("Saving the model to file...")
 
-    torch.save(model.state_dict(), f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}.pth')
-    
+    torch.save(model.state_dict(), f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth')
+
     print("Loading the model from file...")
 
     loaded_model = ClinicalBertClassifier()
-    loaded_model.load_state_dict(torch.load(f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}.pth'))
-
+    loaded_model.load_state_dict(torch.load(f'./models/final-bydrug_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth'))
+    
     print("Evaluating the model on the held out test set...")
-    evaluate(loaded_model, df_test, max_length)
+    evaluate(loaded_model, df_test, max_length, batch_size)
