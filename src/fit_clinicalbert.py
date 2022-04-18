@@ -225,6 +225,9 @@ if __name__ == '__main__':
 
     print("Splitting data into training, validation, and testing...")
     refset = int(args.ref.split('ref')[1].split('_')[0])
+    refsection = args.ref.split('_')[-1].split('.')[0]
+    print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}.")
+
     np_random_seed = 222
     random_state = 24
     max_length = args.max_length
@@ -233,7 +236,7 @@ if __name__ == '__main__':
     LR = args.learning_rate
 
     # check for existing model file
-    filename_params = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
+    filename_params = f'{refset}-{refsection}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
     if os.path.exists(final_model_filename):
         print(f"Found final model already saved at path: {final_model_filename}")
@@ -243,7 +246,7 @@ if __name__ == '__main__':
         elif args.ifexists == 'replicate':
             print("  Will run a replicate, checking for any existing replicates...")
             reps = [f for f in os.listdir('./models/') if f.find(filename_params) != -1 and f.find('BestEpoch') == -1]
-            filename_params = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}_rep{len(reps)}'
+            filename_params = f'{refset}-{refsection}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}_rep{len(reps)}'
             final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
             print(f"    Found {len(reps)} existing models. Filename for this replicate will be: {final_model_filename}")
         elif args.ifexists == 'overwrite':

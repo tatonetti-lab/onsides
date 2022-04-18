@@ -20,6 +20,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--method', type=int, required=True)
     parser.add_argument('--nwords', help='The number of words to grab from either side of the event mention to generate the training example', type=int, default=64)
+    parser.add_argument('--section', help='Designate which section of the label to parse. Options are AR (adverse reactions), BW (boxed warnings), or WP (warnings and precautions)', type=str, default='AR')
 
     args = parser.parse_args()
 
@@ -60,12 +61,29 @@ def main():
 
     meddra_fh.close()
 
-    # derive a drug list from the training and testing data provided
-    train_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_training_set') if fn.find('adverse_reactions.txt') != -1])
-    test_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_test_set') if fn.find('adverse_reactions.txt') != -1])
+    suffix = None
+    section_display_name = None
+    if args.section == 'AR':
+        # ADVERSE REACTIONS
+        suffix = 'adverse_reactions.txt'
+        section_display_name = 'ADVERSE REACTIONS'
+    elif args.section == 'BW':
+        # BLACK BOX WARNINGS
+        suffix = 'boxed_warnings.txt'
+        section_display_name = 'BOXED WARNINGS'
+    elif args.section == 'WP':
+        # WARNINGS AND PRECAUTIONS
+        suffix = 'warnings_and_precautions.txt'
+        section_display_name = 'WARNINGS AND PRECAUTIONS'
+    else:
+        raise Exception(f"ERROR: Unknown section specificed: {args.section}")
 
-    all_drugs = train_drugs | test_drugs
-    print(f"Found {len(all_drugs)} total drugs")
+    # derive a drug list from the training and testing data provided
+    train_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_training_set') if fn.find(suffix) != -1])
+    test_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_test_set') if fn.find(suffix) != -1])
+
+    all_drugs = sorted(train_drugs | test_drugs)
+    print(f"Found {len(all_drugs)} total drugs with *{suffix} files.")
 
     # generate reference data for a specific drug
 
@@ -74,7 +92,7 @@ def main():
     total_num_neg = 0
     total_num_pos = 0
 
-    outfn = f'./data/ref{args.method}_nwords{args.nwords}_clinical_bert_reference_set.txt'
+    outfn = f'./data/ref{args.method}_nwords{args.nwords}_clinical_bert_reference_set_{args.section}.txt'
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
     writer.writerow(['drug', 'llt_id', 'llt', 'class', 'string'])
@@ -98,7 +116,7 @@ def main():
             if not data['Drug Name'] == drug:
                 continue
 
-            if not data['Section Display Name'] == 'ADVERSE REACTIONS':
+            if not data['Section Display Name'] == section_display_name:
                 continue
 
             pts_annotated.add(data['PT ID'])
@@ -112,18 +130,18 @@ def main():
         print(f"\tIntersection of terms with local meddra map: {len(string_annotated & set(llts.values()))}")
 
         # load text from adverse events section
-        ar_file_path = './data/200_training_set/%s_adverse_reactions.txt' % drug
+        ar_file_path = f'./data/200_training_set/{drug}_{suffix}'
         if os.path.exists(ar_file_path):
             ar_fh = open(ar_file_path)
         else:
-            ar_file_path = './data/200_test_set/%s_adverse_reactions.txt' % drug
+            ar_file_path = f'./data/200_test_set/{drug}_{suffix}'
             if os.path.exists(ar_file_path):
                 ar_fh = open(ar_file_path)
             else:
                 raise Exception("Couldn't file adverse reactions file in either the training or testing set.")
 
         ar_text = ' '.join(ar_fh.read().split()).lower()
-        print(f"\tNumber of words in ADVERSE EVENTS text: {len(ar_text.split())}")
+        print(f"\tNumber of words in {section_display_name} text: {len(ar_text.split())}")
 
         # find all the llts that are mentioned in the text
 
