@@ -29,8 +29,8 @@ if __name__ == '__main__':
     LR = fnnoext.split('_')[5]
 
     if len(fnnoext.split('_')) == 8:
-        max_length = fnnoext.split('_')[6]
-        batch_size = fnnoext.split('_')[7]
+        max_length = int(fnnoext.split('_')[6])
+        batch_size = int(fnnoext.split('_')[7])
     else:
         max_length = 128
         batch_size = 128
