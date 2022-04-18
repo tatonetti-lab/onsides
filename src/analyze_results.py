@@ -74,7 +74,7 @@ if __name__ == '__main__':
     print(len(df_train), len(df_val), len(df_test))
 
     print(f"Evaluating testing data...")
-    outputs = cb.evaluate(model, df_test)
+    outputs = cb.evaluate(model, df_test, max_length, batch_size)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
 
@@ -83,14 +83,14 @@ if __name__ == '__main__':
     np.savetxt(f'./results/{prefix}-test_{file_parameters}.csv', predictions, delimiter=',')
 
     print(f"Evaluating validation data...")
-    outputs = cb.evaluate(model, df_val)
+    outputs = cb.evaluate(model, df_val, max_length, batch_size)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
 
     np.savetxt(f'./results/{prefix}-valid_{file_parameters}.csv', predictions, delimiter=',')
 
     print(f"Evaluating training data...")
-    outputs = cb.evaluate(model, df_train)
+    outputs = cb.evaluate(model, df_train, max_length, batch_size)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
 
