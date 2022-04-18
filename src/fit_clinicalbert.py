@@ -226,7 +226,9 @@ if __name__ == '__main__':
     print("Splitting data into training, validation, and testing...")
     refset = int(args.ref.split('ref')[1].split('_')[0])
     refsection = args.ref.split('_')[-1].split('.')[0]
-    print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}.")
+    refnwords = int(args.ref.split('nwords')[1].split('_')[0])
+
+    print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}\n\tnwords: {refnwords}")
 
     np_random_seed = 222
     random_state = 24
@@ -236,7 +238,7 @@ if __name__ == '__main__':
     LR = args.learning_rate
 
     # check for existing model file
-    filename_params = f'{refset}-{refsection}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
+    filename_params = f'{refset}-{refsection}-{refnwords}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
     if os.path.exists(final_model_filename):
         print(f"Found final model already saved at path: {final_model_filename}")
