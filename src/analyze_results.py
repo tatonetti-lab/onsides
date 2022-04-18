@@ -73,25 +73,31 @@ if __name__ == '__main__':
 
     print(len(df_train), len(df_val), len(df_test))
 
-    print(f"Evaluating testing data...")
+    file_parameters = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
+
+    test_filename = f'./results/{prefix}-test_{file_parameters}.csv'
+
+    print(f"Evaluating testing data, will save to: {test_filename}")
     outputs = cb.evaluate(model, df_test, max_length, batch_size)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
 
-    file_parameters = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
+    np.savetxt(test_filename, predictions, delimiter=',')
 
-    np.savetxt(f'./results/{prefix}-test_{file_parameters}.csv', predictions, delimiter=',')
+    valid_filename = f'./results/{prefix}-valid_{file_parameters}.csv'
 
-    print(f"Evaluating validation data...")
+    print(f"Evaluating validation data, will save to: {valid_filename}")
     outputs = cb.evaluate(model, df_val, max_length, batch_size)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
 
-    np.savetxt(f'./results/{prefix}-valid_{file_parameters}.csv', predictions, delimiter=',')
+    np.savetxt(valid_filename, predictions, delimiter=',')
 
-    print(f"Evaluating training data...")
+    train_filename = f'./results/{prefix}-train_{file_parameters}.csv'
+
+    print(f"Evaluating training data, will save to: {train_filename}")
     outputs = cb.evaluate(model, df_train, max_length, batch_size)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
 
-    np.savetxt(f'./results/{prefix}-train_{file_parameters}.csv', predictions, delimiter=',')
+    np.savetxt(train_filename, predictions, delimiter=',')
