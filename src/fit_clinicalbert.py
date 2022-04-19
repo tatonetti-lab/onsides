@@ -263,7 +263,7 @@ if __name__ == '__main__':
         # that fits in log-log space with an r^2 = 0.986
         # NOTE: This is machine dependent! We are using P100s with 16GB of memory
         batch_size = batch_size_estimate(max_length)
-        print(f" Based on the max_length, we are estimating that a batch_size of {batch_size} will not run into memory issues.")
+        print(f" Based on the max_length, we are estimating that a batch_size of {batch_size} is the largest that will not run into memory issues.")
     else:
         batch_size = args.batch_size
         est_batch_size = batch_size_estimate(max_length)
