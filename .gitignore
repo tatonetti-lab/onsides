@@ -3,7 +3,9 @@ data/
 data
 trained_models/
 models/
+models
 results/
+results
 
 # OS X Files
 .DS_Store
