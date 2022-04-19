@@ -19,7 +19,7 @@ def get_args(addl_args = None):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--method', type=int, required=True)
-    parser.add_argument('--nwords', help='The number of words to grab from either side of the event mention to generate the training example', type=int, default=64)
+    parser.add_argument('--nwords', help='The number of words to grab from either side total (nwords/2 before and nwords/2 after) of the event mention to generate the training example', type=int, default=125)
     parser.add_argument('--section', help='Designate which section of the label to parse. Options are AR (adverse reactions), BW (boxed warnings), or WP (warnings and precautions)', type=str, default='AR')
 
     if not addl_args is None and type(addl_args) is list:
@@ -124,7 +124,7 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
     # NOTE: dictionary are split into subwords and tokenized. So the actual
     # NOTE: number of tokens is more than the number of words. We initially
     # NOTE: used ~128.
-    size_of_parts = nwords - size_of_llt
+    size_of_parts = int(nwords/2) - size_of_llt
 
     if len(parts) == 1:
         raise Exception("Parts has length of 1 which shouldn't be possible.")

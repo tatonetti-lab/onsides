@@ -22,7 +22,7 @@ if __name__ == '__main__':
     if not len(fnnoext.split('_')) in (6, 8):
         raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth or {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{MAX_LENGTH}_{BATCH_SIZE}.pth")
 
-    refset = int(fnnoext.split('_')[1])
+    refset, refnwords, refsection = fnnoext.split('_')[1].split('-')
     np_random_seed = int(fnnoext.split('_')[2])
     random_state = int(fnnoext.split('_')[3])
     EPOCHS = int(fnnoext.split('_')[4])
@@ -53,7 +53,10 @@ if __name__ == '__main__':
     model.load_state_dict(torch.load(model_filepath))
 
     # loading and re-splitting the data
-    datapath = f'./data/ref{refset}_clinical_bert_reference_set.txt'
+    datapath = f'./data/ref{refset}_nwords{refnwords}_clinical_bert_reference_set_{refsection}.txt'
+    if not os.path.exists(datapath):
+        raise Exception(f"ERROR: No reference set file found at {datapath}")
+    
     df = pd.read_csv(datapath)
 
     # randomly select by drug/label
