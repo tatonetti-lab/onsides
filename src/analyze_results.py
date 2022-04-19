@@ -22,7 +22,7 @@ if __name__ == '__main__':
     if not len(fnnoext.split('_')) in (6, 8):
         raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth or {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{MAX_LENGTH}_{BATCH_SIZE}.pth")
 
-    refset, refnwords, refsection = fnnoext.split('_')[1].split('-')
+    refset, refsection, refnwords = fnnoext.split('_')[1].split('-')
     np_random_seed = int(fnnoext.split('_')[2])
     random_state = int(fnnoext.split('_')[3])
     EPOCHS = int(fnnoext.split('_')[4])
