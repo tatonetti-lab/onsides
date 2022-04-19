@@ -203,12 +203,18 @@ def evaluate(model, test_data, max_length, batch_size, examples_only=False):
 
     return outputs
 
+def batch_size_estimate(max_length):
+    log_bs = -1.2209302325581395*np.log(max_length)+10.437506963082898
+    bs = np.exp(log_bs)
+    power = np.log2(bs)
+    return 2**round(power)
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--ref', help="relative or full path to the reference set", type=str, required=True)
     parser.add_argument('--max-length', help="maximum number of tokens to use as input for ClinicalBERT, default is smallest power of two that is greater than 2*nwords used in the construction of the reference set", type=int, default=-1)
-    parser.add_argument('--batch-size', help="batch size to feed into the model each epoch, will need to balance with max_length to avoid memory errors", type=int, default=128)
+    parser.add_argument('--batch-size', help="batch size to feed into the model each epoch, will need to balance with max_length to avoid memory errors, default is estimated from a set of runs we've previously run and should work alright", type=int, default=-1)
     parser.add_argument('--epochs', help="number of epochs to train, default is 25", type=int, default=25)
     parser.add_argument('--learning-rate', help="the learning rate to use, default is 1e-6", type=float, default=1e-6)
     parser.add_argument('--ifexists', help="what to do if model already exists with same parameters, options are 'replicate', 'overwrite', 'quit' - default is 'quit'", type=str, default='quit')
@@ -249,7 +255,21 @@ if __name__ == '__main__':
         max_length = args.max_length
         if max_length < 2*refnwords:
             print(f" WARNING: max_length is set to less than 2*nrefwords, there will be truncatation for more than 25% of example strings.")
-    
+
+
+    if args.batch_size == -1:
+        # Default option, we set it using a function we fit on the previous
+        # runs that haven't run into any memory errors. We found a line
+        # that fits in log-log space with an r^2 = 0.986
+        # NOTE: This is machine dependent! We are using P100s with 16GB of memory
+        batch_size = batch_size_estimate(max_length)
+        print(f" Based on the max_length, we are estimating that a batch_size of {batch_size} will not run into memory issues.")
+    else:
+        batch_size = args.batch_size
+        est_batch_size = batch_size_estimate(max_length)
+        if batch_size > est_batch_size:
+            print(f" WARNING: the provided batch size ({batch_size}) is greater than what we would estimate ({est_batch_size}) will work. You may run into memory issues. If so, reduce the batch size or use the default option value.")
+
     # check for existing model file
     filename_params = f'{refset}-{refsection}-{refnwords}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
