@@ -207,7 +207,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--ref', help="relative or full path to the reference set", type=str, required=True)
-    parser.add_argument('--max-length', help="maximum number of tokens to use as input for ClinicalBERT", type=int, default=128)
+    parser.add_argument('--max-length', help="maximum number of tokens to use as input for ClinicalBERT, default is smallest power of two that is greater than 2*nwords used in the construction of the reference set", type=int, default=-1)
     parser.add_argument('--batch-size', help="batch size to feed into the model each epoch, will need to balance with max_length to avoid memory errors", type=int, default=128)
     parser.add_argument('--epochs', help="number of epochs to train, default is 25", type=int, default=25)
     parser.add_argument('--learning-rate', help="the learning rate to use, default is 1e-6", type=float, default=1e-6)
@@ -232,11 +232,24 @@ if __name__ == '__main__':
 
     np_random_seed = 222
     random_state = 24
-    max_length = args.max_length
+    max_length = None
     batch_size = args.batch_size
     EPOCHS = args.epochs
     LR = args.learning_rate
 
+    if args.max_length == -1:
+        # Default option, we set it to smallest power of two greater than
+        # 2*nwords in the reference set. In our analysis we found that
+        # the number of tokens per example was on average 1.7-1.8X the number
+        # of words. And that 2X would capture the entire example string for
+        # about 75% of examples.
+        max_length = 2**int(np.ceil(np.log2(2*refnwords)))
+        print(f" Reference set used {refnwords} nwords per example, max_length is set to {max_length}")
+    else:
+        max_length = args.max_length
+        if max_length < 2*refnwords:
+            print(f" WARNING: max_length is set to less than 2*nrefwords, there will be truncatation for more than 25% of example strings.")
+    
     # check for existing model file
     filename_params = f'{refset}-{refsection}-{refnwords}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
@@ -286,7 +299,7 @@ if __name__ == '__main__':
     print(len(df_train), len(df_val), len(df_test))
 
     model = ClinicalBertClassifier()
-    
+
     print("Fitting the model...")
     best_epoch_model_filename = f'./models/bestepoch-bydrug_{filename_params}.pth'
 
