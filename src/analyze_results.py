@@ -56,7 +56,7 @@ if __name__ == '__main__':
     datapath = f'./data/ref{refset}_nwords{refnwords}_clinical_bert_reference_set_{refsection}.txt'
     if not os.path.exists(datapath):
         raise Exception(f"ERROR: No reference set file found at {datapath}")
-    
+
     df = pd.read_csv(datapath)
 
     # randomly select by drug/label
@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
     print(len(df_train), len(df_val), len(df_test))
 
-    file_parameters = f'{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
+    file_parameters = f'{refset}-{refsection}-{refnwords}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
 
     test_filename = f'./results/{prefix}-test_{file_parameters}.csv'
 
