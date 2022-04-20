@@ -90,8 +90,8 @@ if __name__ == '__main__':
         if batch_size == -1:
             batch_size = batch_size_estimate(max_length)
 
-        finalmodfn = f"./models/final-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}.pth"
-        bestepochmodfn = f"./models/bestepoch-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}.pth"
+        finalmodfn = f"./models/final-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
+        bestepochmodfn = f"./models/bestepoch-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
         epochsfn = f"./results/epoch-results-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
 
         fcbd_params_outputs.append(('final', network, method, section, nwords, epochs, lr, max_length, batch_size, finalmodfn))
