@@ -46,7 +46,7 @@ if __name__ == '__main__':
     print(f" LR: {LR}")
     print(f" max_length: {max_length}")
     print(f" batch_size: {batch_size}")
-    print(f" skip_train?: {args.skip_train})
+    print(f" skip_train?: {args.skip_train}")
 
     sys.path.append(os.path.abspath("./src"))
     import fit_clinicalbert as cb
