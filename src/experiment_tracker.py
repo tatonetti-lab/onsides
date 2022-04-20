@@ -104,6 +104,7 @@ if __name__ == '__main__':
 
         print(f"  {finalmodfn}...{file_exists}")
         print(f"  {bestepochmodfn}...{bestepoch_file_exists}")
+        print(f"  {epochsfn}...{epochs_file_exists}")
 
         if not file_exists or not bestepoch_file_exists or not epochs_file_exists:
             if not file_exists:
