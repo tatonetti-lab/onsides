@@ -90,7 +90,7 @@ class ClinicalBertClassifier(nn.Module):
 def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_size, model_filename):
 
     model.train()
-    
+
     train, val = Dataset(train_data, _max_length=max_length), Dataset(val_data, _max_length=max_length)
 
     train_dataloader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True)
@@ -305,7 +305,7 @@ if __name__ == '__main__':
             print("  Will run a replicate, checking for any existing replicates...")
             reps = [f for f in os.listdir('./models/') if f.find(filename_params) != -1 and f.lower().find('bestepoch') == -1]
             filename_params = f'{refset}-{refsection}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}_rep{len(reps)}'
-            final_model_filename = f'./models/final-bydrug_{filename_params}.pth'
+            final_model_filename = f'./models/final-bydrug-{network_code}_{filename_params}.pth'
             print(f"    Found {len(reps)} existing models. Filename for this replicate will be: {final_model_filename}")
         elif args.ifexists == 'overwrite':
             print("  Option is to overwrite the exising model file.")
