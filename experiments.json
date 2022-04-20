@@ -31,6 +31,16 @@
       "fit_clinicalbert": {
         "max-length": [32]
       }
+    },
+    "1": {
+      "name": "Compare PubMedBERT to ClinicalBERT",
+      "description": "PubMedBERT is a new neural network made available from microsoft. We'd like to know how it compares to using ClinicalBERT for our task.",
+      "construct_training_data": {
+        "nwords": [60],
+      },
+      "fit_clinicalbert": {
+        "network": ["models/Bio_ClinicalBERT/", "models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/"]
+      }
     }
   }
 }
