@@ -6,6 +6,7 @@ models/
 models
 results/
 results
+scripts/
 
 # OS X Files
 .DS_Store

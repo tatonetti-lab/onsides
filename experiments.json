@@ -32,6 +32,7 @@
         "max-length": [32]
       }
     },
+
     "1": {
       "name": "Compare PubMedBERT to ClinicalBERT",
       "description": "PubMedBERT is a new neural network made available from microsoft. We'd like to know how it compares to using ClinicalBERT for our task.",
@@ -40,6 +41,14 @@
       },
       "fit_clinicalbert": {
         "network": ["models/Bio_ClinicalBERT/", "models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/"]
+      }
+    },
+    
+    "2": {
+      "name": "Compare values for nwords",
+      "description": "The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
+      "construct_training_data": {
+        "nwords": [30, 60, 125, 250]
       }
     }
   }
