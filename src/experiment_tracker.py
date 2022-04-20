@@ -71,7 +71,7 @@ if __name__ == '__main__':
     eprint("")
     eprint("Checking for model output...")
     fit_clinicalbert_data = experiment.get("fit_clinicalbert", defaults["fit_clinicalbert"])
-
+    #eprint(fit_clinicalbert_data)
     fcbd_iterator = itertools.product(
         ctd_params_outputs,
         fit_clinicalbert_data.get("max-length", defaults["fit_clinicalbert"]["max-length"]),
