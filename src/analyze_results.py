@@ -46,6 +46,7 @@ if __name__ == '__main__':
     print(f" LR: {LR}")
     print(f" max_length: {max_length}")
     print(f" batch_size: {batch_size}")
+    print(f" skip_train?: {args.skip_train})
 
     sys.path.append(os.path.abspath("./src"))
     import fit_clinicalbert as cb
@@ -97,11 +98,12 @@ if __name__ == '__main__':
 
     np.savetxt(valid_filename, predictions, delimiter=',')
 
-    train_filename = f'./results/{prefix}-train_{file_parameters}.csv'
+    if not args.skip_train:
+        train_filename = f'./results/{prefix}-train_{file_parameters}.csv'
 
-    print(f"Evaluating training data, will save to: {train_filename}")
-    outputs = cb.evaluate(model, df_train, max_length, batch_size)
-    npoutputs = [x.cpu().detach().numpy() for x in outputs]
-    predictions = np.vstack(npoutputs)
+        print(f"Evaluating training data, will save to: {train_filename}")
+        outputs = cb.evaluate(model, df_train, max_length, batch_size)
+        npoutputs = [x.cpu().detach().numpy() for x in outputs]
+        predictions = np.vstack(npoutputs)
 
-    np.savetxt(train_filename, predictions, delimiter=',')
+        np.savetxt(train_filename, predictions, delimiter=',')
