@@ -15,16 +15,20 @@ import numpy as np
 
 from fit_clinicalbert import batch_size_estimate
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--id', type=str, required=True)
+    parser.add_argument('--gpu', type=int, help="if you want to prepend the output commands with the specific gpu, specify a gpu number here.", default=-1)
 
     args = parser.parse_args()
 
     expfh = open('./experiments.json')
     data = json.loads(expfh.read())
 
-    #print(json.dumps(data["experiments"][args.id], indent=4))
+    #eprint(json.dumps(data["experiments"][args.id], indent=4))
 
     if not args.id in data["experiments"]:
         raise Exception(f"ERROR: Could not find an experiment with id={args.id} in experiments.json.")
@@ -34,13 +38,13 @@ if __name__ == '__main__':
     is_complete = True
     remaining_commands = list()
 
-    print(f"Experiment {args.id} loaded.")
-    print(f'  Name: {experiment["name"]}')
-    print(f'  Description: {experiment["description"]}')
-    print(f"-------------------------------------------")
+    eprint(f"Experiment {args.id} loaded.")
+    eprint(f'  Name: {experiment["name"]}')
+    eprint(f'  Description: {experiment["description"]}')
+    eprint(f"-------------------------------------------")
 
-    print("")
-    print("Checking for training data...")
+    eprint("")
+    eprint("Checking for training data...")
 
     construct_training_data = experiment.get("construct_training_data", defaults["construct_training_data"])
 
@@ -57,15 +61,15 @@ if __name__ == '__main__':
         ctd_params_outputs.append((method, nwords, section, fn))
 
         file_exists = os.path.exists(fn)
-        print(f"  {fn}...{file_exists}")
+        eprint(f"  {fn}...{file_exists}")
         if not file_exists:
             command = f"python3 src/construct_training_data.py --method {method} --nwords {nwords} --section {section}"
-            print(f"    NOT FOUND, create with: {command}")
+            eprint(f"    NOT FOUND, create with: {command}")
             is_complete = False
             remaining_commands.append(command)
 
-    print("")
-    print("Checking for model output...")
+    eprint("")
+    eprint("Checking for model output...")
     fit_clinicalbert_data = experiment.get("fit_clinicalbert", defaults["fit_clinicalbert"])
 
     fcbd_iterator = itertools.product(
@@ -99,30 +103,30 @@ if __name__ == '__main__':
         fcbd_params_outputs.append(('final', network, method, section, nwords, epochs, lr, max_length, batch_size, finalmodfn))
         fcbd_params_outputs.append(('bestepoch', network, method, section, nwords, epochs, lr, max_length, batch_size, bestepochmodfn))
 
-        # print(method, nwords, section, reffn, max_length, batch_size, epoch, lr, ifexists, network)
+        # eprint(method, nwords, section, reffn, max_length, batch_size, epoch, lr, ifexists, network)
         file_exists = os.path.exists(finalmodfn)
         bestepoch_file_exists = os.path.exists(bestepochmodfn)
         epochs_file_exists = os.path.exists(epochsfn)
 
-        print(f"  {finalmodfn}...{file_exists}")
-        print(f"  {bestepochmodfn}...{bestepoch_file_exists}")
-        print(f"  {epochsfn}...{epochs_file_exists}")
+        eprint(f"  {finalmodfn}...{file_exists}")
+        eprint(f"  {bestepochmodfn}...{bestepoch_file_exists}")
+        eprint(f"  {epochsfn}...{epochs_file_exists}")
 
         if not file_exists or not bestepoch_file_exists or not epochs_file_exists:
             if not file_exists:
-                print(f"    NOT FOUND: final model file missing.")
+                eprint(f"    NOT FOUND: final model file missing.")
             if not bestepoch_file_exists:
-                print(f"    NOT FOUND: best epoch model file missing.")
+                eprint(f"    NOT FOUND: best epoch model file missing.")
             if not epochs_file_exists:
-                print(f"    NOT FOUND: epoch results file missing.")
+                eprint(f"    NOT FOUND: epoch results file missing.")
 
             command = f"python3 src/fit_clinicalbert.py --ref {reffn} --max_length {max_length} --batch_size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network}"
-            print(f"    Create with: {command}")
+            eprint(f"    Create with: {command}")
             is_complete = False
             remaining_commands.append(command)
 
-    print("")
-    print("Checking for results files...")
+    eprint("")
+    eprint("Checking for results files...")
     analyze_results_data = experiment.get("analyze_results", defaults["analyze_results"])
 
     ard_iterator = itertools.product(
@@ -138,21 +142,24 @@ if __name__ == '__main__':
 
         test_file_exists = os.path.exists(testmodresfn)
         valid_file_exists = os.path.exists(validmodresfn)
-        print(f"  {testmodresfn}...{test_file_exists}")
-        print(f"  {validmodresfn}...{valid_file_exists}")
+        eprint(f"  {testmodresfn}...{test_file_exists}")
+        eprint(f"  {validmodresfn}...{valid_file_exists}")
 
         if not test_file_exists or not valid_file_exists:
             skip_train_str = '' if not skip_train else '--skip-train '
             command = f"python3 src/analyze_results.py --model {modelfn} {skip_train_str}--network {network}"
-            print(f"    NOT FOUND, create with: {command}")
+            eprint(f"    NOT FOUND, create with: {command}")
             is_complete = False
             remaining_commands.append(command)
 
-    print("")
+    eprint("")
 
     if not is_complete:
-        print("EXPERIMENT IS INCOMPLETE: One or more files are missing. The following command need to be run:")
+        eprint("EXPERIMENT IS INCOMPLETE: One or more files are missing. The following command need to be run:")
         for command in remaining_commands:
-            print(command)
+            if args.gpu == -1:
+                print(command)
+            else:
+                print("CUDA_VISIBLE_DEVICES={args.gpu} " + command)
     else:
-        print("EXPERIMENT IS COMPLETE!")
+        eprint("EXPERIMENT IS COMPLETE!")
