@@ -130,11 +130,15 @@ if __name__ == '__main__':
 
     for (modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, modelfn), skip_train, _network in ard_iterator:
 
-        modresfn = f"./results/{modeltype}-bydrug-{network_codes[network]}-test_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        testmodresfn = f"./results/{modeltype}-bydrug-{network_codes[network]}-test_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        validmodresfn = f"./results/{modeltype}-bydrug-{network_codes[network]}-valid_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
 
-        file_exists = os.path.exists(modresfn)
-        print(f"  {modresfn}...{file_exists}")
-        if not file_exists:
+        test_file_exists = os.path.exists(testmodresfn)
+        valid_file_exists = os.path.exists(validmodresfn)
+        print(f"  {testmodresfn}...{test_file_exists}")
+        print(f"  {validmodresfn}...{valid_file_exists}")
+
+        if not test_file_exists or not valid_file_exists:
             skip_train_str = '' if not skip_train else '--skip-train '
             command = f"python3 src/analyze_results.py --model {modelfn} {skip_train_str}--network {network}"
             print(f"    NOT FOUND, create with: {command}")
