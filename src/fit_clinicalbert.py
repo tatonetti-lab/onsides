@@ -112,6 +112,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
     valid_accuracies = list()
     valid_losses = list()
     epoch_times = list()
+    epoch_saved = list()
 
     for epoch_num in range(epochs):
 
@@ -349,7 +350,7 @@ if __name__ == '__main__':
     for epoch in range(EPOCHS):
         writer.writerow([epoch+1] + [training_results[i][epoch] for i in range(len(training_results))])
     lafh.close()
-    
+
     print("Loading the model from file...")
 
     loaded_model = ClinicalBertClassifier()
