@@ -32,6 +32,7 @@ if __name__ == '__main__':
     defaults = data["defaults"]
     experiment = data["experiments"][args.id]
     is_complete = True
+    remaining_commands = list()
 
     print(f"Experiment {args.id} loaded.")
     print(f'  Name: {experiment["name"]}')
@@ -61,6 +62,7 @@ if __name__ == '__main__':
             command = f"python3 src/construct_training_data.py --method {method} --nwords {nwords} --section {section}"
             print(f"    NOT FOUND, create with: {command}")
             is_complete = False
+            remaining_commands.append(command)
 
     print("")
     print("Checking for model output...")
@@ -117,6 +119,7 @@ if __name__ == '__main__':
             command = f"python3 src/fit_clinicalbert.py --ref {reffn} --max_length {max_length} --batch_size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network}"
             print(f"    Create with: {command}")
             is_complete = False
+            remaining_commands.append(command)
 
     print("")
     print("Checking for results files...")
@@ -143,6 +146,7 @@ if __name__ == '__main__':
             command = f"python3 src/analyze_results.py --model {modelfn} {skip_train_str}--network {network}"
             print(f"    NOT FOUND, create with: {command}")
             is_complete = False
+            remaining_commands.append(command)
 
     print("")
 
