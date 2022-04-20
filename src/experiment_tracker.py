@@ -151,6 +151,8 @@ if __name__ == '__main__':
     print("")
 
     if not is_complete:
-        print("EXPERIMENT IS INCOMPLETE: One or more files are missing. See messages above about how to correct the problem.")
+        print("EXPERIMENT IS INCOMPLETE: One or more files are missing. The following command need to be run:")
+        for command in remaining_commands:
+            print(command)
     else:
         print("EXPERIMENT IS COMPLETE!")
