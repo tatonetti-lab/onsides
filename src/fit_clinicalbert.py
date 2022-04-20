@@ -106,7 +106,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
         model = model.cuda()
         criterion = criterion.cuda()
 
-    best_val_acc = 0.0
+    best_val_loss = None
     train_accuracies = list()
     train_losses = list()
     valid_accuracies = list()
@@ -117,6 +117,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
 
         total_acc_train = 0
         total_loss_train = 0
+        saved_model = False
         epoch_start_time = time.time()
 
         for train_input, train_label in tqdm(train_dataloader):
@@ -156,23 +157,24 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
                 acc = (output.argmax(dim=1) == val_label).sum().item()
                 total_acc_val += acc
 
-                if acc > best_val_acc:
-                    best_val_acc = acc
-                    torch.save(model.state_dict(), model_filename)
-
+            if best_val_loss is None or (total_loss_val/len(val_data)) < best_val_loss:
+                best_val_loss = (total_loss_val/len(val_data))
+                torch.save(model.state_dict(), model_filename)
+                saved_model = True
 
         train_losses.append(total_loss_train / len(train_data))
         train_accuracies.append(total_acc_train / len(train_data))
         valid_losses.append(total_loss_val / len(val_data))
         valid_accuracies.append(total_acc_val / len(val_data))
         epoch_times.append(time.time()-epoch_start_time)
+        epoch_saved.append(saved_model)
 
         print(f'Epochs: {epoch_num + 1} | Train Loss: {total_loss_train / len(train_data): .4f} \
                 | Train Accuracy: {total_acc_train / len(train_data): .4f} \
                 | Val Loss: {total_loss_val / len(val_data): .4f} \
                 | Val Accuracy: {total_acc_val / len(val_data): .4f}')
 
-    return train_losses, train_accuracies, valid_losses, valid_accuracies, epoch_times
+    return train_losses, train_accuracies, valid_losses, valid_accuracies, epoch_times, epoch_saved
 
 def evaluate(model, test_data, max_length, batch_size, examples_only=False):
 
@@ -343,11 +345,11 @@ if __name__ == '__main__':
     print("Saving loss and accuracies for each epoch to file...")
     lafh = open(f'./results/epoch-results_{filename_params}.csv', 'w')
     writer = csv.writer(lafh)
-    writer.writerow(['epoch', 'train_loss', 'train_accuracy', 'valid_loss', 'valid_accuracy', 'epoch_time'])
+    writer.writerow(['epoch', 'train_loss', 'train_accuracy', 'valid_loss', 'valid_accuracy', 'epoch_time', 'epoch_saved'])
     for epoch in range(EPOCHS):
         writer.writerow([epoch+1] + [training_results[i][epoch] for i in range(len(training_results))])
     lafh.close()
-
+    
     print("Loading the model from file...")
 
     loaded_model = ClinicalBertClassifier()
