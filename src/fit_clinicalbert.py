@@ -21,21 +21,27 @@ import pandas as pd
 from tqdm import tqdm
 
 labels = {'not_event': 0, 'is_event': 1}
-_PRETRAINED_PATH_ = "./models/Bio_ClinicalBERT"
-
-print(f"Loading ClinicalBERT tokenizer...")
-tokenizer = AutoTokenizer.from_pretrained(_PRETRAINED_PATH_)
 
 class Dataset(torch.utils.data.Dataset):
 
+    tokenizer = None
+
+    @staticmethod
+    def set_tokenizer(pretrained_model_path):
+        print(f"Loading ClinicalBERT tokenizer from {pretrained_model_path}...")
+        Dataset.tokenizer = AutoTokenizer.from_pretrained(pretrained_model_path)
+
     def __init__(self, df, examples_only=False, _max_length=128):
+
+        if Dataset.tokenizer is None:
+            raise Exception("ERROR: The tokenizer has not yet been initailized. Initialize with Dataset.set_tokenizer(...) before instantiating a class.")
 
         if not examples_only:
             self.labels = [labels[label] for label in df['class']]
         else:
             self.labels = [0 for _ in range(len(df))]
 
-        self.texts = [tokenizer(text,
+        self.texts = [Dataset.tokenizer(text,
                                 padding='max_length',
                                 max_length=_max_length,
                                 truncation=True,
@@ -63,11 +69,11 @@ class Dataset(torch.utils.data.Dataset):
 
 class ClinicalBertClassifier(nn.Module):
 
-    def __init__(self, dropout=0.5):
+    def __init__(self, pretrained_model_path, dropout=0.5):
 
         super(ClinicalBertClassifier, self).__init__()
 
-        self.bert = AutoModel.from_pretrained(_PRETRAINED_PATH_)
+        self.bert = AutoModel.from_pretrained(pretrained_model_path)
         self.dropout = nn.Dropout(dropout)
         self.linear = nn.Linear(768, 2)
         self.relu = nn.ReLU()
@@ -218,6 +224,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', help="number of epochs to train, default is 25", type=int, default=25)
     parser.add_argument('--learning-rate', help="the learning rate to use, default is 1e-6", type=float, default=1e-6)
     parser.add_argument('--ifexists', help="what to do if model already exists with same parameters, options are 'replicate', 'overwrite', 'quit' - default is 'quit'", type=str, default='quit')
+    parser.add_argument('--network', help="path to pretained network, default is 'models/Bio_ClinicalBERT'", type=str, default='models/Bio_ClinicalBERT/')
 
     args = parser.parse_args()
 
@@ -318,7 +325,11 @@ if __name__ == '__main__':
     print(f"Resulting dataframes have sizes:")
     print(len(df_train), len(df_val), len(df_test))
 
-    model = ClinicalBertClassifier()
+    # initailize Dataset.tokenizer
+    Dataset.set_tokenizer(args.network)
+
+    # now we can initailize a model
+    model = ClinicalBertClassifier(args.network)
 
     print("Fitting the model...")
     best_epoch_model_filename = f'./models/bestepoch-bydrug_{filename_params}.pth'

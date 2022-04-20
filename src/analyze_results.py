@@ -9,7 +9,8 @@ import numpy as np
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, required=True)
+    parser.add_argument('--model', type=str, required=True, help="Path to the model to construct predictions from.")
+    parser.add_argument('--skip-train', action='store_true', default=False, help="Skip generating predictions for the training data (which can take a long time)")
 
     args = parser.parse_args()
 
