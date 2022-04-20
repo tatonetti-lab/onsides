@@ -89,6 +89,8 @@ class ClinicalBertClassifier(nn.Module):
 
 def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_size, model_filename):
 
+    model.train()
+    
     train, val = Dataset(train_data, _max_length=max_length), Dataset(val_data, _max_length=max_length)
 
     train_dataloader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True)
@@ -178,6 +180,8 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
     return train_losses, train_accuracies, valid_losses, valid_accuracies, epoch_times, epoch_saved
 
 def evaluate(model, test_data, max_length, batch_size, examples_only=False):
+
+    model.eval()
 
     test = Dataset(test_data, examples_only, _max_length=max_length)
 
