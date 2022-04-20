@@ -1,0 +1,36 @@
+{
+  "defaults": {
+    "construct_training_data": {
+      "method": [0],
+      "nwords": [125],
+      "section": ["AR"]
+    },
+    "fit_clinicalbert": {
+      "max-length": [-1],
+      "batch-size": [-1],
+      "epochs": [25],
+      "learning-rate": [1e-6],
+      "ifexists": ["quit"],
+      "network": ["models/Bio_ClinicalBERT/"]
+    },
+    "analyze_results": {
+      "skip-train": [true],
+      "network": ["models/Bio_ClinicalBERT/"]
+    }
+  },
+
+  "experiments":{
+    "0": {
+      "name": "Compare Example Construction Methods",
+      "description": "We have five different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, or 4). See construct_training_data.py for more detials.",
+      "construct_training_data": {
+        "method": [0, 1, 2, 3, 4],
+        "nwords": [30],
+        "section": ["AR"]
+      },
+      "fit_clinicalbert": {
+        "max-length": [32]
+      }
+    }
+  }
+}

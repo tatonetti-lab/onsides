@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, required=True, help="Path to the model to construct predictions from.")
-    parser.add_argument('--skip-train', action='store_true', default=False, help="Skip generating predictions for the training data (which can take a long time)")
+    parser.add_argument('--skip-train', action='store_true', default=True, help="Skip generating predictions for the training data (which can take a long time)")
     parser.add_argument('--network', help="path to pretained network, default is 'models/Bio_ClinicalBERT'", type=str, default='models/Bio_ClinicalBERT/')
 
     args = parser.parse_args()
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     cb.Dataset.set_tokenizer(args.network)
     model = cb.ClinicalBertClassifier(args.network)
     model.load_state_dict(torch.load(model_filepath))
-    
+
     # loading and re-splitting the data
     datapath = f'./data/ref{refset}_nwords{refnwords}_clinical_bert_reference_set_{refsection}.txt'
     if not os.path.exists(datapath):
