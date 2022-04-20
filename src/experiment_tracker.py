@@ -160,6 +160,6 @@ if __name__ == '__main__':
             if args.gpu == -1:
                 print(command)
             else:
-                print("CUDA_VISIBLE_DEVICES={args.gpu} " + command)
+                print(f"CUDA_VISIBLE_DEVICES={args.gpu} " + command)
     else:
         eprint("EXPERIMENT IS COMPLETE!")
