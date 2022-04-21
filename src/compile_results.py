@@ -41,6 +41,7 @@ if __name__ == '__main__':
     # from the first file in the list.
     fnnoext = os.path.split(args.results[0])[-1].split('.')[0]
     prefix = fnnoext.split('_')[0]
+    prefix_nosplit = '-'.join(prefix.split('-')[:-1])
     refset = fnnoext.split('_')[1]
     refmethod, refsection, refnwords = refset.split('-')
 
@@ -88,11 +89,13 @@ if __name__ == '__main__':
             raise Exception("ERROR: Results file and examples file have different numbers of rows.")
 
         print(f"Concatenating (colwise) results file to examples file...", flush=True)
-        df = pd.concat([ex, res], axis=1)
+        for col in ex.columns:
+            if col == 'string':
+                continue
+            res[col] = list(ex[col])
 
         print(f"Grouping predictions by drug label and adverse event term, and taking the mean prediction score...", flush=True)
-        df_grouped = df.groupby(by=['drug', 'llt_id', 'class']).mean().reset_index()
-
+        df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).mean().reset_index()
 
         # For drug, event pairs that couldn't be scored we add them with 0's
         # otherwise we would way overestimate our total recall
@@ -107,6 +110,10 @@ if __name__ == '__main__':
 
         for row in reader:
             data = dict(zip(header, row))
+
+            if data['LLT ID'] == '':
+                continue
+
             if data['Section Display Name'] != section_display_names[refsection]:
                 # print(data['Section Display Name'])
                 continue
@@ -114,17 +121,44 @@ if __name__ == '__main__':
             if not data['Drug Name'] in uniq_drugs:
                 continue
 
-            gold_standard.add((data['Drug Name'], data['LLT ID']))
+            try:
+                gold_standard.add((data['Drug Name'], int(data['LLT ID'])))
+            except ValueError:
+                raise Exception(f"Failed on row: {data}")
 
         refset_fh.close()
         print(f"Loaded manually annotated examples for drug, event pairs: {len(gold_standard)}")
 
+        df_grouped['scored'] = 'scored'
+
         scored_pairs = set()
         for index, row in df_grouped.iterrows():
-            scored_pairs.add((row['drug'], row['llt_id']))
+            scored_pairs.add((row['drug'], int(row['llt_id'])))
+
+        data_to_append = list()
+        #print(len(scored_pairs))
+        #print(list(scored_pairs)[:10])
+
+        #print(len(gold_standard))
+        #print(list(gold_standard)[:10])
+
+        print(f"Found {len(gold_standard-scored_pairs)} drug, event pairs that were not scored.")
+        #print(list(gold_standard-scored_pairs)[:10])
 
         for d, e in (gold_standard-scored_pairs):
-            df_grouped = pd.concat([df_grouped,pd.DataFrame({'drug': [d], 'llt_id': [e], 'Pred1': [0.0], 'Pred0': [0.0], 'class': ['is_event']})], ignore_index=True)
+            data_to_append.append((d, e, 0.0, 0.0, 'is_event', 'not_scored'))
+
+        drugs, llt_ids, pred1s, pred0s, classes, scoreds = zip(*data_to_append)
+
+        df_grouped = pd.concat([df_grouped,pd.DataFrame({
+            'drug': drugs,
+            'llt_id': llt_ids,
+            'Pred1': pred1s,
+            'Pred0': pred0s,
+            'class': classes,
+            'scored': scoreds})], ignore_index=True, sort=False)
+
+
 
         print(f"Adding column to indicate split ({split})")
         df_grouped['split'] = split
@@ -138,6 +172,8 @@ if __name__ == '__main__':
     for df in dataframes[1:]:
         df_concat = pd.concat([df_concat, df], ignore_index=True)
 
-    grouped_filename = f"grouped-{prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
+    df_concat["llt_id"] = [int(llt_id) for llt_id in df_concat["llt_id"]]
+    # print(df_concat.dtypes)
+    grouped_filename = f"grouped-{prefix_nosplit}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
     print(f"Saving concatenated data frame {df_concat.shape} to file: {grouped_filename}")
     df_concat.to_csv(os.path.join('./results/', grouped_filename))

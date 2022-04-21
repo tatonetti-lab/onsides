@@ -23,6 +23,17 @@
     "0": {
       "name": "Compare Example Construction Methods",
       "description": "We have five different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, or 4). See construct_training_data.py for more detials.",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "method",
+        "labels": [
+          "Substitute Term, Prepend Term",
+          "Prepend Term Only",
+          "Substitute Term Only",
+          "No Changes",
+          "Subsitute with Nonsense"
+        ]
+      },
       "construct_training_data": {
         "method": [0, 1, 2, 3, 4],
         "nwords": [30],

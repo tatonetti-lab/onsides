@@ -28,6 +28,7 @@ if __name__ == '__main__':
 
     expfh = open('./experiments.json')
     data = json.loads(expfh.read())
+    expfh.close()
 
     #eprint(json.dumps(data["experiments"][args.id], indent=4))
 
@@ -137,6 +138,8 @@ if __name__ == '__main__':
         analyze_results_data.get("network", defaults["analyze_results"]["network"])
     )
 
+    ard_param_outputs = list()
+
     for (modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, modelfn), skip_train, _network in ard_iterator:
 
         testmodresfn = f"./results/{modeltype}-bydrug-{network_codes[network]}-test_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
@@ -154,7 +157,26 @@ if __name__ == '__main__':
             is_complete = False
             remaining_commands.append(command)
 
+        ard_param_outputs.append((modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, [testmodresfn, validmodresfn]))
+
     eprint("")
+    eprint("Checking for grouped results files...")
+
+    grouped_files = {'final': list(), 'bestepoch': list()}
+
+    for modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, (testmodresfn, validmodresfn) in ard_param_outputs:
+
+        grpresfn = f"./results/grouped-{modeltype}-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        grouped_files[modeltype].append(grpresfn)
+
+        file_exists = os.path.exists(grpresfn)
+        eprint(f"  {grpresfn}...{file_exists}")
+
+        if not file_exists:
+            command = f"python3 src/compile_results.py --results {testmodresfn} {validmodresfn} --examples ./data/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
+            eprint(f"    NOT FOUND, create with: {command}")
+            is_complete = False
+            remaining_commands.append(command)
 
     if not is_complete:
         eprint("EXPERIMENT IS INCOMPLETE: One or more files are missing. The following command need to be run:")
@@ -165,3 +187,39 @@ if __name__ == '__main__':
                 print(f"CUDA_VISIBLE_DEVICES={args.gpu} " + command)
     else:
         eprint("EXPERIMENT IS COMPLETE!")
+
+        eprint("Writing out analysis file...")
+        if os.path.exists('analysis.json'):
+            expfh = open('./analysis.json')
+            analysis = json.loads(expfh.read())
+            expfh.close()
+        else:
+            analysis = {"experiments": dict()}
+
+        factor_name = f'{experiment["factor"]["script"]}.{experiment["factor"]["parameter"]}'
+        factor_levels = experiment[experiment["factor"]["script"]][experiment["factor"]["parameter"]]
+
+        if not "labels" in experiment["factor"]:
+            factor_labels = [f"{factor_name}:{l}" for l in factor_levels]
+        else:
+            factor_labels = experiment["factor"]["labels"]
+
+        for modeltype in ('final', 'bestepoch'):
+            if not len(factor_labels) == len(grouped_files[modeltype]):
+                raise Exception(f"FAILED: The number of resulting grouped files for ({modeltype}) is not consistent with the experimental setup.")
+
+        analysis["experiments"][args.id] = {
+            "name": experiment["name"],
+            "description": experiment["description"],
+            "factor": factor_name,
+            "levels": factor_levels,
+            "labels": factor_labels,
+            "final": grouped_files["final"],
+            "bestepoch": grouped_files["bestepoch"]
+        }
+
+        expfh = open('./analysis.json', 'w')
+        expfh.write(json.dumps(analysis, indent=4))
+        expfh.close()
+
+        print("FINISHED.")

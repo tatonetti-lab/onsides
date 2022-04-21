@@ -1,0 +1,37 @@
+{
+    "experiments": {
+        "0": {
+            "name": "Compare Example Construction Methods",
+            "description": "We have five different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, or 4). See construct_training_data.py for more detials.",
+            "factor": "construct_training_data.method",
+            "levels": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "labels": [
+                "Substitute Term, Prepend Term",
+                "Prepend Term Only",
+                "Substitute Term Only",
+                "No Changes",
+                "Subsitute with Nonsense"
+            ],
+            "final": [
+                "./results/grouped-final-bydrug-CB_0-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/grouped-final-bydrug-CB_1-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/grouped-final-bydrug-CB_2-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/grouped-final-bydrug-CB_3-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/grouped-final-bydrug-CB_4-AR-30_222_24_25_1e-06_32_512.csv"
+            ],
+            "bestepoch": [
+                "./results/grouped-bestepoch-bydrug-CB_0-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/grouped-bestepoch-bydrug-CB_1-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/grouped-bestepoch-bydrug-CB_2-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/grouped-bestepoch-bydrug-CB_3-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/grouped-bestepoch-bydrug-CB_4-AR-30_222_24_25_1e-06_32_512.csv"
+            ]
+        }
+    }
+}
