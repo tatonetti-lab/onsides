@@ -41,10 +41,10 @@
       },
       "fit_clinicalbert": {
         "network": ["models/Bio_ClinicalBERT/", "models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/"],
-	"epochs": [20]
+        "epochs": [20]
       }
     },
-    
+
     "2": {
       "name": "Compare values for nwords",
       "description": "The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
