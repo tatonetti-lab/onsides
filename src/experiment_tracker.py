@@ -120,7 +120,7 @@ if __name__ == '__main__':
             if not epochs_file_exists:
                 eprint(f"    NOT FOUND: epoch results file missing.")
 
-            command = f"python3 src/fit_clinicalbert.py --ref {reffn} --max_length {max_length} --batch_size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network}"
+            command = f"python3 src/fit_clinicalbert.py --ref {reffn} --max-length {max_length} --batch-size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network}"
             eprint(f"    Create with: {command}")
             is_complete = False
             remaining_commands.append(command)
