@@ -32,6 +32,27 @@
                 "./results/grouped-bestepoch-bydrug-CB_3-AR-30_222_24_25_1e-06_32_512.csv",
                 "./results/grouped-bestepoch-bydrug-CB_4-AR-30_222_24_25_1e-06_32_512.csv"
             ]
+        },
+        "1": {
+            "name": "Compare PubMedBERT to ClinicalBERT",
+            "description": "PubMedBERT is a new neural network made available from microsoft. We'd like to know how it compares to using ClinicalBERT for our task.",
+            "factor": "fit_clinicalbert.network",
+            "levels": [
+                "models/Bio_ClinicalBERT/",
+                "models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/"
+            ],
+            "labels": [
+                "ClinicalBERT",
+                "PubMedBERT"
+            ],
+            "final": [
+                "./results/grouped-final-bydrug-CB_0-AR-60_222_24_20_1e-06_128_128.csv",
+                "./results/grouped-final-bydrug-PMB_0-AR-60_222_24_20_1e-06_128_128.csv"
+            ],
+            "bestepoch": [
+                "./results/grouped-bestepoch-bydrug-CB_0-AR-60_222_24_20_1e-06_128_128.csv",
+                "./results/grouped-bestepoch-bydrug-PMB_0-AR-60_222_24_20_1e-06_128_128.csv"
+            ]
         }
     }
 }
