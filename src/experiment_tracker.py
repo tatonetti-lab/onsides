@@ -22,6 +22,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--id', type=str, required=True)
     parser.add_argument('--gpu', type=int, help="if you want to prepend the output commands with the specific gpu, specify a gpu number here.", default=-1)
+    parser.add_argument('--skip-models', action='store_true', default=False)
 
     args = parser.parse_args()
 
@@ -108,11 +109,12 @@ if __name__ == '__main__':
         bestepoch_file_exists = os.path.exists(bestepochmodfn)
         epochs_file_exists = os.path.exists(epochsfn)
 
-        eprint(f"  {finalmodfn}...{file_exists}")
-        eprint(f"  {bestepochmodfn}...{bestepoch_file_exists}")
-        eprint(f"  {epochsfn}...{epochs_file_exists}")
+        if not args.skip_models:
+            eprint(f"  {finalmodfn}...{file_exists}")
+            eprint(f"  {bestepochmodfn}...{bestepoch_file_exists}")
+            eprint(f"  {epochsfn}...{epochs_file_exists}")
 
-        if not file_exists or not bestepoch_file_exists or not epochs_file_exists:
+        if not args.skip_models and (not file_exists or not bestepoch_file_exists or not epochs_file_exists):
             if not file_exists:
                 eprint(f"    NOT FOUND: final model file missing.")
             if not bestepoch_file_exists:

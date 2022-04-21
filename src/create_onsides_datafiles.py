@@ -32,8 +32,8 @@ if __name__ == '__main__':
 
     fnnoext = os.path.split(resultspath)[-1].split('.')[0]
     if len(fnnoext.split('_')) != 7:
-        raise Exception("Model filename not in format expected: {prefix}_{appset}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth")
-    
+        raise Exception("Results filename not in format expected: {prefix}_{appset}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth")
+
     prefix = fnnoext.split('_')[0]
     refset = fnnoext.split('_')[2]
     np_random_seed = int(fnnoext.split('_')[3])

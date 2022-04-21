@@ -222,6 +222,26 @@ def batch_size_estimate(max_length):
     power = np.log2(bs)
     return 2**round(power)
 
+def split_train_val_test(df, np_random_seed):
+    # randomly select by drug/label
+    druglist = sorted(set(df['drug']))
+
+    random.seed(np_random_seed)
+    random.shuffle(druglist)
+
+    np.random.seed(np_random_seed)
+    drugs_train, drugs_val, drugs_test = np.split(druglist, [int(0.8*len(druglist)), int(0.9*len(druglist))])
+
+    print(f"Split labels in train, val, test by drug:")
+    print(len(drugs_train), len(drugs_val), len(drugs_test))
+
+    df_train = df[df['drug'].isin(drugs_train)]
+    df_val = df[df['drug'].isin(drugs_val)]
+    df_test = df[df['drug'].isin(drugs_test)]
+
+    return df_train, df_val, df_test
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -316,27 +336,7 @@ if __name__ == '__main__':
         else:
             raise Exception(f"ERROR: Unexpected option set for --ifexists argument: {args.ifexists}")
 
-
-    np.random.seed(np_random_seed)
-
-    # randomly select by row
-    #df_train, df_val, df_test = np.split(df.sample(frac=1, random_state=random_state),
-    #                                     [int(0.8*len(df)), int(0.9*len(df))])
-
-    # randomly select by drug/label
-    druglist = sorted(set(df['drug']))
-
-    random.seed(np_random_seed)
-    random.shuffle(druglist)
-
-    drugs_train, drugs_val, drugs_test = np.split(druglist, [int(0.8*len(druglist)), int(0.9*len(druglist))])
-
-    print(f"Split labels in train, val, test by drug:")
-    print(len(drugs_train), len(drugs_val), len(drugs_test))
-
-    df_train = df[df['drug'].isin(drugs_train)]
-    df_val = df[df['drug'].isin(drugs_val)]
-    df_test = df[df['drug'].isin(drugs_test)]
+    df_train, df_val, df_test = split_train_val_test(df, np_random_seed)
 
     print(f"Resulting dataframes have sizes:")
     print(len(df_train), len(df_val), len(df_test))
