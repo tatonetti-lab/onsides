@@ -47,6 +47,14 @@
     "1": {
       "name": "Compare PubMedBERT to ClinicalBERT",
       "description": "PubMedBERT is a new neural network made available from microsoft. We'd like to know how it compares to using ClinicalBERT for our task.",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": "network",
+        "labels": [
+          "ClinicalBERT",
+          "PubMedBERT"
+        ]
+      },
       "construct_training_data": {
         "nwords": [60]
       },
@@ -59,6 +67,13 @@
     "2": {
       "name": "Compare values for nwords",
       "description": "The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "nwords",
+        "labels": [
+          "30", "60", "125", "250"
+        ]
+      },
       "construct_training_data": {
         "nwords": [30, 60, 125, 250]
       }
