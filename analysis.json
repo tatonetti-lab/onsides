@@ -31,6 +31,13 @@
                 "./results/grouped-mean-bestepoch-bydrug-CB_2-AR-30_222_24_25_1e-06_32_512.csv",
                 "./results/grouped-mean-bestepoch-bydrug-CB_3-AR-30_222_24_25_1e-06_32_512.csv",
                 "./results/grouped-mean-bestepoch-bydrug-CB_4-AR-30_222_24_25_1e-06_32_512.csv"
+            ],
+            "epochperf": [
+                "./results/epoch-results-CB_0-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/epoch-results-CB_1-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/epoch-results-CB_2-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/epoch-results-CB_3-AR-30_222_24_25_1e-06_32_512.csv",
+                "./results/epoch-results-CB_4-AR-30_222_24_25_1e-06_32_512.csv"
             ]
         },
         "1": {
@@ -52,6 +59,10 @@
             "bestepoch": [
                 "./results/grouped-mean-bestepoch-bydrug-CB_0-AR-60_222_24_20_1e-06_128_128.csv",
                 "./results/grouped-mean-bestepoch-bydrug-PMB_0-AR-60_222_24_20_1e-06_128_128.csv"
+            ],
+            "epochperf": [
+                "./results/epoch-results-CB_0-AR-60_222_24_20_1e-06_128_128.csv",
+                "./results/epoch-results-PMB_0-AR-60_222_24_20_1e-06_128_128.csv"
             ]
         },
         "3": {
@@ -65,10 +76,10 @@
                 "min"
             ],
             "labels": [
-                "compile_results.group-function:mean",
-                "compile_results.group-function:max",
-                "compile_results.group-function:median",
-                "compile_results.group-function:min"
+                "mean",
+                "max",
+                "median",
+                "min"
             ],
             "final": [
                 "./results/grouped-mean-final-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
@@ -81,6 +92,9 @@
                 "./results/grouped-max-bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
                 "./results/grouped-median-bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
                 "./results/grouped-min-bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv"
+            ],
+            "epochperf": [
+                "./results/epoch-results-CB_0-AR-125_222_24_25_1e-06_256_32.csv"
             ]
         }
     }

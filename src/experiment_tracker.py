@@ -90,6 +90,8 @@ if __name__ == '__main__':
 
     fcbd_params_outputs = list()
 
+    epochperf_files = list()
+
     for (method, nwords, section, reffn), max_length, batch_size, epochs, lr, ifexists, network in fcbd_iterator:
 
         if max_length == -1:
@@ -101,6 +103,8 @@ if __name__ == '__main__':
         finalmodfn = f"./models/final-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
         bestepochmodfn = f"./models/bestepoch-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
         epochsfn = f"./results/epoch-results-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+
+        epochperf_files.append(epochsfn)
 
         fcbd_params_outputs.append(('final', network, method, section, nwords, epochs, lr, max_length, batch_size, finalmodfn))
         fcbd_params_outputs.append(('bestepoch', network, method, section, nwords, epochs, lr, max_length, batch_size, bestepochmodfn))
@@ -162,7 +166,7 @@ if __name__ == '__main__':
     eprint("")
     eprint("Checking for grouped results files...")
     compile_results_data = experiment.get("compile_results", defaults["compile_results"])
-    
+
     crd_iterator = itertools.product(
         ard_param_outputs,
         compile_results_data.get("group-function", defaults["compile_results"]["group-function"])
@@ -183,6 +187,8 @@ if __name__ == '__main__':
             eprint(f"    NOT FOUND, create with: {command}")
             is_complete = False
             remaining_commands.append(command)
+
+    eprint("")
 
     if not is_complete:
         eprint("EXPERIMENT IS INCOMPLETE: One or more files are missing. The following command need to be run:")
@@ -221,11 +227,12 @@ if __name__ == '__main__':
             "levels": factor_levels,
             "labels": factor_labels,
             "final": grouped_files["final"],
-            "bestepoch": grouped_files["bestepoch"]
+            "bestepoch": grouped_files["bestepoch"],
+            "epochperf": epochperf_files,
         }
 
         expfh = open('./analysis.json', 'w')
         expfh.write(json.dumps(analysis, indent=4))
         expfh.close()
-
+        
         print("FINISHED.")
