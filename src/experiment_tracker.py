@@ -161,11 +161,11 @@ if __name__ == '__main__':
 
     eprint("")
     eprint("Checking for grouped results files...")
-    compile_results_data = experiment.get("compiled_results", defaults["compile_results"])
-
+    compile_results_data = experiment.get("compile_results", defaults["compile_results"])
+    
     crd_iterator = itertools.product(
         ard_param_outputs,
-        analyze_results_data.get("group-function", defaults["compile_results"]["group-function"])
+        compile_results_data.get("group-function", defaults["compile_results"]["group-function"])
     )
 
     grouped_files = {'final': list(), 'bestepoch': list()}
