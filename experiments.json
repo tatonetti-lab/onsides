@@ -74,14 +74,14 @@
         "script": "construct_training_data",
         "parameter": "nwords",
         "labels": [
-          "30", "60", "125", "250"
+          "6", "15", "30", "60", "125", "250"
         ]
       },
       "construct_training_data": {
-        "nwords": [30, 60, 125, 250]
+        "nwords": [6, 15, 30, 60, 125, 250]
       }
     },
-
+    
     "3": {
       "name": "Compare grouping functions",
       "description": "Each drug, event pair has multiple example strings and each of these example strings will have its own prediction. In order to reduce this down to each drug, event pair we have to decide how to group the data together.",
