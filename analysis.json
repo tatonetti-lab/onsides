@@ -53,6 +53,35 @@
                 "./results/grouped-mean-bestepoch-bydrug-CB_0-AR-60_222_24_20_1e-06_128_128.csv",
                 "./results/grouped-mean-bestepoch-bydrug-PMB_0-AR-60_222_24_20_1e-06_128_128.csv"
             ]
+        },
+        "3": {
+            "name": "Compare grouping functions",
+            "description": "Each drug, event pair has multiple example strings and each of these example strings will have its own prediction. In order to reduce this down to each drug, event pair we have to decide how to group the data together.",
+            "factor": "compile_results.group-function",
+            "levels": [
+                "mean",
+                "max",
+                "median",
+                "min"
+            ],
+            "labels": [
+                "compile_results.group-function:mean",
+                "compile_results.group-function:max",
+                "compile_results.group-function:median",
+                "compile_results.group-function:min"
+            ],
+            "final": [
+                "./results/grouped-mean-final-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
+                "./results/grouped-max-final-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
+                "./results/grouped-median-final-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
+                "./results/grouped-min-final-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv"
+            ],
+            "bestepoch": [
+                "./results/grouped-mean-bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
+                "./results/grouped-max-bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
+                "./results/grouped-median-bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
+                "./results/grouped-min-bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv"
+            ]
         }
     }
 }
