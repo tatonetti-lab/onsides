@@ -161,19 +161,25 @@ if __name__ == '__main__':
 
     eprint("")
     eprint("Checking for grouped results files...")
+    compile_results_data = experiment.get("compiled_results", defaults["compile_results"])
+
+    crd_iterator = itertools.product(
+        ard_param_outputs,
+        analyze_results_data.get("group-function", defaults["compile_results"]["group-function"])
+    )
 
     grouped_files = {'final': list(), 'bestepoch': list()}
 
-    for modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, (testmodresfn, validmodresfn) in ard_param_outputs:
+    for (modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, (testmodresfn, validmodresfn)), grpfun in crd_iterator:
 
-        grpresfn = f"./results/grouped-{modeltype}-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        grpresfn = f"./results/grouped-{grpfun}-{modeltype}-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
         grouped_files[modeltype].append(grpresfn)
 
         file_exists = os.path.exists(grpresfn)
         eprint(f"  {grpresfn}...{file_exists}")
 
         if not file_exists:
-            command = f"python3 src/compile_results.py --results {testmodresfn} {validmodresfn} --examples ./data/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
+            command = f"python3 src/compile_results.py --group-function {grpfun} --results {testmodresfn} {validmodresfn} --examples ./data/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
             eprint(f"    NOT FOUND, create with: {command}")
             is_complete = False
             remaining_commands.append(command)

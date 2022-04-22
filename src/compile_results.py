@@ -24,9 +24,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--results', type=str, required=True, nargs='+', help='Path to results file(s) to generate the data tables from.')
-    parser.add_argument('--examples', help='Path to the example file that corresponds to the results file (e.g. the reference set file).', type=str, required=True)
+    parser.add_argument('--examples', type=str, required=True, help='Path to the example file that corresponds to the results file (e.g. the reference set file).')
+    parser.add_argument('--group-function', type=str, default='mean', help="Function to use to aggregate predictions by drug, event across trainnig examples.")
 
     args = parser.parse_args()
+    if not args.group_function in ('mean', 'max', 'median', 'min'):
+        raise Exception(f"ERROR: Unexpected value ({args.group_function}) provided for --group-function. Can only be one of mean, max, median, or min")
 
     # check the inputs
     for resultspath in args.results:
@@ -95,7 +98,17 @@ if __name__ == '__main__':
             res[col] = list(ex[col])
 
         print(f"Grouping predictions by drug label and adverse event term, and taking the mean prediction score...", flush=True)
-        df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).mean().reset_index()
+
+        if args.group_function == 'mean':
+            df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).mean().reset_index()
+        elif args.group_function == 'max':
+            df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).max().reset_index()
+        elif args.group_function == 'median':
+            df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).median().reset_index()
+        elif args.group_function == 'min':
+            df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).min().reset_index()
+        else:
+            raise Exception("ERROR. Should not be able to get to this code.")
 
         # For drug, event pairs that couldn't be scored we add them with 0's
         # otherwise we would way overestimate our total recall
@@ -174,6 +187,6 @@ if __name__ == '__main__':
 
     df_concat["llt_id"] = [int(llt_id) for llt_id in df_concat["llt_id"]]
     # print(df_concat.dtypes)
-    grouped_filename = f"grouped-{prefix_nosplit}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
+    grouped_filename = f"grouped-{args.group_function}-{prefix_nosplit}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
     print(f"Saving concatenated data frame {df_concat.shape} to file: {grouped_filename}")
     df_concat.to_csv(os.path.join('./results/', grouped_filename))
