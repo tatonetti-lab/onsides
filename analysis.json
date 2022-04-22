@@ -96,6 +96,41 @@
             "epochperf": [
                 "./results/epoch-results-CB_0-AR-125_222_24_25_1e-06_256_32.csv"
             ]
+        },
+        "2": {
+            "name": "Compare values for nwords",
+            "description": "The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
+            "factor": "construct_training_data.nwords",
+            "levels": [
+                30,
+                60,
+                125,
+                250
+            ],
+            "labels": [
+                "30",
+                "60",
+                "125",
+                "250"
+            ],
+            "final": [
+                "./results/grouped-mean-final-bydrug-CB_0-AR-30_222_24_25_1e-06_64_256.csv",
+                "./results/grouped-mean-final-bydrug-CB_0-AR-60_222_24_25_1e-06_128_128.csv",
+                "./results/grouped-mean-final-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
+                "./results/grouped-mean-final-bydrug-CB_0-AR-250_222_24_25_1e-06_512_16.csv"
+            ],
+            "bestepoch": [
+                "./results/grouped-mean-bestepoch-bydrug-CB_0-AR-30_222_24_25_1e-06_64_256.csv",
+                "./results/grouped-mean-bestepoch-bydrug-CB_0-AR-60_222_24_25_1e-06_128_128.csv",
+                "./results/grouped-mean-bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
+                "./results/grouped-mean-bestepoch-bydrug-CB_0-AR-250_222_24_25_1e-06_512_16.csv"
+            ],
+            "epochperf": [
+                "./results/epoch-results-CB_0-AR-30_222_24_25_1e-06_64_256.csv",
+                "./results/epoch-results-CB_0-AR-60_222_24_25_1e-06_128_128.csv",
+                "./results/epoch-results-CB_0-AR-125_222_24_25_1e-06_256_32.csv",
+                "./results/epoch-results-CB_0-AR-250_222_24_25_1e-06_512_16.csv"
+            ]
         }
     }
 }
