@@ -11,11 +11,11 @@
       "epochs": [25],
       "learning-rate": [1e-6],
       "ifexists": ["quit"],
-      "network": ["models/Bio_ClinicalBERT/"]
+      "network": ["Bio_ClinicalBERT"]
     },
     "analyze_results": {
       "skip-train": [true],
-      "network": ["models/Bio_ClinicalBERT/"]
+      "network": ["Bio_ClinicalBERT"]
     },
     "compile_results": {
       "group-function": ["mean"]
@@ -63,7 +63,7 @@
         "nwords": [60]
       },
       "fit_clinicalbert": {
-        "network": ["models/Bio_ClinicalBERT/", "models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/"],
+        "network": ["Bio_ClinicalBERT", "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"],
         "epochs": [20]
       }
     },
@@ -75,7 +75,7 @@
         "script": "construct_training_data",
         "parameter": "nwords",
         "labels": [
-          "3", "6", "15", "30", "60", "125", "250"
+          "LLT Term Only", "6", "15", "30", "60", "125", "250"
         ]
       },
       "construct_training_data": {
@@ -114,15 +114,21 @@
       "description": "Boxed warnings do not have as many training examples and suffer in performance. We want to investigate using the pretrained model from the Adverse Reactions sections with no additional training and with additional training to see how it performs.",
       "factor": {
         "script": "fit_clinicalbert",
-        "parameter": ["network", "epochs"]
+        "parameter": ["network", "epochs"],
+        "labels": [
+          "PreTrain:AR, Fit 0 Epochs",
+          "PreTrain:AR, Fit 10 Epochs",
+          "PreTrain:BW, Fit 0 Epochs",
+          "PreTrain:BW, Fit 10 Epochs"
+        ]
       },
       "construct_training_data": {
         "section": ["BW"]
       },
       "fit_clinicalbert": {
         "network": [
-          "models/bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth",
-          "models/bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth"
+          "bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth",
+          "bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth"
         ],
         "epochs": [0, 10]
       }

@@ -23,6 +23,7 @@ if __name__ == '__main__':
     parser.add_argument('--id', type=str, required=True)
     parser.add_argument('--gpu', type=int, help="if you want to prepend the output commands with the specific gpu, specify a gpu number here.", default=-1)
     parser.add_argument('--skip-models', action='store_true', default=False)
+    parser.add_argument('--replicate', type=int, default=0, help="use to run exact replicates of existing experiments, results and models will be saved in a replicates/rep[NUM] directory")
 
     args = parser.parse_args()
 
@@ -31,6 +32,19 @@ if __name__ == '__main__':
     expfh.close()
 
     #eprint(json.dumps(data["experiments"][args.id], indent=4))
+    DATA_DIR = './data'
+    RESULTS_DIR = './results'
+    MODELS_DIR = './models'
+    if args.replicate != 0:
+        DATA_DIR = f'./replicates/rep{args.replicate}'
+        RESULTS_DIR = f'./replicates/rep{args.replicate}'
+        MODELS_DIR = f'./replicates/rep{args.replicate}'
+
+        if not os.path.exists('./replicates'):
+            os.mkdir('./replicates')
+        for subdir in (DATA_DIR, RESULTS_DIR, MODELS_DIR):
+            if not os.path.exists(subdir):
+                os.mkdir(subdir)
 
     if not args.id in data["experiments"]:
         raise Exception(f"ERROR: Could not find an experiment with id={args.id} in experiments.json.")
@@ -59,7 +73,7 @@ if __name__ == '__main__':
     ctd_params_outputs = list()
 
     for method, nwords, section in ctd_iterator:
-        fn = f"./data/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
+        fn = f"{DATA_DIR}/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
         ctd_params_outputs.append((method, nwords, section, fn))
 
         file_exists = os.path.exists(fn)
@@ -84,12 +98,12 @@ if __name__ == '__main__':
         fit_clinicalbert_data.get("network", defaults["fit_clinicalbert"]["network"]),
     )
     network_codes = {
-        'models/Bio_ClinicalBERT/': 'CB',
-        'models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/': 'PMB',
-        'models/bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth': 'CB0',
-        'models/bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth': 'CB1'
+        'Bio_ClinicalBERT': 'CB',
+        'microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract': 'PMB',
+        'bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth': 'CB0',
+        'bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth': 'CB1'
     }
-    
+
     fcbd_params_outputs = list()
 
     epochperf_files = list()
@@ -102,9 +116,10 @@ if __name__ == '__main__':
         if batch_size == -1:
             batch_size = batch_size_estimate(max_length)
 
-        finalmodfn = f"./models/final-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
-        bestepochmodfn = f"./models/bestepoch-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
-        epochsfn = f"./results/epoch-results-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        network_path = os.path.join(MODELS_DIR, network)
+        finalmodfn = f"{MODELS_DIR}/final-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
+        bestepochmodfn = f"{MODELS_DIR}/bestepoch-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
+        epochsfn = f"{RESULTS_DIR}/epoch-results-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
 
         epochperf_files.append(epochsfn)
 
@@ -129,7 +144,7 @@ if __name__ == '__main__':
             if not epochs_file_exists:
                 eprint(f"    NOT FOUND: epoch results file missing.")
 
-            command = f"python3 src/fit_clinicalbert.py --ref {reffn} --max-length {max_length} --batch-size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network}"
+            command = f"python3 src/fit_clinicalbert.py --ref {reffn} --max-length {max_length} --batch-size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network_path}"
             eprint(f"    Create with: {command}")
             is_complete = False
             remaining_commands.append(command)
@@ -148,6 +163,8 @@ if __name__ == '__main__':
 
     for (modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, modelfn), skip_train, _network in ard_iterator:
 
+        network_path = os.path.join(MODELS_DIR, network)
+
         testmodresfn = f"./results/{modeltype}-bydrug-{network_codes[network]}-test_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
         validmodresfn = f"./results/{modeltype}-bydrug-{network_codes[network]}-valid_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
 
@@ -158,7 +175,7 @@ if __name__ == '__main__':
 
         if not test_file_exists or not valid_file_exists:
             skip_train_str = '' if not skip_train else '--skip-train '
-            command = f"python3 src/analyze_results.py --model {modelfn} {skip_train_str}--network {network}"
+            command = f"python3 src/analyze_results.py --model {modelfn} {skip_train_str}--network {network_path}"
             eprint(f"    NOT FOUND, create with: {command}")
             is_complete = False
             remaining_commands.append(command)
