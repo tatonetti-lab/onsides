@@ -255,10 +255,10 @@ def split_train_val_test(df, np_random_seed):
 def parse_network_argument(args_network):
     network_path = None
     pretrained_state = None
-    if args.network.endswith('.pth'):
+    if args_network.endswith('.pth'):
         # load a previoulsy saved state
-        pretrained_state = args.network
-        network_code = os.path.split(args.network)[-1].split('_')[0].split('-')[-1]
+        pretrained_state = args_network
+        network_code = os.path.split(args_network)[-1].split('_')[0].split('-')[-1]
         if network_code == 'CB':
             network_path = './models/Bio_ClinicalBERT/'
         elif network_code == 'PMB':
@@ -270,16 +270,16 @@ def parse_network_argument(args_network):
             raise Exception(f"ERROR: The pretrained state you are using ({pretrained_state}) does not have an identifer. Add it to the dictionary in fit_clinicalbert.py.")
         network_code += pretrained_state_ids[os.path.split(pretrained_state)[-1]]
 
-    elif args.network.find('Bio_ClinicalBERT') != -1:
+    elif args_network.find('Bio_ClinicalBERT') != -1:
         # ClinicalBert
         network_code = 'CB'
-        network_path = args.network
-    elif args.network.find('BiomedNLP-PubMedBERT') != -1:
+        network_path = args_network
+    elif args_network.find('BiomedNLP-PubMedBERT') != -1:
         # PubMedBert
         network_code = 'PMB'
-        network_path = args.network
+        network_path = args_network
     else:
-        raise Exception(f"ERROR: Unexpected pretrained model: {args.network}")
+        raise Exception(f"ERROR: Unexpected pretrained model: {args_network}")
 
 
 if __name__ == '__main__':
