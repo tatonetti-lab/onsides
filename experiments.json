@@ -74,11 +74,11 @@
         "script": "construct_training_data",
         "parameter": "nwords",
         "labels": [
-          "6", "15", "30", "60", "125", "250"
+          "3", "6", "15", "30", "60", "125", "250"
         ]
       },
       "construct_training_data": {
-        "nwords": [6, 15, 30, 60, 125, 250]
+        "nwords": [3, 6, 15, 30, 60, 125, 250]
       }
     },
 
