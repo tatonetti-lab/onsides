@@ -6,6 +6,9 @@ import argparse
 import pandas as pd
 import numpy as np
 
+sys.path.append(os.path.abspath("./src"))
+import fit_clinicalbert as cb
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -39,6 +42,8 @@ if __name__ == '__main__':
 
     prefix = fnnoext.split('_')[0]
 
+    _, network_path, _ = cb.parse_network_argument(args.network)
+
     print(f" prefix: {prefix}")
     print(f" refset: {refset}")
     print(f" np_random_seed: {np_random_seed}")
@@ -49,12 +54,9 @@ if __name__ == '__main__':
     print(f" batch_size: {batch_size}")
     print(f" skip_train?: {args.skip_train}")
 
-    sys.path.append(os.path.abspath("./src"))
-    import fit_clinicalbert as cb
-
     # load pre-trained network
-    cb.Dataset.set_tokenizer(args.network)
-    model = cb.ClinicalBertClassifier(args.network)
+    cb.Dataset.set_tokenizer(network_path)
+    model = cb.ClinicalBertClassifier(network_path)
     model.load_state_dict(torch.load(model_filepath))
 
     # loading and re-splitting the data
