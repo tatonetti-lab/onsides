@@ -400,7 +400,7 @@ if __name__ == '__main__':
 
     print("Loading the model from file...")
 
-    loaded_model = ClinicalBertClassifier(args.network)
+    loaded_model = ClinicalBertClassifier(network_path)
     loaded_model.load_state_dict(torch.load(final_model_filename))
 
     print("Evaluating the model on the held out test set...")
