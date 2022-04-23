@@ -167,8 +167,8 @@ if __name__ == '__main__':
 
         network_path = os.path.join(MODELS_DIR, network)
 
-        testmodresfn = f"./results/{modeltype}-bydrug-{network_codes[network]}-test_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
-        validmodresfn = f"./results/{modeltype}-bydrug-{network_codes[network]}-valid_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        testmodresfn = f"{RESULTS_DIR}/{modeltype}-bydrug-{network_codes[network]}-test_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        validmodresfn = f"{RESULTS_DIR}/{modeltype}-bydrug-{network_codes[network]}-valid_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
 
         test_file_exists = os.path.exists(testmodresfn)
         valid_file_exists = os.path.exists(validmodresfn)
@@ -197,7 +197,7 @@ if __name__ == '__main__':
 
     for (modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, (testmodresfn, validmodresfn)), grpfun in crd_iterator:
 
-        grpresfn = f"./results/grouped-{grpfun}-{modeltype}-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        grpresfn = f"{RESULTS_DIR}/grouped-{grpfun}-{modeltype}-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
         grouped_files[modeltype].append(grpresfn)
 
         file_exists = os.path.exists(grpresfn)
@@ -252,7 +252,11 @@ if __name__ == '__main__':
             if not len(factor_labels) == len(grouped_files[modeltype]):
                 raise Exception(f"FAILED: The number of resulting grouped files for ({modeltype}) is not consistent with the experimental setup.")
 
-        analysis["experiments"][args.id] = {
+        experiment_id = f"{args.id}"
+        if args.replicate != 0:
+            experiment_id = f"{args.id}R{args.replicate}"
+
+        analysis["experiments"][experiment_id] = {
             "name": experiment["name"],
             "description": experiment["description"],
             "factor": factor_name,
