@@ -34,11 +34,12 @@
           "Prepend Term Only",
           "Substitute Term Only",
           "No Changes",
-          "Subsitute with Nonsense"
+          "Subsitute with Nonsense",
+          "Random Sentences"
         ]
       },
       "construct_training_data": {
-        "method": [0, 1, 2, 3, 4],
+        "method": [0, 1, 2, 3, 4, 5],
         "nwords": [30],
         "section": ["AR"]
       },

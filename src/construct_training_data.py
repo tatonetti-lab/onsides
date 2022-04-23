@@ -14,6 +14,7 @@ import os
 import re
 import sys
 import csv
+import random
 import argparse
 
 def get_args(addl_args = None):
@@ -29,9 +30,16 @@ def get_args(addl_args = None):
 
     args = parser.parse_args()
 
+    if args.nwords == 3 and args.method != 0:
+        raise Exception("ERROR: method must be set to 0 if nwords is set to 3, it is a special case where only the llt is included as the example.")
+
+    if args.nwords < 3:
+        raise Exception("ERROR: nwords must be >= 3.")
+
     sub_event = False
     sub_nonsense = False
     prepend_event = False
+    random_sampled_words = False
 
     if args.method == 0:
         sub_event = True
@@ -49,8 +57,10 @@ def get_args(addl_args = None):
         sub_event = True
         sub_nonsense = True
         prepend_event = False
+    elif args.method == 5:
+        random_sampled_words = True
     else:
-        raise Exception(f"Expected method argument to be an integer value (0, 1, 2, 3, or 4). Got {args.method}")
+        raise Exception(f"Expected method argument to be an integer value (0, 1, 2, 3, 4, or 5). Got {args.method}")
 
     suffix = None
     section_display_name = None
@@ -69,7 +79,7 @@ def get_args(addl_args = None):
     else:
         raise Exception(f"ERROR: Unknown section specificed: {args.section}")
 
-    return args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name
+    return args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words
 
 def load_meddra():
     # load preferred terms and lower level terms
@@ -116,7 +126,7 @@ def get_annotations(drug, section_display_name):
 
     return pts_annotated, llts_annotated, string_annotated
 
-def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_event):
+def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words):
     parts = ar_text.split(llt)
 
     size_of_llt = len(llt.split())
@@ -145,6 +155,15 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
 
     for i in range(len(parts)-1):
         example_string = START_STRING + ' ' + ' '.join(parts[i].split()[-1*size_of_parts:] + [EVENT_STRING] + parts[i+1].split()[:size_of_parts])
+
+        # nwords == 3 is a special case where we only include the llt and nothing else
+        if nwords == 3:
+            example_string = llt
+
+        # method 5 is just a random bag of words
+        if random_sampled_words:
+            example_string = ' '.join(random.sample(ar_text.split(), nwords))
+
         strings.append(example_string)
 
     # A different method of generating the strings that goes beyond the next
@@ -159,7 +178,9 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
 
 def main():
 
-    args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name = get_args()
+    random.seed(222)
+
+    args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words = get_args()
 
     llts = load_meddra()
 
@@ -219,7 +240,7 @@ def main():
                 llts_mentioned.add(llt_id)
                 string_mentioned.add(llt)
 
-                example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event)
+                example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words)
 
                 # check if this event was annotated from the gold standard
                 if llt_id in llts_annotated:
