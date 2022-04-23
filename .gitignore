@@ -9,6 +9,7 @@ results
 scripts/
 *.bu
 analysis.json
+replicates/
 
 # OS X Files
 .DS_Store
