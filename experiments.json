@@ -81,7 +81,7 @@
         "nwords": [6, 15, 30, 60, 125, 250]
       }
     },
-    
+
     "3": {
       "name": "Compare grouping functions",
       "description": "Each drug, event pair has multiple example strings and each of these example strings will have its own prediction. In order to reduce this down to each drug, event pair we have to decide how to group the data together.",
@@ -106,6 +106,26 @@
       "construct_training_data": {
         "section": ["AR", "BW", "WP"]
       }
+    },
+
+    "5": {
+      "name": "Investigate pretraining with AR for Boxed Warning performance",
+      "description": "Boxed warnings do not have as many training examples and suffer in performance. We want to investigate using the pretrained model from the Adverse Reactions sections with no additional training and with additional training to see how it performs.",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": ["network", "epochs"]
+      },
+      "construct_training_data": {
+        "section": ["BW"]
+      },
+      "fit_clinicalbert": {
+        "network": [
+          "models/bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth",
+          "models/bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth"
+        ],
+        "epochs": [0, 10]
+      }
     }
+
   }
 }

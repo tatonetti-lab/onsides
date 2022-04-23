@@ -85,9 +85,11 @@ if __name__ == '__main__':
     )
     network_codes = {
         'models/Bio_ClinicalBERT/': 'CB',
-        'models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/': 'PMB'
+        'models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/': 'PMB',
+        'models/bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth': 'CB0',
+        'models/bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth': 'CB1'
     }
-
+    
     fcbd_params_outputs = list()
 
     epochperf_files = list()
@@ -208,8 +210,19 @@ if __name__ == '__main__':
         else:
             analysis = {"experiments": dict()}
 
-        factor_name = f'{experiment["factor"]["script"]}.{experiment["factor"]["parameter"]}'
-        factor_levels = experiment[experiment["factor"]["script"]][experiment["factor"]["parameter"]]
+        if type(experiment["factor"]["parameter"]) is list:
+            factor_name = experiment["factor"]["script"]
+            param_levels = list()
+
+            for param in experiment["factor"]["parameter"]:
+                factor_name += '.' + param
+                param_levels.append(experiment[experiment["factor"]["script"]][param])
+
+            factor_levels = list(itertools.product(*param_levels))
+
+        else:
+            factor_name = f'{experiment["factor"]["script"]}.{experiment["factor"]["parameter"]}'
+            factor_levels = experiment[experiment["factor"]["script"]][experiment["factor"]["parameter"]]
 
         if not "labels" in experiment["factor"]:
             factor_labels = [f"{factor_name}:{l}" for l in factor_levels]
@@ -234,5 +247,5 @@ if __name__ == '__main__':
         expfh = open('./analysis.json', 'w')
         expfh.write(json.dumps(analysis, indent=4))
         expfh.close()
-        
+
         print("FINISHED.")

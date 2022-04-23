@@ -21,6 +21,10 @@ import pandas as pd
 from tqdm import tqdm
 
 labels = {'not_event': 0, 'is_event': 1}
+pretrained_state_ids = {
+    'bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth': '0',
+    'bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth': '1'
+}
 
 class Dataset(torch.utils.data.Dataset):
 
@@ -89,6 +93,11 @@ class ClinicalBertClassifier(nn.Module):
 
 def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_size, model_filename):
 
+    skip_training = False
+    if epochs == 0:
+        skip_training = True
+        epochs = 1
+
     model.train()
 
     train, val = Dataset(train_data, _max_length=max_length), Dataset(val_data, _max_length=max_length)
@@ -124,7 +133,9 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
         epoch_start_time = time.time()
 
         for train_input, train_label in tqdm(train_dataloader):
-
+            if skip_training:
+                break
+            
             train_label = train_label.to(device)
             mask = train_input['attention_mask'].to(device)
             input_id = train_input['input_ids'].squeeze(1).to(device)
@@ -251,7 +262,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', help="number of epochs to train, default is 25", type=int, default=25)
     parser.add_argument('--learning-rate', help="the learning rate to use, default is 1e-6", type=float, default=1e-6)
     parser.add_argument('--ifexists', help="what to do if model already exists with same parameters, options are 'replicate', 'overwrite', 'quit' - default is 'quit'", type=str, default='quit')
-    parser.add_argument('--network', help="path to pretained network, default is 'models/Bio_ClinicalBERT'", type=str, default='models/Bio_ClinicalBERT/')
+    parser.add_argument('--network', help="path to pretained network, default is 'models/Bio_ClinicalBERT', but you can use other pretrained models or you can use previously saved states.", type=str, default='models/Bio_ClinicalBERT/')
 
     args = parser.parse_args()
 
@@ -277,12 +288,31 @@ if __name__ == '__main__':
     EPOCHS = args.epochs
     LR = args.learning_rate
 
-    if args.network.find('Bio_ClinicalBERT') != -1:
+    network_path = None
+    pretrained_state = None
+    if args.network.endswith('.pth'):
+        # load a previoulsy saved state
+        pretrained_state = args.network
+        network_code = os.path.split(args.network)[-1].split('_')[0].split('-')[-1]
+        if network_code == 'CB':
+            network_path = './models/Bio_ClinicalBERT/'
+        elif network_code == 'PMB':
+            network_path = './models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/'
+        else:
+            raise Excepction(f"ERROR: Pretrained state has unexpected network code: {network_code}")
+
+        if not os.path.split(pretrained_state)[-1] in pretrained_state_ids:
+            raise Exception(f"ERROR: The pretrained state you are using ({pretrained_state}) does not have an identifer. Add it to the dictionary in fit_clinicalbert.py.")
+        network_code += pretrained_state_ids[os.path.split(pretrained_state)[-1]]
+
+    elif args.network.find('Bio_ClinicalBERT') != -1:
         # ClinicalBert
         network_code = 'CB'
+        network_path = args.network
     elif args.network.find('BiomedNLP-PubMedBERT') != -1:
         # PubMedBert
         network_code = 'PMB'
+        network_path = args.network
     else:
         raise Exception(f"ERROR: Unexpected pretrained model: {args.network}")
 
@@ -324,7 +354,7 @@ if __name__ == '__main__':
         elif args.ifexists == 'replicate':
             print("  Will run a replicate, checking for any existing replicates...")
             reps = [f for f in os.listdir('./models/') if f.find(filename_params) != -1 and f.lower().find('bestepoch') == -1]
-            filename_params = f'{refset}-{refsection}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}_rep{len(reps)}'
+            filename_params = f'{filename_params}_rep{len(reps)}'
             final_model_filename = f'./models/final-bydrug-{network_code}_{filename_params}.pth'
             print(f"    Found {len(reps)} existing models. Filename for this replicate will be: {final_model_filename}")
         elif args.ifexists == 'overwrite':
@@ -346,6 +376,10 @@ if __name__ == '__main__':
 
     # now we can initailize a model
     model = ClinicalBertClassifier(args.network)
+
+    if not pretrained_state is None:
+        print(f"Loading pretrained state from model at: {pretrained_state}")
+        model.load_state_dict(pretrained_state)
 
     print("Fitting the model...")
     best_epoch_model_filename = f'./models/bestepoch-bydrug-{network_code}_{filename_params}.pth'

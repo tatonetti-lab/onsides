@@ -11,6 +11,7 @@ the term will be manually annotated as an adverse event for the drug.
 """
 
 import os
+import re
 import sys
 import csv
 import argparse
@@ -124,26 +125,35 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
     # NOTE: dictionary are split into subwords and tokenized. So the actual
     # NOTE: number of tokens is more than the number of words. We initially
     # NOTE: used ~128.
-    size_of_parts = int(nwords/2) - size_of_llt
+    size_of_parts = max(int(nwords/2) - size_of_llt, 1)
 
     if len(parts) == 1:
-        raise Exception("Parts has length of 1 which shouldn't be possible.")
+       raise Exception("Parts has length of 1 which shouldn't be possible.")
 
     strings = list()
+
+    EVENT_STRING = llt
+    if sub_event:
+        EVENT_STRING = 'EVENT'
+    if sub_nonsense:
+        EVENT_STRING = 'YIHFKEHDK'
+
+    START_STRING = ''
+    if prepend_event:
+        START_STRING = llt
+
+
     for i in range(len(parts)-1):
-        # print(parts[i].split()[-1*size_of_parts:])
-        EVENT_STRING = llt
-        if sub_event:
-            EVENT_STRING = 'EVENT'
-        if sub_nonsense:
-            EVENT_STRING = 'YIHFKEHDK'
-
-        START_STRING = ''
-        if prepend_event:
-            START_STRING = llt
-
         example_string = START_STRING + ' ' + ' '.join(parts[i].split()[-1*size_of_parts:] + [EVENT_STRING] + parts[i+1].split()[:size_of_parts])
         strings.append(example_string)
+
+    # A different method of generating the strings that goes beyond the next
+    # occurrence of the llt in the overall text. Not tested for its performance yet.
+    # for match in re.finditer(llt, ar_text):
+    #     start, end = match.span()
+    #     example_string = START_STRING + ' ' + ' '.join(ar_text[:start].split()[(-1*size_of_parts):] + [EVENT_STRING] + ar_text[end:].split()[:size_of_parts])
+    #     strings.append(example_string)
+
 
     return strings
 
