@@ -26,6 +26,7 @@ if __name__ == '__main__':
     parser.add_argument('--results', type=str, required=True, nargs='+', help='Path to results file(s) to generate the data tables from.')
     parser.add_argument('--examples', type=str, required=True, help='Path to the example file that corresponds to the results file (e.g. the reference set file).')
     parser.add_argument('--group-function', type=str, default='mean', help="Function to use to aggregate predictions by drug, event across trainnig examples.")
+    parser.add_argument('--base-dir', type=str, default='.')
 
     args = parser.parse_args()
     if not args.group_function in ('mean', 'max', 'median', 'min'):
@@ -189,4 +190,4 @@ if __name__ == '__main__':
     # print(df_concat.dtypes)
     grouped_filename = f"grouped-{args.group_function}-{prefix_nosplit}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
     print(f"Saving concatenated data frame {df_concat.shape} to file: {grouped_filename}")
-    df_concat.to_csv(os.path.join('./results/', grouped_filename))
+    df_concat.to_csv(os.path.join(BASE_DIR, 'results', grouped_filename))
