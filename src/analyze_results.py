@@ -15,6 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, required=True, help="Path to the model to construct predictions from.")
     parser.add_argument('--skip-train', action='store_true', default=True, help="Skip generating predictions for the training data (which can take a long time)")
     parser.add_argument('--network', help="path to pretained network, default is 'models/Bio_ClinicalBERT'", type=str, default='models/Bio_ClinicalBERT/')
+    parser.add_argument('--base-dir', type=str, default='.')
 
     args = parser.parse_args()
 
@@ -85,7 +86,7 @@ if __name__ == '__main__':
 
     file_parameters = f'{refset}-{refsection}-{refnwords}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
 
-    test_filename = f'./results/{prefix}-test_{file_parameters}.csv'
+    test_filename = f'{args.base_dir}/results/{prefix}-test_{file_parameters}.csv'
 
     print(f"Evaluating testing data, will save to: {test_filename}")
     outputs = cb.evaluate(model, df_test, max_length, batch_size)
@@ -94,7 +95,7 @@ if __name__ == '__main__':
 
     np.savetxt(test_filename, predictions, delimiter=',')
 
-    valid_filename = f'./results/{prefix}-valid_{file_parameters}.csv'
+    valid_filename = f'{args.base_dir}/results/{prefix}-valid_{file_parameters}.csv'
 
     print(f"Evaluating validation data, will save to: {valid_filename}")
     outputs = cb.evaluate(model, df_val, max_length, batch_size)
@@ -104,7 +105,7 @@ if __name__ == '__main__':
     np.savetxt(valid_filename, predictions, delimiter=',')
 
     if not args.skip_train:
-        train_filename = f'./results/{prefix}-train_{file_parameters}.csv'
+        train_filename = f'{args.base_dir}/results/{prefix}-train_{file_parameters}.csv'
 
         print(f"Evaluating training data, will save to: {train_filename}")
         outputs = cb.evaluate(model, df_train, max_length, batch_size)

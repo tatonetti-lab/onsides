@@ -36,13 +36,15 @@ if __name__ == '__main__':
     RESULTS_DIR = './results'
     MODELS_DIR = './models'
     if args.replicate != 0:
-        DATA_DIR = f'./replicates/rep{args.replicate}'
-        RESULTS_DIR = f'./replicates/rep{args.replicate}'
-        MODELS_DIR = f'./replicates/rep{args.replicate}'
+        RESULTS_DIR = f'./replicates/rep{args.replicate}/results'
+        MODELS_DIR = f'./replicates/rep{args.replicate}/models'
 
         if not os.path.exists('./replicates'):
             os.mkdir('./replicates')
-        for subdir in (DATA_DIR, RESULTS_DIR, MODELS_DIR):
+        if not os.path.exists(f'./replicates/rep{args.replicate}'):
+            os.mkdir(f'./replicates/rep{args.replicate}')
+
+        for subdir in (RESULTS_DIR, MODELS_DIR):
             if not os.path.exists(subdir):
                 os.mkdir(subdir)
 

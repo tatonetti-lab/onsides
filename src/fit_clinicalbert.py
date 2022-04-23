@@ -273,11 +273,11 @@ def parse_network_argument(args_network):
     elif args_network.find('Bio_ClinicalBERT') != -1:
         # ClinicalBert
         network_code = 'CB'
-        network_path = args_network
+        network_path = './models/Bio_ClinicalBERT/'
     elif args_network.find('BiomedNLP-PubMedBERT') != -1:
         # PubMedBert
         network_code = 'PMB'
-        network_path = args_network
+        network_path = './models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/'
     else:
         raise Exception(f"ERROR: Unexpected pretrained model: {args_network}")
 
@@ -294,6 +294,7 @@ if __name__ == '__main__':
     parser.add_argument('--learning-rate', help="the learning rate to use, default is 1e-6", type=float, default=1e-6)
     parser.add_argument('--ifexists', help="what to do if model already exists with same parameters, options are 'replicate', 'overwrite', 'quit' - default is 'quit'", type=str, default='quit')
     parser.add_argument('--network', help="path to pretained network, default is 'models/Bio_ClinicalBERT', but you can use other pretrained models or you can use previously saved states.", type=str, default='models/Bio_ClinicalBERT/')
+    parser.add_argument('--base-dir', type=str, default='.')
 
     args = parser.parse_args()
 
@@ -350,7 +351,7 @@ if __name__ == '__main__':
 
     # check for existing model file
     filename_params = f'{refset}-{refsection}-{refnwords}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
-    final_model_filename = f'./models/final-bydrug-{network_code}_{filename_params}.pth'
+    final_model_filename = f'{args.base_dir}/models/final-bydrug-{network_code}_{filename_params}.pth'
     if os.path.exists(final_model_filename):
         print(f"Found final model already saved at path: {final_model_filename}")
         if args.ifexists == 'quit':
@@ -358,9 +359,9 @@ if __name__ == '__main__':
             sys.exit(1)
         elif args.ifexists == 'replicate':
             print("  Will run a replicate, checking for any existing replicates...")
-            reps = [f for f in os.listdir('./models/') if f.find(filename_params) != -1 and f.lower().find('bestepoch') == -1]
+            reps = [f for f in os.listdir(f'{args.base_dir}/models/') if f.find(filename_params) != -1 and f.lower().find('bestepoch') == -1]
             filename_params = f'{filename_params}_rep{len(reps)}'
-            final_model_filename = f'./models/final-bydrug-{network_code}_{filename_params}.pth'
+            final_model_filename = f'{args.base_dir}/models/final-bydrug-{network_code}_{filename_params}.pth'
             print(f"    Found {len(reps)} existing models. Filename for this replicate will be: {final_model_filename}")
         elif args.ifexists == 'overwrite':
             print("  Option is to overwrite the exising model file.")
@@ -387,7 +388,7 @@ if __name__ == '__main__':
         model.load_state_dict(torch.load(pretrained_state))
 
     print("Fitting the model...")
-    best_epoch_model_filename = f'./models/bestepoch-bydrug-{network_code}_{filename_params}.pth'
+    best_epoch_model_filename = f'{args.base_dir}/models/bestepoch-bydrug-{network_code}_{filename_params}.pth'
 
     training_results = train(model, df_train, df_val, LR, EPOCHS, max_length, batch_size, best_epoch_model_filename)
 
@@ -396,7 +397,7 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), final_model_filename)
 
     print("Saving loss and accuracies for each epoch to file...")
-    lafh = open(f'./results/epoch-results-{network_code}_{filename_params}.csv', 'w')
+    lafh = open(f'{args.base_dir}/results/epoch-results-{network_code}_{filename_params}.csv', 'w')
     writer = csv.writer(lafh)
     writer.writerow(['epoch', 'train_loss', 'train_accuracy', 'valid_loss', 'valid_accuracy', 'epoch_time', 'epoch_saved'])
     for epoch in range(EPOCHS):
