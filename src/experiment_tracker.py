@@ -35,9 +35,11 @@ if __name__ == '__main__':
     DATA_DIR = './data'
     RESULTS_DIR = './results'
     MODELS_DIR = './models'
+    BASE_DIR = '.'
     if args.replicate != 0:
         RESULTS_DIR = f'./replicates/rep{args.replicate}/results'
         MODELS_DIR = f'./replicates/rep{args.replicate}/models'
+        BASE_DIR = f'./replicates/rep{args.replicate}'
 
         if not os.path.exists('./replicates'):
             os.mkdir('./replicates')
@@ -146,7 +148,7 @@ if __name__ == '__main__':
             if not epochs_file_exists:
                 eprint(f"    NOT FOUND: epoch results file missing.")
 
-            command = f"python3 src/fit_clinicalbert.py --ref {reffn} --max-length {max_length} --batch-size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network_path}"
+            command = f"python3 src/fit_clinicalbert.py --base-dir {BASE_DIR} --ref {reffn} --max-length {max_length} --batch-size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network_path}"
             eprint(f"    Create with: {command}")
             is_complete = False
             remaining_commands.append(command)
@@ -177,7 +179,7 @@ if __name__ == '__main__':
 
         if not test_file_exists or not valid_file_exists:
             skip_train_str = '' if not skip_train else '--skip-train '
-            command = f"python3 src/analyze_results.py --model {modelfn} {skip_train_str}--network {network_path}"
+            command = f"python3 src/analyze_results.py --base-dir {BASE_DIR} --model {modelfn} {skip_train_str}--network {network_path}"
             eprint(f"    NOT FOUND, create with: {command}")
             is_complete = False
             remaining_commands.append(command)
