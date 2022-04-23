@@ -281,6 +281,8 @@ def parse_network_argument(args_network):
     else:
         raise Exception(f"ERROR: Unexpected pretrained model: {args_network}")
 
+    return network_code, network_path, pretrained_state
+
 
 if __name__ == '__main__':
 
