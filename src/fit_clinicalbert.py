@@ -135,7 +135,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
         for train_input, train_label in tqdm(train_dataloader):
             if skip_training:
                 break
-            
+
             train_label = train_label.to(device)
             mask = train_input['attention_mask'].to(device)
             input_id = train_input['input_ids'].squeeze(1).to(device)
@@ -372,14 +372,14 @@ if __name__ == '__main__':
     print(len(df_train), len(df_val), len(df_test))
 
     # initailize Dataset.tokenizer
-    Dataset.set_tokenizer(args.network)
+    Dataset.set_tokenizer(network_path)
 
     # now we can initailize a model
-    model = ClinicalBertClassifier(args.network)
+    model = ClinicalBertClassifier(network_path)
 
     if not pretrained_state is None:
         print(f"Loading pretrained state from model at: {pretrained_state}")
-        model.load_state_dict(pretrained_state)
+        model.load_state_dict(torch.load(pretrained_state))
 
     print("Fitting the model...")
     best_epoch_model_filename = f'./models/bestepoch-bydrug-{network_code}_{filename_params}.pth'
