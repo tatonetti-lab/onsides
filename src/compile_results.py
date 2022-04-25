@@ -190,4 +190,4 @@ if __name__ == '__main__':
     # print(df_concat.dtypes)
     grouped_filename = f"grouped-{args.group_function}-{prefix_nosplit}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
     print(f"Saving concatenated data frame {df_concat.shape} to file: {grouped_filename}")
-    df_concat.to_csv(os.path.join(BASE_DIR, 'results', grouped_filename))
+    df_concat.to_csv(os.path.join(args.base_dir, 'results', grouped_filename))
