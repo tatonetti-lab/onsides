@@ -23,6 +23,7 @@ def get_args(addl_args = None):
     parser.add_argument('--method', type=int, required=True)
     parser.add_argument('--nwords', help='The number of words to grab from either side total (nwords/2 before and nwords/2 after) of the event mention to generate the training example', type=int, default=125)
     parser.add_argument('--section', help='Designate which section of the label to parse. Options are AR (adverse reactions), BW (boxed warnings), or WP (warnings and precautions)', type=str, default='AR')
+    parser.add_argument('--prop-before', type=float, default=0.5, help="Proportion of nwords that should come from before the event term. Default is 0.5 (50%).")
 
     if not addl_args is None and type(addl_args) is list:
         for addl_arg in addl_args:
@@ -40,7 +41,6 @@ def get_args(addl_args = None):
     sub_nonsense = False
     prepend_event = False
     random_sampled_words = False
-    before_and_after = 'both'
 
     if args.method == 0:
         sub_event = True
@@ -64,14 +64,34 @@ def get_args(addl_args = None):
         # this is method 0 except that all the words are from "BEFORE" the AE term
         sub_event = True
         prepend_event = True
-        before_and_after = 'before'
+        args.prop_before = 1.0
     elif args.method == 7:
         # this is method 0 except that all the words are from "AFTER" the AE term
         sub_event = True
         prepend_event = True
-        before_and_after = 'after'
+        args.prop_before = 0.0
+    elif args.method == 8:
+        sub_event = True
+        prepend_event = True
+        args.prop_before = 0.125
+    elif args.method == 9:
+        sub_event = True
+        prepend_event = True
+        args.prop_before = 0.25
+    elif args.method == 10:
+        sub_event = True
+        prepend_event = True
+        args.prop_before = 0.75
+    elif args.method == 11:
+        sub_event = True
+        prepend_event = True
+        args.prop_before = 0.875
     else:
         raise Exception(f"Expected method argument to be an integer value (0, 1, 2, 3, 4, or 5). Got {args.method}")
+
+    if args.prop_before < 0 or args.prop_before > 1:
+        raise Exception(f"ERROR: Unexpected value ({args.prop_before}) provided for --prop-before. Needs to be a float between 0 and 1.")
+
 
     suffix = None
     section_display_name = None
@@ -90,7 +110,7 @@ def get_args(addl_args = None):
     else:
         raise Exception(f"ERROR: Unknown section specificed: {args.section}")
 
-    return args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words, before_and_after
+    return args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words
 
 def load_meddra():
     # load preferred terms and lower level terms
@@ -137,7 +157,7 @@ def get_annotations(drug, section_display_name):
 
     return pts_annotated, llts_annotated, string_annotated
 
-def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, before_and_after):
+def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, prop_before):
     parts = ar_text.split(llt)
 
     size_of_llt = len(llt.split())
@@ -146,10 +166,17 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
     # NOTE: dictionary are split into subwords and tokenized. So the actual
     # NOTE: number of tokens is more than the number of words. We initially
     # NOTE: used ~128.
-    if before_and_after == 'both':
-        size_of_parts = max(int(nwords/2) - size_of_llt, 1)
-    else:
-        size_of_parts = max(nwords-size_of_llt, 1)
+
+
+    # size_of_parts = max(int(nwords/2) - size_of_llt, 1)
+
+    size_before = max(int((nwords-2*size_of_llt)*prop_before), 1)
+    size_after = max(int((nwords-2*size_of_llt)*(1-prop_before)), 1)
+
+    # print(f"size_of_parts = {size_of_parts}")
+    # print(f"size_before = {size_before}")
+    # print(f"size_after = {size_after}")
+    # sys.exit(1)
 
     if len(parts) == 1:
        raise Exception("Parts has length of 1 which shouldn't be possible.")
@@ -176,8 +203,8 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
             example_string = llt
         else:
             # normal scenario
-            before_parts = parts[i].split()[-1*size_of_parts:]
-            after_parts = parts[i+1].split()[:size_of_parts]
+            before_parts = parts[i].split()[-1*size_before:]
+            after_parts = parts[i+1].split()[:size_after]
 
             li = [START_STRING]
 
@@ -188,7 +215,7 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
 
             if before_and_after in ('both', 'after'):
                 li.extend(after_parts)
-                
+
             example_string = ' '.join(li)
 
 
@@ -208,7 +235,7 @@ def main():
 
     random.seed(222)
 
-    args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words, before_and_after = get_args()
+    args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words = get_args()
 
     llts = load_meddra()
 
@@ -268,7 +295,7 @@ def main():
                 llts_mentioned.add(llt_id)
                 string_mentioned.add(llt)
 
-                example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, before_and_after)
+                example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
                 # check if this event was annotated from the gold standard
                 if llt_id in llts_annotated:

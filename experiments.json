@@ -141,13 +141,17 @@
         "script": "construct_training_data",
         "parameter": "method",
         "labels": [
-          "Before Only",
+          "After Only",
+          "87.5% After",
+          "75% After",
           "Before and After",
-          "After Only"
+          "75% Before",
+          "87.5% Before",
+          "Before Only"
         ]
       },
       "construct_training_data": {
-        "method": [6, 0, 7],
+        "method": [7, 8, 9, 0, 10, 11, 6],
         "nwords": [30],
         "section": ["AR"]
       },
@@ -155,5 +159,6 @@
         "max-length": [32]
       }
     }
+
   }
 }
