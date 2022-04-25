@@ -206,7 +206,7 @@ if __name__ == '__main__':
         eprint(f"  {grpresfn}...{file_exists}")
 
         if not file_exists:
-            command = f"python3 src/compile_results.py --group-function {grpfun} --results {testmodresfn} {validmodresfn} --examples ./data/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
+            command = f"python3 src/compile_results.py --base-dir {BASE_DIR} --group-function {grpfun} --results {testmodresfn} {validmodresfn} --examples ./data/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
             eprint(f"    NOT FOUND, create with: {command}")
             is_complete = False
             remaining_commands.append(command)
