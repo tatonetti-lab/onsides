@@ -214,7 +214,7 @@ if __name__ == '__main__':
     eprint("")
 
     if not is_complete:
-        eprint("EXPERIMENT IS INCOMPLETE: One or more files are missing. The following command need to be run:")
+                eprint(f"EXPERIMENT IS INCOMPLETE: One or more files are missing. {len(remaining_commands)} commands need to be run. Printing them to standard output, pipe this script to bash to automatically run them.")
         for command in remaining_commands:
             if args.gpu == -1:
                 print(command)
