@@ -214,12 +214,12 @@ if __name__ == '__main__':
     eprint("")
 
     if not is_complete:
-                eprint(f"EXPERIMENT IS INCOMPLETE: One or more files are missing. {len(remaining_commands)} commands need to be run. Printing them to standard output, pipe this script to bash to automatically run them.")
-        for command in remaining_commands:
-            if args.gpu == -1:
-                print(command)
-            else:
-                print(f"CUDA_VISIBLE_DEVICES={args.gpu} " + command)
+        eprint(f"EXPERIMENT IS INCOMPLETE: One or more files are missing. {len(remaining_commands)} commands need to be run. Printing them to standard output, pipe this script to bash to automatically run them.")
+    for command in remaining_commands:
+        if args.gpu == -1:
+            print(command)
+        else:
+            print(f"CUDA_VISIBLE_DEVICES={args.gpu} " + command)
     else:
         eprint("EXPERIMENT IS COMPLETE!")
 
