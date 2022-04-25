@@ -40,6 +40,7 @@ def get_args(addl_args = None):
     sub_nonsense = False
     prepend_event = False
     random_sampled_words = False
+    before_and_after = 'both'
 
     if args.method == 0:
         sub_event = True
@@ -59,6 +60,16 @@ def get_args(addl_args = None):
         prepend_event = False
     elif args.method == 5:
         random_sampled_words = True
+    elif args.method == 6:
+        # this is method 0 except that all the words are from "BEFORE" the AE term
+        sub_event = True
+        prepend_event = True
+        before_and_after = 'before'
+    elif args.method == 7:
+        # this is method 0 except that all the words are from "AFTER" the AE term
+        sub_event = True
+        prepend_event = True
+        before_and_after = 'after'
     else:
         raise Exception(f"Expected method argument to be an integer value (0, 1, 2, 3, 4, or 5). Got {args.method}")
 
@@ -79,7 +90,7 @@ def get_args(addl_args = None):
     else:
         raise Exception(f"ERROR: Unknown section specificed: {args.section}")
 
-    return args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words
+    return args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words, before_and_after
 
 def load_meddra():
     # load preferred terms and lower level terms
@@ -126,7 +137,7 @@ def get_annotations(drug, section_display_name):
 
     return pts_annotated, llts_annotated, string_annotated
 
-def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words):
+def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, before_and_after):
     parts = ar_text.split(llt)
 
     size_of_llt = len(llt.split())
@@ -135,7 +146,10 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
     # NOTE: dictionary are split into subwords and tokenized. So the actual
     # NOTE: number of tokens is more than the number of words. We initially
     # NOTE: used ~128.
-    size_of_parts = max(int(nwords/2) - size_of_llt, 1)
+    if before_and_after == 'both':
+        size_of_parts = max(int(nwords/2) - size_of_llt, 1)
+    else:
+        size_of_parts = max(nwords-size_of_llt, 1)
 
     if len(parts) == 1:
        raise Exception("Parts has length of 1 which shouldn't be possible.")
@@ -154,15 +168,29 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
 
 
     for i in range(len(parts)-1):
-        example_string = START_STRING + ' ' + ' '.join(parts[i].split()[-1*size_of_parts:] + [EVENT_STRING] + parts[i+1].split()[:size_of_parts])
-
-        # nwords == 3 is a special case where we only include the llt and nothing else
-        if nwords == 3:
-            example_string = llt
-
-        # method 5 is just a random bag of words
         if random_sampled_words:
+            # method 5 is just a random bag of words
             example_string = ' '.join(random.sample(ar_text.split(), nwords))
+        elif nwords == 3:
+            # nwords == 3 is a special case where we only include the llt and nothing else
+            example_string = llt
+        else:
+            # normal scenario
+            before_parts = parts[i].split()[-1*size_of_parts:]
+            after_parts = parts[i+1].split()[:size_of_parts]
+
+            li = [START_STRING]
+
+            if before_and_after in ('both', 'before'):
+                li.extend(before_parts)
+
+            li.append(EVENT_STRING)
+
+            if before_and_after in ('both', 'after'):
+                li.extend(after_parts)
+                
+            example_string = ' '.join(li)
+
 
         strings.append(example_string)
 
@@ -180,7 +208,7 @@ def main():
 
     random.seed(222)
 
-    args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words = get_args()
+    args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name, random_sampled_words, before_and_after = get_args()
 
     llts = load_meddra()
 
@@ -240,7 +268,7 @@ def main():
                 llts_mentioned.add(llt_id)
                 string_mentioned.add(llt)
 
-                example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words)
+                example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, before_and_after)
 
                 # check if this event was annotated from the gold standard
                 if llt_id in llts_annotated:

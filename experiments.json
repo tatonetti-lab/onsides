@@ -132,7 +132,28 @@
         ],
         "epochs": [0, 10]
       }
-    }
+    },
 
+    "6": {
+      "name": "Compare string before to string after",
+      "description": "When constructing the training data we have the choice to take words preceding the event term, following the event term, or an event split of both (default). This experiment compares the performance of those three options. This could be part of experiment 0, but that seems to be getting crowded.",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "method",
+        "labels": [
+          "Before Only",
+          "Before and After",
+          "After Only"
+        ]
+      },
+      "construct_training_data": {
+        "method": [6, 0, 7],
+        "nwords": [30],
+        "section": ["AR"]
+      },
+      "fit_clinicalbert": {
+        "max-length": [32]
+      }
+    }
   }
 }
