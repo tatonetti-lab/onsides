@@ -208,12 +208,12 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
 
             li = [START_STRING]
 
-            if before_and_after in ('both', 'before'):
+            if prop_before > 0:
                 li.extend(before_parts)
 
             li.append(EVENT_STRING)
 
-            if before_and_after in ('both', 'after'):
+            if prop_before < 1:
                 li.extend(after_parts)
 
             example_string = ' '.join(li)
