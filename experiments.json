@@ -158,6 +158,25 @@
       "fit_clinicalbert": {
         "max-length": [32]
       }
+    },
+
+    "7": {
+      "name": "Compare values for nwords",
+      "description": "Same as experiment two except for reference method 8, rather than 0. The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "nwords",
+        "labels": [
+          "LLT Term Only", "6", "15", "30", "60", "125", "250"
+        ]
+      },
+      "construct_training_data": {
+        "method": [8],
+        "nwords": [3, 6, 15, 30, 60, 125, 250]
+      },
+      "fit_clinicalbert": {
+        "epochs": [10]
+      }
     }
 
   }
