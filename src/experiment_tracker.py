@@ -273,4 +273,4 @@ if __name__ == '__main__':
         expfh.write(json.dumps(analysis, indent=4))
         expfh.close()
 
-        print("FINISHED.")
+        eprint("FINISHED.")
