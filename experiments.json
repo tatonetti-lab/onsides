@@ -136,7 +136,7 @@
 
     "6": {
       "name": "Compare string before to string after",
-      "description": "When constructing the training data we have the choice to take words preceding the event term, following the event term, or an event split of both (default). This experiment compares the performance of those three options. This could be part of experiment 0, but that seems to be getting crowded.",
+      "description": "REPLACED BY 6A. When constructing the training data we have the choice to take words preceding the event term, following the event term, or an event split of both (default). This experiment compares the performance of those three options. This could be part of experiment 0, but that seems to be getting crowded.",
       "factor": {
         "script": "construct_training_data",
         "parameter": "method",
@@ -157,6 +157,29 @@
       },
       "fit_clinicalbert": {
         "max-length": [32]
+      }
+    },
+
+    "6A": {
+      "name": "Compare string before to string after",
+      "description": "Same as experiment 6, but with no max_length set. When constructing the training data we have the choice to take words preceding the event term, following the event term, or an event split of both (default). This experiment compares the performance of those three options. This could be part of experiment 0, but that seems to be getting crowded.",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "method",
+        "labels": [
+          "After Only",
+          "87.5% After",
+          "75% After",
+          "Before and After",
+          "75% Before",
+          "87.5% Before",
+          "Before Only"
+        ]
+      },
+      "construct_training_data": {
+        "method": [7, 8, 9, 0, 10, 11, 6],
+        "nwords": [30],
+        "section": ["AR"]
       }
     },
 
