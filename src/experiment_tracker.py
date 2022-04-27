@@ -15,56 +15,35 @@ import numpy as np
 
 from fit_clinicalbert import batch_size_estimate
 
+QUIET_MODE = False
+
 def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+    if not QUIET_MODE:
+        print(*args, file=sys.stderr, **kwargs)
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--id', type=str, required=True)
-    parser.add_argument('--gpu', type=int, help="if you want to prepend the output commands with the specific gpu, specify a gpu number here.", default=-1)
-    parser.add_argument('--skip-models', action='store_true', default=False)
-    parser.add_argument('--replicate', type=int, default=0, help="use to run exact replicates of existing experiments, results and models will be saved in a replicates/rep[NUM] directory")
+def qprint(*args, **kwargs):
+    if QUIET_MODE:
+        print(*args, file=sys.stderr, **kwargs)
 
-    args = parser.parse_args()
+def tracker(args_id, args, data, DATA_DIR, RESULTS_DIR, MODELS_DIR, BASE_DIR):
 
-    expfh = open('./experiments.json')
-    data = json.loads(expfh.read())
-    expfh.close()
-
-    #eprint(json.dumps(data["experiments"][args.id], indent=4))
-    DATA_DIR = './data'
-    RESULTS_DIR = './results'
-    MODELS_DIR = './models'
-    BASE_DIR = '.'
-    if args.replicate != 0:
-        RESULTS_DIR = f'./replicates/rep{args.replicate}/results'
-        MODELS_DIR = f'./replicates/rep{args.replicate}/models'
-        BASE_DIR = f'./replicates/rep{args.replicate}'
-
-        if not os.path.exists('./replicates'):
-            os.mkdir('./replicates')
-        if not os.path.exists(f'./replicates/rep{args.replicate}'):
-            os.mkdir(f'./replicates/rep{args.replicate}')
-
-        for subdir in (RESULTS_DIR, MODELS_DIR):
-            if not os.path.exists(subdir):
-                os.mkdir(subdir)
-
-    if not args.id in data["experiments"]:
-        raise Exception(f"ERROR: Could not find an experiment with id={args.id} in experiments.json.")
+    if not args_id in data["experiments"]:
+        raise Exception(f"ERROR: Could not find an experiment with id={args_id} in experiments.json.")
 
     defaults = data["defaults"]
-    experiment = data["experiments"][args.id]
+    experiment = data["experiments"][args_id]
     is_complete = True
     remaining_commands = list()
 
-    eprint(f"Experiment {args.id} loaded.")
+    eprint(f"Experiment {args_id} loaded.")
     eprint(f'  Name: {experiment["name"]}')
     eprint(f'  Description: {experiment["description"]}')
     eprint(f"-------------------------------------------")
 
     eprint("")
     eprint("Checking for training data...")
+
+    qprint(f"Loaded Experiment {args_id:2s} ({experiment['name'][:30]:30s}), checking status...", end='')
 
     construct_training_data = experiment.get("construct_training_data", defaults["construct_training_data"])
 
@@ -215,13 +194,17 @@ if __name__ == '__main__':
 
     if not is_complete:
         eprint(f"EXPERIMENT IS INCOMPLETE: One or more files are missing. {len(remaining_commands)} commands need to be run. Printing them to standard output, pipe this script to bash to automatically run them.")
-        for command in remaining_commands:
-            if args.gpu == -1:
-                print(command)
-            else:
-                print(f"CUDA_VISIBLE_DEVICES={args.gpu} " + command)
+        qprint(f" [  Incomplete  ] {len(remaining_commands):2} commands remaining")
+
+        if not QUIET_MODE:
+            for command in remaining_commands:
+                if args.gpu == -1:
+                    print(command)
+                else:
+                    print(f"CUDA_VISIBLE_DEVICES={args.gpu} " + command)
     else:
         eprint("EXPERIMENT IS COMPLETE!")
+        qprint(" [   Complete   ]")
 
         eprint("Writing out analysis file...")
         if os.path.exists('analysis.json'):
@@ -254,9 +237,9 @@ if __name__ == '__main__':
             if not len(factor_labels) == len(grouped_files[modeltype]):
                 raise Exception(f"FAILED: The number of resulting grouped files for ({modeltype}) is not consistent with the experimental setup.")
 
-        experiment_id = f"{args.id}"
+        experiment_id = f"{args_id}"
         if args.replicate != 0:
-            experiment_id = f"{args.id}R{args.replicate}"
+            experiment_id = f"{args_id}R{args.replicate}"
 
         analysis["experiments"][experiment_id] = {
             "name": experiment["name"],
@@ -274,3 +257,50 @@ if __name__ == '__main__':
         expfh.close()
 
         eprint("FINISHED.")
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--id', type=str)
+    parser.add_argument('--gpu', type=int, help="if you want to prepend the output commands with the specific gpu, specify a gpu number here.", default=-1)
+    parser.add_argument('--skip-models', action='store_true', default=False)
+    parser.add_argument('--replicate', type=int, default=0, help="use to run exact replicates of existing experiments, results and models will be saved in a replicates/rep[NUM] directory")
+    parser.add_argument('--quiet', action='store_true', default=False)
+    parser.add_argument('--all', action='store_true', default=False)
+
+    args = parser.parse_args()
+
+    if args.id is None and not args.all:
+        raise Exception(f"ERROR: No experiment id provided. If you would like to check on all experiments use the --all flag.")
+
+    QUIET_MODE = args.quiet
+
+    expfh = open('./experiments.json')
+    data = json.loads(expfh.read())
+    expfh.close()
+
+    #eprint(json.dumps(data["experiments"][args.id], indent=4))
+    DATA_DIR = './data'
+    RESULTS_DIR = './results'
+    MODELS_DIR = './models'
+    BASE_DIR = '.'
+    if args.replicate != 0:
+        RESULTS_DIR = f'./replicates/rep{args.replicate}/results'
+        MODELS_DIR = f'./replicates/rep{args.replicate}/models'
+        BASE_DIR = f'./replicates/rep{args.replicate}'
+
+        if not os.path.exists('./replicates'):
+            os.mkdir('./replicates')
+        if not os.path.exists(f'./replicates/rep{args.replicate}'):
+            os.mkdir(f'./replicates/rep{args.replicate}')
+
+        for subdir in (RESULTS_DIR, MODELS_DIR):
+            if not os.path.exists(subdir):
+                os.mkdir(subdir)
+
+    if args.all:
+        experiment_ids = sorted(data["experiments"].keys())
+    else:
+        experiment_ids = [args.id]
+
+    for exp_id in experiment_ids:
+        tracker(exp_id, args, data, DATA_DIR, RESULTS_DIR, MODELS_DIR, BASE_DIR)
