@@ -14,11 +14,7 @@ import pandas as pd
 
 from fit_clinicalbert import split_train_val_test
 
-section_display_names = {
-    'AR': 'ADVERSE REACTIONS',
-    'BW': 'BOXED WARNINGS',
-    'WP': 'WARNINGS AND PRECAUTIONS'
-}
+from construct_training_data import section_names2codes
 
 if __name__ == '__main__':
 
@@ -100,14 +96,15 @@ if __name__ == '__main__':
 
         print(f"Grouping predictions by drug label and adverse event term, and taking the mean prediction score...", flush=True)
 
+        groupby_cols = ['section', 'drug', 'llt_id', 'class']
         if args.group_function == 'mean':
-            df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).mean().reset_index()
+            df_grouped = res.groupby(by=groupby_cols).mean().reset_index()
         elif args.group_function == 'max':
-            df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).max().reset_index()
+            df_grouped = res.groupby(by=groupby_cols).max().reset_index()
         elif args.group_function == 'median':
-            df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).median().reset_index()
+            df_grouped = res.groupby(by=groupby_cols).median().reset_index()
         elif args.group_function == 'min':
-            df_grouped = res.groupby(by=['drug', 'llt_id', 'class']).min().reset_index()
+            df_grouped = res.groupby(by=groupby_cols).min().reset_index()
         else:
             raise Exception("ERROR. Should not be able to get to this code.")
 
@@ -128,15 +125,13 @@ if __name__ == '__main__':
             if data['LLT ID'] == '':
                 continue
 
-            if data['Section Display Name'] != section_display_names[refsection]:
-                # print(data['Section Display Name'])
-                continue
+            section_code = section_names2codes[data['Section Display Name']]
 
             if not data['Drug Name'] in uniq_drugs:
                 continue
 
             try:
-                gold_standard.add((data['Drug Name'], int(data['LLT ID'])))
+                gold_standard.add((section_code, data['Drug Name'], int(data['LLT ID'])))
             except ValueError:
                 raise Exception(f"Failed on row: {data}")
 
@@ -147,7 +142,7 @@ if __name__ == '__main__':
 
         scored_pairs = set()
         for index, row in df_grouped.iterrows():
-            scored_pairs.add((row['drug'], int(row['llt_id'])))
+            scored_pairs.add((row['section'], row['drug'], int(row['llt_id'])))
 
         data_to_append = list()
         #print(len(scored_pairs))
@@ -159,20 +154,19 @@ if __name__ == '__main__':
         print(f"Found {len(gold_standard-scored_pairs)} drug, event pairs that were not scored.")
         #print(list(gold_standard-scored_pairs)[:10])
 
-        for d, e in (gold_standard-scored_pairs):
-            data_to_append.append((d, e, 0.0, 0.0, 'is_event', 'not_scored'))
+        for s, d, e in (gold_standard-scored_pairs):
+            data_to_append.append((s, d, e, 0.0, 0.0, 'is_event', 'not_scored'))
 
-        drugs, llt_ids, pred1s, pred0s, classes, scoreds = zip(*data_to_append)
+        sections, drugs, llt_ids, pred1s, pred0s, classes, scoreds = zip(*data_to_append)
 
         df_grouped = pd.concat([df_grouped,pd.DataFrame({
+            'section': sections,
             'drug': drugs,
             'llt_id': llt_ids,
             'Pred1': pred1s,
             'Pred0': pred0s,
             'class': classes,
             'scored': scoreds})], ignore_index=True, sort=False)
-
-
 
         print(f"Adding column to indicate split ({split})")
         df_grouped['split'] = split

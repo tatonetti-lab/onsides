@@ -27,6 +27,11 @@ section_display_names = {
     'BW': 'BOXED WARNINGS',
     'WP': 'WARNINGS AND PRECAUTIONS'
 }
+section_names2codes = {
+    'ADVERSE REACTIONS': 'AR',
+    'BOXED WARNINGS': 'BW',
+    'WARNINGS AND PRECAUTIONS': 'WP'
+}
 
 def get_args(addl_args = None):
 
@@ -232,7 +237,7 @@ def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_eve
 
         if len(example_string.split()) > (nwords+size_of_llt):
             raise Exception(f"ERROR: Example string is too long for llt={llt}, was length {len(example_string.split())}, expected less than {nwords}")
-        
+
         strings.append(example_string)
 
     # A different method of generating the strings that goes beyond the next
