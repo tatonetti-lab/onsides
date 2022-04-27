@@ -102,10 +102,10 @@
       "factor": {
         "script": "construct_training_data",
         "parameter": "section",
-        "labels": ["AR", "BW", "WP", "ALL"]
+        "labels": ["AR", "BW", "WP", "ALL", "ARBW"]
       },
       "construct_training_data": {
-        "section": ["AR", "BW", "WP", "ALL"]
+        "section": ["AR", "BW", "WP", "ALL", "ARBW"]
       }
     },
 
@@ -185,7 +185,7 @@
 
     "7": {
       "name": "Compare values for nwords",
-      "description": "Same as experiment two except for reference method 8, rather than 0. The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
+      "description": "Same as experiment 2 except for reference method 8, rather than 0. The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
       "factor": {
         "script": "construct_training_data",
         "parameter": "nwords",
