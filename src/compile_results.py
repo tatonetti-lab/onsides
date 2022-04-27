@@ -45,6 +45,14 @@ if __name__ == '__main__':
     refset = fnnoext.split('_')[1]
     refmethod, refsection, refnwords = refset.split('-')
 
+    valid_section_codes = None
+    if refsection == 'ALL':
+        valid_section_codes = ('AR', 'BW', 'WP')
+    elif refsection == 'ARBW':
+        valid_section_codes = ('AR', 'BW')
+    else:
+        valid_section_codes = (refsection,)
+
     np_random_seed = int(fnnoext.split('_')[2])
     random_state = int(fnnoext.split('_')[3])
     EPOCHS = int(fnnoext.split('_')[4])
@@ -125,9 +133,7 @@ if __name__ == '__main__':
             if data['LLT ID'] == '':
                 continue
 
-            if refsection != 'ALL' and section_names2codes[data['Section Display Name']] != refsection:
-                # unless we're doing ALL sections, then we need to match the section exactly
-                # TODO: Come up with a way for pairs of section to be chosen as well. 
+            if not section_names2codes[data['Section Display Name']] in valid_section_codes:
                 continue
 
             section_code = section_names2codes[data['Section Display Name']]

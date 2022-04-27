@@ -123,6 +123,10 @@ def get_args(addl_args = None):
         sections.append('AR')
         sections.append('BW')
         sections.append('WP')
+    elif args.section == 'ARBW':
+        # AR and BW, but not WP
+        sections.append('AR')
+        sections.append('BW')
     else:
         raise Exception(f"ERROR: Unknown section specificed: {args.section}")
 
