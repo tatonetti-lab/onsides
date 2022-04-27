@@ -125,6 +125,11 @@ if __name__ == '__main__':
             if data['LLT ID'] == '':
                 continue
 
+            if refsection != 'ALL' and section_names2codes[data['Section Display Name']] != refsection:
+                # unless we're doing ALL sections, then we need to match the section exactly
+                # TODO: Come up with a way for pairs of section to be chosen as well. 
+                continue
+
             section_code = section_names2codes[data['Section Display Name']]
 
             if not data['Drug Name'] in uniq_drugs:

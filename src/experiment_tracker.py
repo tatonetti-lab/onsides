@@ -299,6 +299,7 @@ if __name__ == '__main__':
 
     if args.all:
         experiment_ids = sorted(data["experiments"].keys())
+        QUIET_MODE = True
     else:
         experiment_ids = [args.id]
 
