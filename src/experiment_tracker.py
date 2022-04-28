@@ -305,14 +305,13 @@ if __name__ == '__main__':
 
     #eprint(json.dumps(data["experiments"][args.id], indent=4))
     if args.all:
-        experiment_ids = [(exp_id, 0) for exp_id in sorted(data["experiments"].keys())]
-        for exp_id in sorted(data["replicates"].keys()):
+        experiment_ids = [(exp_id, 0) for exp_id in data["experiments"].keys()]
+        for exp_id in data["replicates"].keys():
             for replicate in data["replicates"][exp_id]:
                 experiment_ids.append((exp_id, replicate))
-
         QUIET_MODE = True
     else:
         experiment_ids = [(args.id, args.replicate),]
 
-    for exp_id, replicate in experiment_ids:
+    for exp_id, replicate in sorted(experiment_ids):
         tracker(exp_id, args, data, replicate)
