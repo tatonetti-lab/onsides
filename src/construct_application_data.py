@@ -33,7 +33,10 @@ def main():
             }
         }
     ]
-    args, sub_event, sub_nonsense, prepend_event, suffix, section_display_name = get_args(addl_args)
+
+    random.seed(222)
+
+    args, sub_event, sub_nonsense, prepend_event, sections, random_sampled_words = get_args(addl_args)
 
     llts = load_meddra()
 
@@ -43,40 +46,45 @@ def main():
 
     print(f"Found {len(all_drugs)} total drugs")
 
-    outfn = f'./data/{file_prefix}_app{args.method}_nwords{args.nwords}_clinical_bert_application_set_{args.section}.txt'
+    outfn = f'./data/{file_prefix}_method{args.method}_nwords{args.nwords}_clinical_bert_application_set_{args.section}.txt'
     print(f" Application data will be written to {outfn}")
 
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
-    writer.writerow(['drug', 'llt_id', 'llt', 'string'])
+    writer.writerow(['section', 'drug', 'llt_id', 'llt', 'string'])
 
-    for drug in tqdm.tqdm(all_drugs):
-        #print(f"Generating application data for: {drug}")
+    for section in sections:
+        suffix = section_suffices[section]
+        section_display_name = section_display_names[section]
+        print(f"Parsing section: {section_dislay_name} ({section})")
 
-        # load text from adverse events section
-        ar_file_path = os.path.join(args.dir, f'{drug}_{suffix}')
-        if not os.path.exists(ar_file_path):
-            raise Exception(f"Did not file an adverse event file for {ar_file_path}")
+        for drug in tqdm.tqdm(all_drugs):
+            #print(f"Generating application data for: {drug}")
 
-        ar_fh = open(ar_file_path)
-        ar_text = ' '.join(ar_fh.read().split()).lower()
+            # load text from adverse events section
+            ar_file_path = os.path.join(args.dir, f'{drug}_{suffix}')
+            if not os.path.exists(ar_file_path):
+                raise Exception(f"Did not file an adverse event file for {ar_file_path}")
 
-        #print(f"\tNumber of words in ADVERSE EVENTS text: {len(ar_text.split())}")
+            ar_fh = open(ar_file_path)
+            ar_text = ' '.join(ar_fh.read().split()).lower()
 
-        # find all the llts that are mentioned in the text
+            #print(f"\tNumber of words in ADVERSE EVENTS text: {len(ar_text.split())}")
 
-        llts_mentioned = set()
-        string_mentioned = set()
+            # find all the llts that are mentioned in the text
 
-        for llt_id, llt in llts.items():
-            if ar_text.find(llt) != -1:
-                llts_mentioned.add(llt_id)
-                string_mentioned.add(llt)
+            llts_mentioned = set()
+            string_mentioned = set()
 
-                example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event)
+            for llt_id, llt in llts.items():
+                if ar_text.find(llt) != -1:
+                    llts_mentioned.add(llt_id)
+                    string_mentioned.add(llt)
 
-                for example_string in example_strings:
-                    writer.writerow([drug, llt_id, llt, example_string])
+                    example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
+
+                    for example_string in example_strings:
+                        writer.writerow([drug, llt_id, llt, example_string])
 
     outfh.close()
 

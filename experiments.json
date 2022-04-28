@@ -207,6 +207,18 @@
   "replicates": {
     "0": [1],
     "2": [1]
-  }
+  },
 
+  "deployments": {
+    "V01": {
+      "name": "Onsides Version 01",
+      "construct_training_data": {
+        "method": 8,
+        "nwords": 125,
+      },
+      "fit_clinicalbert": {
+        "epochs": 10
+      }
+    }
+  }
 }
