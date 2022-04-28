@@ -41,8 +41,6 @@ def main():
 
     llts = load_meddra()
 
-    # derive a drug list from the training and testing data provided
-    all_drugs = set([fn.split('_')[0] for fn in os.listdir(args.dir) if fn.endswith(suffix)])
     file_prefix = os.path.split(args.dir)[-1]
 
     print(f"Found {len(all_drugs)} total drugs")
@@ -59,6 +57,9 @@ def main():
         section_display_name = section_display_names[section]
         print(f"Parsing section: {section_dislay_name} ({section})")
 
+        # derive a drug list from the training and testing data provided
+        all_drugs = set([fn.split('_')[0] for fn in os.listdir(args.dir) if fn.endswith(suffix)])
+        
         for drug in tqdm.tqdm(all_drugs):
             #print(f"Generating application data for: {drug}")
 
