@@ -8,6 +8,7 @@ where we are in generating the data.
 import os
 import sys
 import json
+import psutil
 import argparse
 import itertools
 
@@ -236,7 +237,24 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         return
 
     if not is_complete:
-        eprint(f"EXPERIMENT IS INCOMPLETE: One or more files are missing. {len(remaining_commands)} commands need to be run. Printing them to standard output, pipe this script to bash to automatically run them.")
+        eprint(f"EXPERIMENT IS INCOMPLETE: One or more files are missing. {len(remaining_commands)} commands need to be run.")
+        eprint(f"Checking to see if any commands are currently running...")
+        exploded_commands = set([tuple(cmd.split()) for cmd in remaining_commands])
+        running_commands = set()
+        for p in psutil.pids():
+            try:
+                proc = psutil.Process(p)
+                running_commands.add(tuple(proc.cmdline()))
+            except psutil.AccessDenied:
+                pass
+            except psutil.NoSuchProcess:
+                pass
+
+        for cmd in (running_commands & exploded_commands):
+            eprint(f"  Found running: {cmd}")
+
+        eprint("Printing the remaining commands to standard output, pipe this script to bash to automatically run them.")
+        
         qprint(f" [  Incomplete  ] {len(remaining_commands):2} commands remaining")
 
         if not QUIET_MODE:
