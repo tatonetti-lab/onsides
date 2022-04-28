@@ -25,7 +25,7 @@ def qprint(*args, **kwargs):
     if QUIET_MODE:
         print(*args, file=sys.stderr, **kwargs)
 
-def tracker(args_id, args, data, replicate):
+def tracker(args_id, args, data, replicate, clean_experiment):
 
     DATA_DIR = './data'
     RESULTS_DIR = './results'
@@ -52,6 +52,7 @@ def tracker(args_id, args, data, replicate):
     experiment = data["experiments"][args_id]
     is_complete = True
     remaining_commands = list()
+    output_files = list()
 
     if replicate == 0:
         eprint(f"Experiment {args_id} loaded.")
@@ -129,6 +130,10 @@ def tracker(args_id, args, data, replicate):
         bestepochmodfn = f"{MODELS_DIR}/bestepoch-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
         epochsfn = f"{RESULTS_DIR}/epoch-results-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
 
+        output_files.append(finalmodfn)
+        output_files.append(bestepochmodfn)
+        output_files.append(epochsfn)
+
         epochperf_files.append(epochsfn)
 
         fcbd_params_outputs.append(('final', network, method, section, nwords, epochs, lr, max_length, batch_size, finalmodfn))
@@ -176,6 +181,9 @@ def tracker(args_id, args, data, replicate):
         testmodresfn = f"{RESULTS_DIR}/{modeltype}-bydrug-{network_codes[network]}-test_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
         validmodresfn = f"{RESULTS_DIR}/{modeltype}-bydrug-{network_codes[network]}-valid_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
 
+        output_files.append(testmodresfn)
+        output_files.append(validmodresfn)
+
         test_file_exists = os.path.exists(testmodresfn)
         valid_file_exists = os.path.exists(validmodresfn)
         eprint(f"  {testmodresfn}...{test_file_exists}")
@@ -206,6 +214,8 @@ def tracker(args_id, args, data, replicate):
         grpresfn = f"{RESULTS_DIR}/grouped-{grpfun}-{modeltype}-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
         grouped_files[modeltype].append(grpresfn)
 
+        output_files.append(grpresfn)
+
         file_exists = os.path.exists(grpresfn)
         eprint(f"  {grpresfn}...{file_exists}")
 
@@ -216,6 +226,13 @@ def tracker(args_id, args, data, replicate):
             remaining_commands.append(command)
 
     eprint("")
+
+    if clean_experiment:
+        eprint(f"CLEANING MODE: To clean out the files from this experiment, pipe the following commands to bash.")
+        for fn in output_files:
+            print(f"rm {fn}")
+
+        return
 
     if not is_complete:
         eprint(f"EXPERIMENT IS INCOMPLETE: One or more files are missing. {len(remaining_commands)} commands need to be run. Printing them to standard output, pipe this script to bash to automatically run them.")
@@ -291,11 +308,15 @@ if __name__ == '__main__':
     parser.add_argument('--replicate', type=int, default=0, help="use to run exact replicates of existing experiments, results and models will be saved in a replicates/rep[NUM] directory")
     parser.add_argument('--quiet', action='store_true', default=False)
     parser.add_argument('--all', action='store_true', default=False)
+    parser.add_argument('--clean', action='store_true', default=False)
 
     args = parser.parse_args()
 
     if args.id is None and not args.all:
         raise Exception(f"ERROR: No experiment id provided. If you would like to check on all experiments use the --all flag.")
+
+    if args.all and args.clean:
+        raise Exception(f"ERROR: Cannot clean all experiments. An experiment must be chosen with the --id argument.")
 
     QUIET_MODE = args.quiet
 
@@ -314,4 +335,4 @@ if __name__ == '__main__':
         experiment_ids = [(args.id, args.replicate),]
 
     for exp_id, replicate in sorted(experiment_ids):
-        tracker(exp_id, args, data, replicate)
+        tracker(exp_id, args, data, replicate, args.clean)
