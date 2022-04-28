@@ -104,7 +104,11 @@ if __name__ == '__main__':
 
         print(f"Grouping predictions by drug label and adverse event term, and taking the mean prediction score...", flush=True)
 
-        groupby_cols = ['section', 'drug', 'llt_id', 'class']
+        if 'section' in res:
+            groupby_cols = ['section', 'drug', 'llt_id', 'class']
+        else:
+            groupby_cols = ['drug', 'llt_id', 'class']
+
         if args.group_function == 'mean':
             df_grouped = res.groupby(by=groupby_cols).mean().reset_index()
         elif args.group_function == 'max':
