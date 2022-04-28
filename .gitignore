@@ -12,6 +12,9 @@ analysis.json
 replicates/
 replicates
 
+# ignore the website folder while I'm figuring it out
+website/
+
 # OS X Files
 .DS_Store
 
