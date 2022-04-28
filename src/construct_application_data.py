@@ -15,6 +15,7 @@ import os
 import sys
 import csv
 import tqdm
+import random
 import argparse
 
 from construct_training_data import get_args
