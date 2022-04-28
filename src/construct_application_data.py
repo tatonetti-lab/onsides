@@ -46,7 +46,7 @@ def main():
     file_prefix = os.path.split(args.dir)[-1]
 
     outfn = f'./data/{file_prefix}_method{args.method}_nwords{args.nwords}_clinical_bert_application_set_{args.section}.txt'
-    print(f" Application data will be written to {outfn}")
+    print(f"Application data will be written to {outfn}")
 
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
