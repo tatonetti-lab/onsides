@@ -10,6 +10,7 @@ scripts/
 *.bu
 analysis.json
 replicates/
+replicates
 
 # OS X Files
 .DS_Store
