@@ -21,6 +21,8 @@ import argparse
 from construct_training_data import get_args
 from construct_training_data import load_meddra
 from construct_training_data import generate_examples
+from construct_training_data import section_suffices
+from construct_training_data import section_display_names
 
 def main():
 
@@ -58,7 +60,7 @@ def main():
         # derive a drug list from the training and testing data provided
         all_drugs = set([fn.split('_')[0] for fn in os.listdir(args.dir) if fn.endswith(suffix)])
         print(f"Found {len(all_drugs)} total drugs")
-        
+
         for drug in tqdm.tqdm(all_drugs):
             #print(f"Generating application data for: {drug}")
 
