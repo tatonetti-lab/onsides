@@ -87,7 +87,7 @@ def main():
                     example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
                     for example_string in example_strings:
-                        writer.writerow([drug, llt_id, llt, example_string])
+                        writer.writerow([section, drug, llt_id, llt, example_string])
 
     outfh.close()
 
