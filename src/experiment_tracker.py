@@ -251,14 +251,19 @@ def tracker(args_id, args, data, replicate, clean_experiment):
                 pass
 
         for cmd in (running_commands & exploded_commands):
-            eprint(f"  Found running: {cmd}")
+            eprint(f"  Found running: {proc} {' '.join(cmd)}")
 
         eprint("Printing the remaining commands to standard output, pipe this script to bash to automatically run them.")
-        
-        qprint(f" [  Incomplete  ] {len(remaining_commands):2} commands remaining")
+
+        nrunning = len(running_commands & exploded_commands)
+        runningstr = '' if nrunning == 0 else f', {nrunning} currently running.'
+        qprint(f" [  Incomplete  ] {len(remaining_commands):2} commands remaining{runningstr}")
 
         if not QUIET_MODE:
             for command in remaining_commands:
+                if tuple(command.split()) in running_commands:
+                    continue
+                
                 if args.gpu == -1:
                     print(command)
                 else:
