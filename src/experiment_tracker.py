@@ -230,7 +230,8 @@ def tracker(args_id, args, data, replicate, clean_experiment):
     if clean_experiment:
         eprint(f"CLEANING MODE: To clean out the files from this experiment, pipe the following commands to bash.")
         for fn in output_files:
-            print(f"rm {fn}")
+            if os.path.exists(fn):
+                print(f"rm {fn}")
 
         return
 
