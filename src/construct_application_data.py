@@ -55,7 +55,7 @@ def main():
     for section in sections:
         suffix = section_suffices[section]
         section_display_name = section_display_names[section]
-        print(f"Parsing section: {section_dislay_name} ({section})")
+        print(f"Parsing section: {section_display_name} ({section})")
 
         # derive a drug list from the training and testing data provided
         all_drugs = set([fn.split('_')[0] for fn in os.listdir(args.dir) if fn.endswith(suffix)])
