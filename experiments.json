@@ -214,7 +214,7 @@
       "name": "Onsides Version 01",
       "construct_training_data": {
         "method": 8,
-        "nwords": 125,
+        "nwords": 125
       },
       "fit_clinicalbert": {
         "epochs": 10
