@@ -43,8 +43,6 @@ def main():
 
     file_prefix = os.path.split(args.dir)[-1]
 
-    print(f"Found {len(all_drugs)} total drugs")
-
     outfn = f'./data/{file_prefix}_method{args.method}_nwords{args.nwords}_clinical_bert_application_set_{args.section}.txt'
     print(f" Application data will be written to {outfn}")
 
@@ -59,6 +57,7 @@ def main():
 
         # derive a drug list from the training and testing data provided
         all_drugs = set([fn.split('_')[0] for fn in os.listdir(args.dir) if fn.endswith(suffix)])
+        print(f"Found {len(all_drugs)} total drugs")
         
         for drug in tqdm.tqdm(all_drugs):
             #print(f"Generating application data for: {drug}")
