@@ -124,6 +124,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
     valid_losses = list()
     epoch_times = list()
     epoch_saved = list()
+    epochs_since_best = 0
 
     for epoch_num in range(epochs):
 
@@ -131,6 +132,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
         total_loss_train = 0
         saved_model = False
         epoch_start_time = time.time()
+        epochs_since_best += 1
 
         for train_input, train_label in tqdm(train_dataloader):
             if skip_training:
@@ -172,9 +174,11 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
                 total_acc_val += acc
 
             if best_val_loss is None or (total_loss_val/len(val_data)) < best_val_loss:
+                # best epoch so far, we save it to file
                 best_val_loss = (total_loss_val/len(val_data))
                 torch.save(model.state_dict(), model_filename)
                 saved_model = True
+                epochs_since_best = 0
 
         train_losses.append(total_loss_train / len(train_data))
         train_accuracies.append(total_acc_train / len(train_data))
@@ -187,6 +191,11 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
                 | Train Accuracy: {total_acc_train / len(train_data): .4f} \
                 | Val Loss: {total_loss_val / len(val_data): .4f} \
                 | Val Accuracy: {total_acc_val / len(val_data): .4f}')
+
+        print(f"It's been {epochs_since_best} since the best performing epoch. Will break if this hits 4.")
+        if epochs_since_best >= 4:
+            print(f"  Stopping here.")
+            break
 
     return train_losses, train_accuracies, valid_losses, valid_accuracies, epoch_times, epoch_saved
 

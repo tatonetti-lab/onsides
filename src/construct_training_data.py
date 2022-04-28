@@ -56,7 +56,7 @@ def get_args(addl_args = None):
     sub_event = False
     sub_nonsense = False
     prepend_event = False
-    prepend_section = False
+    # prepend_section = False
     random_sampled_words = False
 
     if args.method == 0:
@@ -103,15 +103,15 @@ def get_args(addl_args = None):
         sub_event = True
         prepend_event = True
         args.prop_before = 0.875
-    elif args.method == 12:
-        sub_event = True
-        prepend_event = True
-        prepend_section = True
+    # elif args.method == 12:
+    #     sub_event = True
+    #     prepend_event = True
+    #     prepend_section = True
     else:
-        raise Exception(f"Expected method argument to be an integer value (0, 1, 2, 3, 4, or 5). Got {args.method}")
+        raise Exception(f"Expected method argument to be an integer value (0-11). Got {args.method}")
 
     if args.prop_before < 0 or args.prop_before > 1:
-        raise Exception(f"ERROR: Unexpected value ({args.prop_before}) provided for --prop-before. Needs to be a float between 0 and 1.")
+        raise Exception(f"ERROR: Unexpected value ({args.prop_before}) provided for --prop-before. Needs to be a float between 0 and 1, inclusive.")
 
 
     sections = list()

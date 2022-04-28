@@ -25,7 +25,25 @@ def qprint(*args, **kwargs):
     if QUIET_MODE:
         print(*args, file=sys.stderr, **kwargs)
 
-def tracker(args_id, args, data, DATA_DIR, RESULTS_DIR, MODELS_DIR, BASE_DIR):
+def tracker(args_id, args, data, replicate):
+
+    DATA_DIR = './data'
+    RESULTS_DIR = './results'
+    MODELS_DIR = './models'
+    BASE_DIR = '.'
+    if replicate != 0:
+        RESULTS_DIR = f'./replicates/rep{replicate}/results'
+        MODELS_DIR = f'./replicates/rep{replicate}/models'
+        BASE_DIR = f'./replicates/rep{replicate}'
+
+        if not os.path.exists('./replicates'):
+            os.mkdir('./replicates')
+        if not os.path.exists(f'./replicates/rep{replicate}'):
+            os.mkdir(f'./replicates/rep{replicate}')
+
+        for subdir in (RESULTS_DIR, MODELS_DIR):
+            if not os.path.exists(subdir):
+                os.mkdir(subdir)
 
     if not args_id in data["experiments"]:
         raise Exception(f"ERROR: Could not find an experiment with id={args_id} in experiments.json.")
@@ -35,7 +53,11 @@ def tracker(args_id, args, data, DATA_DIR, RESULTS_DIR, MODELS_DIR, BASE_DIR):
     is_complete = True
     remaining_commands = list()
 
-    eprint(f"Experiment {args_id} loaded.")
+    if replicate == 0:
+        eprint(f"Experiment {args_id} loaded.")
+    else:
+        eprint(f"Experiment {args_id}, Replicate {replicate} loaded.")
+
     eprint(f'  Name: {experiment["name"]}')
     eprint(f'  Description: {experiment["description"]}')
     eprint(f"-------------------------------------------")
@@ -43,7 +65,8 @@ def tracker(args_id, args, data, DATA_DIR, RESULTS_DIR, MODELS_DIR, BASE_DIR):
     eprint("")
     eprint("Checking for training data...")
 
-    qprint(f"Loaded Experiment {args_id:2s} ({experiment['name'][:30]:30s}), checking status...", end='')
+    repexpstr = 'Experiment' if replicate == 0 else 'Replicate'
+    qprint(f"Loaded {repexpstr:10} {args_id:2s} ({experiment['name'][:50]:50s}), checking status...", end='')
 
     construct_training_data = experiment.get("construct_training_data", defaults["construct_training_data"])
 
@@ -279,29 +302,15 @@ if __name__ == '__main__':
     expfh.close()
 
     #eprint(json.dumps(data["experiments"][args.id], indent=4))
-    DATA_DIR = './data'
-    RESULTS_DIR = './results'
-    MODELS_DIR = './models'
-    BASE_DIR = '.'
-    if args.replicate != 0:
-        RESULTS_DIR = f'./replicates/rep{args.replicate}/results'
-        MODELS_DIR = f'./replicates/rep{args.replicate}/models'
-        BASE_DIR = f'./replicates/rep{args.replicate}'
-
-        if not os.path.exists('./replicates'):
-            os.mkdir('./replicates')
-        if not os.path.exists(f'./replicates/rep{args.replicate}'):
-            os.mkdir(f'./replicates/rep{args.replicate}')
-
-        for subdir in (RESULTS_DIR, MODELS_DIR):
-            if not os.path.exists(subdir):
-                os.mkdir(subdir)
-
     if args.all:
-        experiment_ids = sorted(data["experiments"].keys())
+        experiment_ids = [(exp_id, 0) for exp_id in sorted(data["experiments"].keys())]
+        for exp_id in sorted(data["replicates"].keys()):
+            for replicate in data["replicates"][exp_id]:
+                experiment_ids.append((exp_id, replicate))
+
         QUIET_MODE = True
     else:
-        experiment_ids = [args.id]
+        experiment_ids = [(args.id, args.replicate),]
 
-    for exp_id in experiment_ids:
-        tracker(exp_id, args, data, DATA_DIR, RESULTS_DIR, MODELS_DIR, BASE_DIR)
+    for exp_id, replicate in experiment_ids:
+        tracker(exp_id, args, data, replicate)
