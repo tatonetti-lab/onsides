@@ -37,7 +37,7 @@ if __name__ == '__main__':
     EPOCHS = int(fnnoext.split('_')[5])
     LR = fnnoext.split('_')[6]
     max_length = fnnoext.split('_')[7]
-    batch_length = fnnoext.split('_')[7]
+    batch_size = fnnoext.split('_')[7]
 
     print(f" prefix: {prefix}")
     print(f" refset: {refset}")
