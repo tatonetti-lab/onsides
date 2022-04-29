@@ -47,7 +47,7 @@ if __name__ == '__main__':
     print(f" LR: {LR}")
     print(f" threshold: {threshold}")
     print(f" max_length: {LR}")
-    print(f" threshold: {threshold}")
+    print(f" batch-size: {batch_size}")
 
     res = pd.read_csv(resultspath, header=None, names=['Pred0', 'Pred1'])
 
