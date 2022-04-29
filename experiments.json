@@ -211,7 +211,8 @@
         "labels": ["0", "8"]
       },
       "construct_training_data": {
-        "method": [0, 8]
+        "method": [0, 8],
+        "section": ["BW"]
       }
     }
 
