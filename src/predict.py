@@ -29,7 +29,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', help='path to the model (pth) file', type=str, required=True)
     parser.add_argument('--examples', help='path to the file that contains the examples to make predict for', type=str, required=True)
-
+    parser.add_argument('--batch-size', default=None, help='override the default batch size')
     args = parser.parse_args()
 
     model_filepath = args.model
@@ -48,7 +48,6 @@ if __name__ == '__main__':
     LR = model_file_noext.split('_')[5]
     max_length = int(model_file_noext.split('_')[6])
     batch_size = int(model_file_noext.split('_')[7])
-
     prefix = model_file_noext.split('_')[0]
     network = prefix.split('-')[2]
 
@@ -90,6 +89,14 @@ if __name__ == '__main__':
     print(f" split_no: {split_no}")
     print(f" results path: {results_path}\n")
 
+    if args.batch_size is None:
+        # default is to use 2X the training batch size
+        batch_size *= 2
+        print(f"Setting prediction batch_size to 2X the training batch_size: {batch_size}")
+    else:
+        batch_size = args.batch_size
+        print(f"Overriding batch_size to user defined: {batch_size}")
+    
     if os.path.exists(results_path):
         print(f"  > Results file already exists, will not repeat evaluation. If you want to re-generate the results, delete the file and try again.")
         sys.exit(1)
