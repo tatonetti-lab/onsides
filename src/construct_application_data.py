@@ -67,7 +67,9 @@ def main():
             # load text from adverse events section
             ar_file_path = os.path.join(args.dir, f'{drug}_{suffix}')
             if not os.path.exists(ar_file_path):
-                raise Exception(f"Did not file an adverse event file for {ar_file_path}")
+                #raise Exception(f"Did not file an adverse event file for {ar_file_path}")
+                print(f"Did not file an adverse event file for {ar_file_path}, skipping.")
+                continue
 
             ar_fh = open(ar_file_path)
             ar_text = ' '.join(ar_fh.read().split()).lower()
