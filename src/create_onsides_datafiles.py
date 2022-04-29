@@ -12,13 +12,9 @@ import argparse
 import pandas as pd
 
 # These are determined in the Compare notebook by looking at the validation data
-max_f1_thresholds = {
-    'ref0': (1.73684511333704, 0.7828877005347594),
-    'ref1': (2.1926324367523193, 0.7767903815995818),
-    'ref2': (0.0, 0.6347046087225487),
-    'ref3': (0.0, 0.6347046087225487),
-    'ref4': (0.0, 0.6347046087225487)
-}
+# Onsides V01, reference method 8, nwords 125, epochs 10, all other parmas are defaults
+# this value is taken from the Experiment 7 notebook.
+threshold = 2.397288988618289
 
 if __name__ == '__main__':
 
@@ -31,8 +27,8 @@ if __name__ == '__main__':
     resultspath = args.results
 
     fnnoext = os.path.split(resultspath)[-1].split('.')[0]
-    if len(fnnoext.split('_')) != 7:
-        raise Exception("Results filename not in format expected: {prefix}_{appset}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth")
+    if len(fnnoext.split('_')) != 9:
+        raise Exception("Results filename not in format expected: {prefix}_{appset}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz")
 
     prefix = fnnoext.split('_')[0]
     refset = fnnoext.split('_')[2]
@@ -40,8 +36,8 @@ if __name__ == '__main__':
     random_state = int(fnnoext.split('_')[4])
     EPOCHS = int(fnnoext.split('_')[5])
     LR = fnnoext.split('_')[6]
-
-    threshold = max_f1_thresholds[refset][0]
+    max_length = fnnoext.split('_')[7]
+    batch_length = fnnoext.split('_')[7]
 
     print(f" prefix: {prefix}")
     print(f" refset: {refset}")
@@ -49,6 +45,8 @@ if __name__ == '__main__':
     print(f" random_state: {random_state}")
     print(f" EPOCHS: {EPOCHS}")
     print(f" LR: {LR}")
+    print(f" threshold: {threshold}")
+    print(f" max_length: {LR}")
     print(f" threshold: {threshold}")
 
     res = pd.read_csv(resultspath, header=None, names=['Pred0', 'Pred1'])
@@ -78,6 +76,6 @@ if __name__ == '__main__':
     print(f"Predictions data frame created...")
     print(f" predictions.shape: {predictions.shape}")
 
-    out_filename = f'./results/onsides.db/{prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.csv.gz'
+    out_filename = f'./results/onsides.db/{prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
     print(f"Saving to gzipped file: {out_filename}...")
     predictions.to_csv(out_filename)

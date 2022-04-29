@@ -34,6 +34,14 @@ def main():
                 'type': str,
                 'required': True
             }
+        },
+        {
+            'args': ['--medtype'],
+            'kwargs': {
+                'help': 'otc (over-the-counter) or rx (prescription).',
+                type: str,
+                'required': True
+            }
         }
     ]
 
@@ -43,7 +51,7 @@ def main():
 
     llts = load_meddra()
 
-    file_prefix = os.path.split(args.dir)[-1]
+    file_prefix = f'{os.path.split(args.dir)[-1]}-{args.medtype}'
 
     outfn = f'./data/{file_prefix}_method{args.method}_nwords{args.nwords}_clinical_bert_application_set_{args.section}.txt'
     print(f"Application data will be written to {outfn}")
