@@ -316,8 +316,8 @@ def tracker(args_id, args, data, replicate, clean_experiment):
                     raise Exception(f"FAILED: The number of resulting grouped files for ({modeltype}) is not consistent with the experimental setup.")
 
             experiment_id = f"{args_id}"
-            if args.replicate != 0:
-                experiment_id = f"{args_id}R{args.replicate}"
+            if replicate != 0:
+                experiment_id = f"{args_id}R{replicate}"
 
             analysis["experiments"][experiment_id] = {
                 "name": experiment["name"],
@@ -366,6 +366,10 @@ if __name__ == '__main__':
         for exp_id in data["replicates"].keys():
             for replicate in data["replicates"][exp_id]:
                 experiment_ids.append((exp_id, replicate))
+
+        for dep_id in data["deployments"].keys():
+            experiment_ids.append((dep_id, 0))
+
         QUIET_MODE = True
     else:
         experiment_ids = [(args.id, args.replicate),]

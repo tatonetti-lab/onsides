@@ -31,6 +31,7 @@ if __name__ == '__main__':
         raise Exception("Results filename not in format expected: {prefix}_{appset}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz")
 
     prefix = fnnoext.split('_')[0]
+    appset = fnnoext.split('_')[1]
     refset = fnnoext.split('_')[2]
     np_random_seed = int(fnnoext.split('_')[3])
     random_state = int(fnnoext.split('_')[4])
@@ -40,6 +41,7 @@ if __name__ == '__main__':
     batch_size = fnnoext.split('_')[7]
 
     print(f" prefix: {prefix}")
+    print(f" appset: {appset}")
     print(f" refset: {refset}")
     print(f" np_random_seed: {np_random_seed}")
     print(f" random_state: {random_state}")
@@ -76,6 +78,6 @@ if __name__ == '__main__':
     print(f"Predictions data frame created...")
     print(f" predictions.shape: {predictions.shape}")
 
-    out_filename = f'./results/onsides.db/{prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
+    out_filename = f'./results/onsides.db/{prefix}_{appset}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
     print(f"Saving to gzipped file: {out_filename}...")
     predictions.to_csv(out_filename)

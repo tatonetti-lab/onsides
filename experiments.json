@@ -245,7 +245,7 @@
         "section": ["BW"]
       },
       "fit_clinicalbert": {
-        "epochs": [30]
+        "epochs": [25]
       }
     }
 
