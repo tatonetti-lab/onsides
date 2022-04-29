@@ -29,7 +29,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', help='path to the model (pth) file', type=str, required=True)
     parser.add_argument('--examples', help='path to the file that contains the examples to make predict for', type=str, required=True)
-    parser.add_argument('--batch-size', default=None, help='override the default batch size')
+    parser.add_argument('--batch-size', default=None, type=int, help='override the default batch size')
     args = parser.parse_args()
 
     model_filepath = args.model
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     else:
         batch_size = args.batch_size
         print(f"Overriding batch_size to user defined: {batch_size}")
-    
+
     if os.path.exists(results_path):
         print(f"  > Results file already exists, will not repeat evaluation. If you want to re-generate the results, delete the file and try again.")
         sys.exit(1)
