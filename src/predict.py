@@ -101,6 +101,9 @@ if __name__ == '__main__':
     else:
         raise Exception(f"ERROR: Unknown network: {network}")
 
+    # initailize Dataset.tokenizer
+    Dataset.set_tokenizer(network_path)
+    
     model = cb.ClinicalBertClassifier(network_path)
     model.load_state_dict(torch.load(model_filepath))
 
