@@ -218,7 +218,8 @@
       },
       "fit_clinicalbert": {
         "epochs": 10
-      }
+      },
+      "max_f1_threshold": 2.397
     }
   }
 }
