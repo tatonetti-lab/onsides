@@ -195,7 +195,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
         print(f"It's been {epochs_since_best} since the best performing epoch. Will break if this hits 4.")
         if epochs_since_best >= 4:
             print(f"  Stopping here.")
-            break
+            return train_losses, train_accuracies, valid_losses, valid_accuracies, epoch_times, epoch_saved
 
     return train_losses, train_accuracies, valid_losses, valid_accuracies, epoch_times, epoch_saved
 

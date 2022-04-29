@@ -200,6 +200,19 @@
       "fit_clinicalbert": {
         "epochs": [10]
       }
+    },
+
+    "8": {
+      "name": "BW reference methods",
+      "description": "Compare refernece method 0 with reference metod 8 (top two) for Boxed Warnings.",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "method",
+        "labels": ["0", "8"]
+      },
+      "construct_training_data": {
+        "method": [0, 8]
+      }
     }
 
   },
@@ -210,16 +223,30 @@
   },
 
   "deployments": {
-    "V01": {
-      "name": "Onsides Version 01",
+    "V01-AR": {
+      "name": "Onsides Version 01 - Adverse Reactions",
+      "description": "V01 of the model to extract side effect terms from the Adverse Reactions section of the labels, created on April 29, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 7. Max F1 (threshold = 2.397) was 0.87 on the validation set and 0.86 on the test set. AUROC was 0.88 on the validation set and 0.88 on the test set. AUPR was 0.91 on the validation set and 0.91 on the test set.",
       "construct_training_data": {
-        "method": 8,
-        "nwords": 125
+        "method": [8],
+        "nwords": [125],
+        "section": ["AR"]
       },
       "fit_clinicalbert": {
-        "epochs": 10
+        "epochs": [10]
+      }
+    },
+    "V01-BW": {
+      "name": "Onsides Version 01 - Boxed Warnings",
+      "description": "V01 of the model to extract side effect terms from the Boxed Warnings section of the labels, created on April 29, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 7. Max F1 was 0.XX on the validation set and 0.XX on the test set. AUROC was 0.XX on the validation set and 0.88 on the test set. AUPR was 0.XX on the validation set and 0.XX on the test set.",
+      "construct_training_data": {
+        "method": [8],
+        "nwords": [125],
+        "section": ["BW"]
       },
-      "max_f1_threshold": 2.397
+      "fit_clinicalbert": {
+        "epochs": [30]
+      }
     }
+
   }
 }

@@ -78,13 +78,17 @@ if __name__ == '__main__':
     print(f" max_length: {max_length}")
     print(f" batch_size: {batch_size}\n")
 
-    ex_filename = os.path.split(args.examples)[-1]
+    ex_filename = os.path.split(args.examples)[-1].split('.')[0]
     ex_refset = int(ex_filename.split('_')[1].strip('method'))
     ex_nwords = ex_filename.split('_')[2].strip('nwords')
     ex_prefix = ex_filename.split('_')[0]
+    ex_section = ex_filename.split('_')[7]
 
     if ex_nwords != refnwords:
         raise Exception(f"ERROR: There is an nwords mismatch between the model ({refnwords}) and the example data ({ex_nwords}).")
+
+    if ex_section != refsection:
+        print(f"WARNING: The examples section ({ex_section}) does not match the reference section ({refsection}))")
 
     is_split = False
     split_no = ''
@@ -92,7 +96,7 @@ if __name__ == '__main__':
         is_split = True
         split_no = '-' + ex_filename.split('split')[1]
 
-    results_path = f'./results/{prefix}-{ex_prefix}{split_no}_app{ex_refset}_ref{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
+    results_path = f'./results/{prefix}-{ex_prefix}{split_no}_app{ex_refset}-{ex_section}_ref{refset}-{refsection}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
 
     print(f"Examples")
     print(f"-------------------")

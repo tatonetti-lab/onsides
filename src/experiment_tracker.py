@@ -46,14 +46,21 @@ def tracker(args_id, args, data, replicate, clean_experiment):
             if not os.path.exists(subdir):
                 os.mkdir(subdir)
 
-    if not args_id in data["experiments"]:
-        raise Exception(f"ERROR: Could not find an experiment with id={args_id} in experiments.json.")
-
     defaults = data["defaults"]
-    experiment = data["experiments"][args_id]
+    is_deployment = False
+
+    if args_id in data["experiments"]:
+        experiment = data["experiments"][args_id]
+    elif args_id in data["deployments"]:
+        experiment = data["deployments"][args_id]
+        is_deployment = True
+    else:
+        raise Exception(f"ERROR: Could not find an experiment or deployment with id={args_id} in experiments.json.")
+
     is_complete = True
     remaining_commands = list()
     output_files = list()
+
 
     if replicate == 0:
         eprint(f"Experiment {args_id} loaded.")
@@ -269,60 +276,65 @@ def tracker(args_id, args, data, replicate, clean_experiment):
                 else:
                     print(f"CUDA_VISIBLE_DEVICES={args.gpu} " + command)
     else:
-        eprint("EXPERIMENT IS COMPLETE!")
-        qprint(" [   Complete   ]")
+        if is_deployment:
+            eprint("DEPLOYMENT IS READY.")
+            qprint(" [     Ready    ]")
+        else:
 
-        eprint("Writing out analysis file...")
-        if os.path.exists('analysis.json'):
-            expfh = open('./analysis.json')
-            analysis = json.loads(expfh.read())
+            eprint("EXPERIMENT IS COMPLETE!")
+            qprint(" [   Complete   ]")
+
+            eprint("Writing out analysis file...")
+            if os.path.exists('analysis.json'):
+                expfh = open('./analysis.json')
+                analysis = json.loads(expfh.read())
+                expfh.close()
+            else:
+                analysis = {"experiments": dict()}
+
+            if type(experiment["factor"]["parameter"]) is list:
+                factor_name = experiment["factor"]["script"]
+                param_levels = list()
+
+                for param in experiment["factor"]["parameter"]:
+                    factor_name += '.' + param
+                    param_levels.append(experiment[experiment["factor"]["script"]][param])
+
+                factor_levels = list(itertools.product(*param_levels))
+
+            else:
+                factor_name = f'{experiment["factor"]["script"]}.{experiment["factor"]["parameter"]}'
+                factor_levels = experiment[experiment["factor"]["script"]][experiment["factor"]["parameter"]]
+
+            if not "labels" in experiment["factor"]:
+                factor_labels = [f"{factor_name}:{l}" for l in factor_levels]
+            else:
+                factor_labels = experiment["factor"]["labels"]
+
+            for modeltype in ('final', 'bestepoch'):
+                if not len(factor_labels) == len(grouped_files[modeltype]):
+                    raise Exception(f"FAILED: The number of resulting grouped files for ({modeltype}) is not consistent with the experimental setup.")
+
+            experiment_id = f"{args_id}"
+            if args.replicate != 0:
+                experiment_id = f"{args_id}R{args.replicate}"
+
+            analysis["experiments"][experiment_id] = {
+                "name": experiment["name"],
+                "description": experiment["description"],
+                "factor": factor_name,
+                "levels": factor_levels,
+                "labels": factor_labels,
+                "final": grouped_files["final"],
+                "bestepoch": grouped_files["bestepoch"],
+                "epochperf": epochperf_files,
+            }
+
+            expfh = open('./analysis.json', 'w')
+            expfh.write(json.dumps(analysis, indent=4))
             expfh.close()
-        else:
-            analysis = {"experiments": dict()}
 
-        if type(experiment["factor"]["parameter"]) is list:
-            factor_name = experiment["factor"]["script"]
-            param_levels = list()
-
-            for param in experiment["factor"]["parameter"]:
-                factor_name += '.' + param
-                param_levels.append(experiment[experiment["factor"]["script"]][param])
-
-            factor_levels = list(itertools.product(*param_levels))
-
-        else:
-            factor_name = f'{experiment["factor"]["script"]}.{experiment["factor"]["parameter"]}'
-            factor_levels = experiment[experiment["factor"]["script"]][experiment["factor"]["parameter"]]
-
-        if not "labels" in experiment["factor"]:
-            factor_labels = [f"{factor_name}:{l}" for l in factor_levels]
-        else:
-            factor_labels = experiment["factor"]["labels"]
-
-        for modeltype in ('final', 'bestepoch'):
-            if not len(factor_labels) == len(grouped_files[modeltype]):
-                raise Exception(f"FAILED: The number of resulting grouped files for ({modeltype}) is not consistent with the experimental setup.")
-
-        experiment_id = f"{args_id}"
-        if args.replicate != 0:
-            experiment_id = f"{args_id}R{args.replicate}"
-
-        analysis["experiments"][experiment_id] = {
-            "name": experiment["name"],
-            "description": experiment["description"],
-            "factor": factor_name,
-            "levels": factor_levels,
-            "labels": factor_labels,
-            "final": grouped_files["final"],
-            "bestepoch": grouped_files["bestepoch"],
-            "epochperf": epochperf_files,
-        }
-
-        expfh = open('./analysis.json', 'w')
-        expfh.write(json.dumps(analysis, indent=4))
-        expfh.close()
-
-        eprint("FINISHED.")
+            eprint("FINISHED.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
