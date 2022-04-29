@@ -39,7 +39,7 @@ def main():
             'args': ['--medtype'],
             'kwargs': {
                 'help': 'otc (over-the-counter) or rx (prescription).',
-                type: str,
+                'type': str,
                 'required': True
             }
         }
