@@ -68,7 +68,11 @@ if __name__ == '__main__':
 
     ex_filename = os.path.split(args.examples)[-1]
     ex_refset = int(ex_filename.split('_')[1].strip('method'))
+    ex_nwords = ex_filename.split('_')[2].strip('nwords')
     ex_prefix = ex_filename.split('_')[0]
+
+    if ex_nwords != refnwords:
+        raise Exception(f"ERROR: There is an nwords mismatch between the model ({refnwords}) and the example data ({ex_nwords}).")
 
     is_split = False
     split_no = ''
