@@ -46,8 +46,8 @@ if __name__ == '__main__':
     random_state = int(model_file_noext.split('_')[3])
     EPOCHS = int(model_file_noext.split('_')[4])
     LR = model_file_noext.split('_')[5]
-    max_length = model_file_noext.split('_')[6]
-    batch_size = model_file_noext.split('_')[7]
+    max_length = int(model_file_noext.split('_')[6])
+    batch_size = int(model_file_noext.split('_')[7])
 
     prefix = model_file_noext.split('_')[0]
     network = prefix.split('-')[2]
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     df = pd.read_csv(args.examples)
 
     print(f"Evaluating example data...")
-    outputs = cb.evaluate(model, df, examples_only=True)
+    outputs = cb.evaluate(model, df, max_length, batch_size, examples_only=True)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
 
