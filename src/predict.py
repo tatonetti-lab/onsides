@@ -36,7 +36,7 @@ if __name__ == '__main__':
     model_file = os.path.split(model_filepath)[-1]
 
     print(f"Loading model from {model_file}")
-    model_file_noext = os.path.split(model_file)[-1]
+    model_file_noext = os.path.split(model_file)[-1].split('.')[0]
 
     if len(model_file_noext.split('_')) != 8:
         raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth")
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     print(f" np_random_seed: {np_random_seed}")
     print(f" random_state: {random_state}")
     print(f" EPOCHS: {EPOCHS}")
-    print(f" LR: {LR}\n")
+    print(f" LR: {LR}")
     print(f" max_length: {max_length}")
     print(f" batch_size: {batch_size}\n")
 
