@@ -37,4 +37,4 @@ Below is a brief description of the tables. See `src/load_onsides_db.sql` for mo
 
 ### Citation
 
-A manuscript describing the data, methods, and results is in preparation. In the mean time, please reference the github repository. 
+A manuscript describing the data, methods, and results is in preparation. In the mean time, please reference the github repository. [![DOI](https://zenodo.org/badge/479583027.svg)](https://zenodo.org/badge/latestdoi/479583027)
