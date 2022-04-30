@@ -12,9 +12,17 @@ import argparse
 import pandas as pd
 
 # These are determined in the Compare notebook by looking at the validation data
+
+thresholds = {
 # Onsides V01, reference method 8, nwords 125, epochs 10, all other parmas are defaults
 # this value is taken from the Experiment 7 notebook.
-threshold = 2.397288988618289
+    'AR': 2.397288988618289,
+# Onsides V01-BW, reference method 8, nwords 125, epochs 25, all other params are defaults
+# this value is taken from the Expiemrent 8 notebook. Note that reference method 0 produced
+# slightly better validation F1 score, but I wanted everything to be as consisent as possible
+# so choose method 8 anyway. Can come back to this decision in the future.
+    'BW': 2.794294238090515,
+}
 
 if __name__ == '__main__':
 
@@ -33,6 +41,7 @@ if __name__ == '__main__':
     prefix = fnnoext.split('_')[0]
     appset = fnnoext.split('_')[1]
     refset = fnnoext.split('_')[2]
+    refsection = refset.split('-')[1]
     np_random_seed = int(fnnoext.split('_')[3])
     random_state = int(fnnoext.split('_')[4])
     EPOCHS = int(fnnoext.split('_')[5])
@@ -47,7 +56,7 @@ if __name__ == '__main__':
     print(f" random_state: {random_state}")
     print(f" EPOCHS: {EPOCHS}")
     print(f" LR: {LR}")
-    print(f" threshold: {threshold}")
+    print(f" threshold: {thresholds[refsection]}")
     print(f" max_length: {LR}")
     print(f" batch-size: {batch_size}")
 
@@ -72,7 +81,7 @@ if __name__ == '__main__':
     df_grouped = df.groupby(by=['drug', 'llt']).mean().reset_index()
 
     print(f"Applying the pre-determined threshold to the prediction values to get predictions...")
-    predictions = df_grouped[df_grouped['Pred1'] > threshold]
+    predictions = df_grouped[df_grouped['Pred1'] > thresholds[refsection]]
     predictions = predictions.rename(columns={'drug': 'xml_id', 'llt': 'concept_name', 'llt_id':'concept_id'})
 
     print(f"Predictions data frame created...")

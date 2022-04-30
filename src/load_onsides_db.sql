@@ -2,19 +2,37 @@ CREATE TABLE `adverse_reactions_bylabel` (
 `col0` int(11) DEFAULT NULL,
 `xml_id` varchar(37) DEFAULT NULL,
 `concept_name` varchar(53) DEFAULT NULL,
-`concept_id` double DEFAULT NULL,
+`concept_code` double DEFAULT NULL,
 `pred0` double DEFAULT NULL,
 `pred1` double DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 # Prescription Drug Labels
-load data local infile './final-bydrug-output-part1_ref0_222_24_25_1e-06.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-load data local infile './final-bydrug-output-part2_ref0_222_24_25_1e-06.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-load data local infile './final-bydrug-output-part3_ref0_222_24_25_1e-06.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-load data local infile './final-bydrug-output-part4_ref0_222_24_25_1e-06.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+load data local infile './bestepoch-bydrug-CB-output-part1_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+load data local infile './bestepoch-bydrug-CB-output-part2_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+load data local infile './bestepoch-bydrug-CB-output-part3_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+load data local infile './bestepoch-bydrug-CB-output-part4_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
 
 alter table adverse_reactions_bylabel add index (`concept_id`);
 alter table adverse_reactions_bylabel add index (`xml_id`);
+
+CREATE TABLE `boxed_warnings_bylabel` (
+`col0` int(11) DEFAULT NULL,
+`xml_id` varchar(37) DEFAULT NULL,
+`concept_name` varchar(53) DEFAULT NULL,
+`concept_code` double DEFAULT NULL,
+`pred0` double DEFAULT NULL,
+`pred1` double DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+# Prescription Drug Labels
+load data local infile './bestepoch-bydrug-CB-output-part1-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+load data local infile './bestepoch-bydrug-CB-output-part2-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+load data local infile './bestepoch-bydrug-CB-output-part3-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+load data local infile './bestepoch-bydrug-CB-output-part4-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+
+alter table boxed_warnings_bylabel add index (`concept_id`);
+alter table boxed_warnings_bylabel add index (`xml_id`);
 
 CREATE TABLE `label_map` (
 `xml_id` varchar(37) DEFAULT NULL,
@@ -78,7 +96,7 @@ alter table ingredients add index (`concept_class_id`);
 
 create table latest_labels_bydrug
 select ingredient_concept_id, substring_index(group_concat(xml_id order by zip_id desc), ',', 1) latest_xml_id, substring_index(group_concat(zip_id order by zip_id desc), ',', 1) latest_zip_id
-from ingredients
+from ingredientspart
 join label_map using (xml_id)
 group by ingredient_concept_id;
 
@@ -102,10 +120,12 @@ alter table latest_labels_bydrug modify latest_zip_id varchar(46);
 alter table latest_labels_bydrug add index (`latest_xml_id`);
 
 create table adverse_reactions
-select xml_id, c.concept_name, vocabulary_id, concept_class_id, concept_code as meddra_id, ingredients, concept_codes as rxnorm_ids, concept_ids as drug_concept_ids
+select xml_id, c.concept_name, vocabulary_id, domain_id, concept_class_id, concept_code as meddra_id, concept_id as omop_concept_id, ingredients, concept_codes as rxnorm_ids, concept_ids as drug_concept_ids
 from adverse_reactions_bylabel l
 join latest_labels_bydrug on (xml_id = latest_xml_id)
-join clinical_merge_v5_2022q1.concept c using (concept_id);
+join clinical_merge_v5_2022q1.concept c using (concept_code)
+where vocabulary_id = 'MedDRA';
 
 alter table adverse_reactions add index (`xml_id`);
 alter table adverse_reactions add index (`meddra_id`);
+alter table adverse_reactions add index (`omop_concept_id`);
