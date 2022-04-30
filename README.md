@@ -35,6 +35,12 @@ Below is a brief description of the tables. See `src/load_onsides_db.sql` for mo
 
 `rxnorm_to_setid` - Map between set_id and rx_cui. 141,915 rows.
 
+### Caveats
+
+The Onsides database is intended for research purposes only. The extraction process is far from perfect, side effects will be missed and some identified will be incorrect. Patients seeking health information should not trust these data and instead refer to the FDA's website (fda.gov) and consult their doctor.
+
+The project is under active development. Validation of extracted information is yet to be independently verified and the data, methods, and statistics are subject to change at any time. Check back to this page for updates. If you would like to to contribute to the project or have ideas on how the methods, data, or evaluation can be improved please reach out to Dr. Tatonetti via email or [Twitter](http://twitter.com/nicktatonetti).
+
 ### Citation
 
 A manuscript describing the data, methods, and results is in preparation. In the mean time, please reference the github repository. [![DOI](https://zenodo.org/badge/479583027.svg)](https://zenodo.org/badge/latestdoi/479583027)
