@@ -13,7 +13,7 @@ load data local infile './bestepoch-bydrug-CB-output-part2_app8-AR_ref8-AR_222_2
 load data local infile './bestepoch-bydrug-CB-output-part3_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
 load data local infile './bestepoch-bydrug-CB-output-part4_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
 
-alter table adverse_reactions_bylabel add index (`concept_id`);
+alter table adverse_reactions_bylabel add index (`concept_code`);
 alter table adverse_reactions_bylabel add index (`xml_id`);
 
 CREATE TABLE `boxed_warnings_bylabel` (
@@ -31,7 +31,7 @@ load data local infile './bestepoch-bydrug-CB-output-part2-rx_app8-BW_ref8-BW_22
 load data local infile './bestepoch-bydrug-CB-output-part3-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
 load data local infile './bestepoch-bydrug-CB-output-part4-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
 
-alter table boxed_warnings_bylabel add index (`concept_id`);
+alter table boxed_warnings_bylabel add index (`concept_code`);
 alter table boxed_warnings_bylabel add index (`xml_id`);
 
 CREATE TABLE `label_map` (
@@ -129,3 +129,14 @@ where vocabulary_id = 'MedDRA';
 alter table adverse_reactions add index (`xml_id`);
 alter table adverse_reactions add index (`meddra_id`);
 alter table adverse_reactions add index (`omop_concept_id`);
+
+create table boxed_warnings
+select xml_id, c.concept_name, vocabulary_id, domain_id, concept_class_id, concept_code as meddra_id, concept_id as omop_concept_id, ingredients, concept_codes as rxnorm_ids, concept_ids as drug_concept_ids
+from boxed_warnings_bylabel l
+join latest_labels_bydrug on (xml_id = latest_xml_id)
+join clinical_merge_v5_2022q1.concept c using (concept_code)
+where vocabulary_id = 'MedDRA';
+
+alter table boxed_warnings add index (`xml_id`);
+alter table boxed_warnings add index (`meddra_id`);
+alter table boxed_warnings add index (`omop_concept_id`);
