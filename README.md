@@ -21,7 +21,7 @@ Below is a brief description of the tables. See `src/load_onsides_db.sql` for mo
 
 `boxed_warnings` - Main table of boxed warnings. This table includes adverse reactions extracted from the BOXED WARNINGS section of the most recent label for each ingredient or combination of ingredients. 2,907 rows.
 
-`boxed_warnings_bylabel` - All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, genetics, etc). 67,984 rows.
+`boxed_warnings_bylabel` - All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc). 67,984 rows.
 
 `ingredients` - Active ingredients for each of the parsed labels. If the label is for a drug with a single active compound then there will be only a single row for that label.  If the label is for a combination of compounds then there will be multiple rows for that label. 52,646 rows.
 
