@@ -9,7 +9,14 @@ Onsides was created using the ClinicalBERT language model and 200 manually curat
 
 ### Download
 
-The data are available as a set of SQL tables. You can access SQL to load the tables here: [onsides_v01_20220430.sql.gz](http://tatonettilab.org/data/onsides_v01_20220430.sql.gz) (81MB, md5:b386e9485e943120c9a783edf843d68e).
+The data are available as a set of SQL tables or as flat files in CSV format.
+
+#### SQL File
+[onsides_v01_20220430.sql.gz](https://github.com/tatonetti-lab/onsides/releases/download/v01/onsides_v01_20220430.sql.gz) (81MB, md5:b386e9485e943120c9a783edf843d68e)
+
+#### CSV Files
+[onsides_v01_20220430.tar.gz](https://github.com/tatonetti-lab/onsides/releases/download/v01/onsides_v01_20220430.tar.gz) (81MB, md5:f73ded83cf5edc63447f6ca8b80add66)
+
 
 ### Description of Tables
 
