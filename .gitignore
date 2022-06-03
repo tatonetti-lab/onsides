@@ -12,6 +12,9 @@ analysis.json
 replicates/
 replicates
 
+# ignore emacs temporary files
+*~
+
 # ignore the website folder while I'm figuring it out
 website/
 

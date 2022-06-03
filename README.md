@@ -20,7 +20,7 @@ The data are available as a set of SQL tables or as flat files in CSV format.
 
 ### Description of Tables
 
-Below is a brief description of the tables. See `src/load_onsides_db.sql` for more details.
+Below is a brief description of the tables. See [`SCHEMA.md`](SCHEMA.md) for column descritpions and [`src/load_onsides_db.sql`](src/load_onsides_db.sql) for more details.
 
 `adverse_reactions` - Main table of adverse reactions. This table includes adverse reactions extracted from the ADVERSE REACTIONS section of the most recent label for each ingredient or combination of ingredients. 94,029 rows.
 
