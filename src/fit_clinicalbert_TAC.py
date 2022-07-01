@@ -106,7 +106,7 @@ def train(model, train_data, val_data, learning_rate, epochs, max_length, batch_
     val_dataloader = torch.utils.data.DataLoader(val, batch_size=batch_size)
 
     use_cuda = torch.cuda.is_available()
-    device = torch.device("cuda:0" if use_cuda else "cpu")
+    device = torch.device("cuda" if use_cuda else "cpu")
 
     print(f"Using device: {device}")
 
@@ -210,7 +210,7 @@ def evaluate(model, test_data, max_length, batch_size, examples_only=False):
     test_dataloader = torch.utils.data.DataLoader(test, batch_size=batch_size)
 
     use_cuda = torch.cuda.is_available()
-    device = torch.device("cuda:0" if use_cuda else "cpu")
+    device = torch.device("cuda" if use_cuda else "cpu")
 
     if use_cuda:
         model = model.cuda()
