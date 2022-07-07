@@ -74,7 +74,7 @@ if __name__ == '__main__':
     test_examplespath = args.examples_test
     dfex_test = pd.read_csv(test_examplespath)
 
-    df_ref['test'] = set_up_test(dfex_test)
+    df_ref['test'] = set_up_test(dfex_test, np_random_seed)
 
     dataframes = list()
     for resultspath in args.results:

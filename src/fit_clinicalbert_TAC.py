@@ -244,7 +244,7 @@ def batch_size_estimate(max_length):
     power = np.log2(bs)
     return 2**round(power)
 
-def set_up_test(df):
+def set_up_test(df, np_random_seed):
     druglist = sorted(set(df['drug']))
 
     random.seed(np_random_seed)
@@ -447,4 +447,3 @@ if __name__ == '__main__':
 
     print("Evaluating the model on the held out test set...")
     evaluate(loaded_model, df_test, max_length, batch_size)
-    
