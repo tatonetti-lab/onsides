@@ -79,6 +79,7 @@ if __name__ == '__main__':
     dataframes = list()
     for resultspath in args.results:
         fnnoext = os.path.split(resultspath)[-1].split('.')[0]
+
         prefix = fnnoext.split('_')[0]
         split = prefix.split('-')[3]
 
