@@ -5,7 +5,6 @@
 import xml.etree.ElementTree as ET
 import pandas as pd
 import csv
-
 import argparse
 
 def load_meddra():
@@ -30,6 +29,7 @@ def generate_subelement(row): # row = row index
 	id_norm = id_reaction + str(".N") + str(row[0] + 1)
 	meddra_pt_id = str(row.llt_id)
 	meddra_pt = meddra_dict.get(str(row.llt_id))
+	meddra_pt = meddra_pt.lower()
 	
 	
 	Reaction = ET.SubElement(Reactions, "Reaction")
@@ -37,16 +37,14 @@ def generate_subelement(row): # row = row index
 	Reaction.set("str", meddra_pt)
 	
 	subelement_generated = ET.SubElement(Reaction, "Normalization", id=id_norm, meddra_pt=meddra_pt, meddra_pt_id=meddra_pt_id)
-   
+
 	return subelement_generated
-
-
 
 if __name__ == "__main__": 
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--results', help="full path to the model results", type=str, required=True)
-	parser.add_argument('--threshold', help="threshold for positive result", type=float, default=2)
+	parser.add_argument('--threshold', help="threshold for positive result", type=float, default=2.54717718064785)
 	parser.add_argument('--section', help="part of label (AR, BW, etc)", type=str, default='AR')
 	parser.add_argument('--base-dir', type=str, default='.')
 
@@ -58,6 +56,12 @@ if __name__ == "__main__":
 
 	# PARAMETERS 
 	all_df = pd.read_csv(args.results) #pd.read_csv("grouped-mean-bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.csv")
+	all_df = all_df[all_df["split"] == "test"] # subset for only test data
+	all_df = all_df[all_df["scored"] == "scored"] # subset for only scored
+	#all_df = all_df[all_df["class"] == "is_event"] 
+
+	print(all_df.head())
+
 	threshold = args.threshold   # this will need to be changed, as well as the pred0 (should be pred1 i think) -- can change this into a param? 
 	section = args.section
 
@@ -75,7 +79,43 @@ if __name__ == "__main__":
 		
 		# start to generate xml
 		Label = ET.Element("Label")
+		Label.set("track", "TAC2017_ADR")
 		Label.set("drug", current_drug)
+
+		# the following are placeholders
+		Text = ET.SubElement(Label, "Text")
+		Section = ET.SubElement(Text, "Section")
+		Section.set("id", "S")
+		Section.set("name", "adverse reactions")
+		Section.set("text", "")
+
+		Section = ET.SubElement(Text, "Section")
+		Section.set("id", "S")
+		Section.set("name", "adverse reactions")
+		Section.set("text", "")
+
+		Section = ET.SubElement(Text, "Section")
+		Section.set("id", "S")
+		Section.set("name", "adverse reactions")
+		Section.set("text", "")
+
+		Mentions = ET.SubElement(Label, "Mentions")
+		Mention = ET.SubElement(Mentions, "Mention")
+		Mention.set("id", "M")
+		Mention.set("section", "")
+		Mention.set("type", "AdverseReaction")
+		Mention.set("start", "")
+		Mention.set("len", "")
+		Mention.set("str", "")
+
+		Relations = ET.SubElement(Label, "Relations")
+		Relation = ET.SubElement(Relations, "Relation")
+		Relation.set("id", "")
+		Relation.set("type", "Hypothetical")
+		Relation.set("arg1", "")
+		Relation.set("arg2", "")
+		# end placeholder
+
 		Reactions = ET.SubElement(Label, "Reactions")
 
 		# this is the part that generates the xml
