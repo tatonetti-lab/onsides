@@ -360,7 +360,7 @@ if __name__ == '__main__':
 
     # check for existing model file
     filename_params = f'{refset}-{refsection}-{refnwords}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
-    final_model_filename = f'{args.base_dir}/models/final-bydrug-{network_code}_{filename_params}.pth'
+    final_model_filename = f'{args.base_dir}/models/final-bydrug-{network_code}_{filename_params}_metamap.pth'
     if os.path.exists(final_model_filename):
         print(f"Found final model already saved at path: {final_model_filename}")
         if args.ifexists == 'quit':
@@ -397,7 +397,7 @@ if __name__ == '__main__':
         model.load_state_dict(torch.load(pretrained_state))
 
     print("Fitting the model...")
-    best_epoch_model_filename = f'{args.base_dir}/models/bestepoch-bydrug-{network_code}_{filename_params}.pth'
+    best_epoch_model_filename = f'{args.base_dir}/models/bestepoch-bydrug-{network_code}_{filename_params}_metamap.pth'
 
     training_results = train(model, df_train, df_val, LR, EPOCHS, max_length, batch_size, best_epoch_model_filename)
 
@@ -406,7 +406,7 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), final_model_filename)
 
     print("Saving loss and accuracies for each epoch to file...")
-    lafh = open(f'{args.base_dir}/results/epoch-results-{network_code}_{filename_params}.csv', 'w')
+    lafh = open(f'{args.base_dir}/results/epoch-results-{network_code}_{filename_params}_metamap.csv', 'w')
     writer = csv.writer(lafh)
     writer.writerow(['epoch', 'train_loss', 'train_accuracy', 'valid_loss', 'valid_accuracy', 'epoch_time', 'epoch_saved'])
     for epoch in range(EPOCHS):
