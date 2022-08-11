@@ -317,7 +317,7 @@ if __name__ == '__main__':
 
     print("Splitting data into training, validation, and testing...")
     refset = int(args.ref.split('ref')[1].split('_')[0])
-    refsection = args.ref.split('_')[-1].split('.')[0]
+    refsection = args.ref.split('_')[-2].split('.')[0]
     refnwords = int(args.ref.split('nwords')[1].split('_')[0])
 
     print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}\n\tnwords: {refnwords}")
