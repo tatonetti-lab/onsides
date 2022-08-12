@@ -20,7 +20,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     model_filepath = args.model
-    model_file = os.path.split(model_filepath)[-1]
+    model_file = os.path.split(model_filepath)[-2]
 
     print(f"Loading model from {model_file}")
     fnnoext = os.path.split(model_file)[-1].split('.')[0]
