@@ -24,9 +24,9 @@ if __name__ == '__main__':
 
     print(f"Loading model from {model_file}")
     fnnoext = os.path.split(model_file)[-1].split('.')[0]
-    
+
     if not len(fnnoext.split('_')) in (6, 8):
-        raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_metamap.pth or {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{MAX_LENGTH}_{BATCH_SIZE}_metamap.pth")
+        raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth or {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{MAX_LENGTH}_{BATCH_SIZE}.pth")
 
     refset, refsection, refnwords = fnnoext.split('_')[1].split('-')
     np_random_seed = int(fnnoext.split('_')[2])
