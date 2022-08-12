@@ -20,13 +20,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     model_filepath = args.model
-    model_file = os.path.split(model_filepath)[-2]
+    model_file = os.path.split(model_filepath)[-1]
 
     print(f"Loading model from {model_file}")
-    fnnoext = os.path.split(model_file)[-2].split('.')[0]
-
-    print(fnnoext)
-
+    fnnoext = os.path.split(model_file)[-1].split('.')[0]
+    
     if not len(fnnoext.split('_')) in (6, 8):
         raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_metamap.pth or {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{MAX_LENGTH}_{BATCH_SIZE}_metamap.pth")
 
