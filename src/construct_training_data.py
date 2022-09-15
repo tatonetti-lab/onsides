@@ -17,6 +17,8 @@ import csv
 import random
 import argparse
 
+from collections import defaultdict
+
 section_suffices = {
     'AR': 'adverse_reactions.txt',
     'BW': 'boxed_warnings.txt',
@@ -141,13 +143,33 @@ def load_meddra():
 
     llts = dict()
 
+    # llt_concept_id|llt_concept_name|llt_concept_code|pt_concept_id|pt_concept_name|pt_concept_code
     for row in reader:
         data = dict(zip(header, row))
-        llts[data['llt_concept_code']] = data['llt_concept_name'].lower()
+        llts[data['llt_concept_code']] = (data['llt_concept_name'].lower(), data['pt_concept_name'])
 
     meddra_fh.close()
 
     return llts
+
+def load_deepcadrme():
+    # DeepCADRME has been run on the training and testing set provided by Demmer-Fushman et al.
+    # We saved those to a file named ./data/deepcadrme_guess_terms.csv
+    # These terms were then mapped using either exact string matches or fuzzy matching
+    # to meddra LLTs and PTs. LLTs were then mapped to PTs.
+    # Currently this is done in the normalize deepcadrme files jupyter notebook.
+    # TODO: Move processing of deepcadrme output to a script.
+    # The normalized deepcadrme output is then stored at ./data/Deepcadrme_guess_terms_meddramatch.csv
+    deepcadrme_fn = './data/deepcadrme_guess_terms_meddramatch.csv'
+    deepcadrme_fh = open(deepcadrme_fn)
+    reader = csv.reader(deepcadrme_fh)
+    header = next(reader)
+
+    deepcadrme = defaultdict(list)
+    for _, xmlfile, term, start, length, match_method, meddra_id, meddra_string in reader:
+        deepcadrme[xmlfile].append( (term, int(start), int(length), match_method, meddra_id, meddra_string) )
+
+    return deepcadrme
 
 def get_annotations(drug, section_display_name):
 
@@ -175,8 +197,61 @@ def get_annotations(drug, section_display_name):
 
     final_ref_fh.close()
 
+    # NOTE: llts_annotated actually contains both PTs and LLTs
+    # NOTE: because in the reference csv if the string found was directly mapped
+    # NOTE: to a PT then it's in both columns.
     return pts_annotated, llts_annotated, string_annotated
 
+def generate_example(ar_text, term, start_pos, length, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, prop_before):
+
+    size_before = max(int((nwords-2*length)*prop_before), 1)
+    size_after = max(int((nwords-2*length)*(1-prop_before)), 1)
+
+    EVENT_STRING = term
+    if sub_event:
+        EVENT_STRING = 'EVENT'
+    if sub_nonsense:
+        EVENT_STRING = 'YIHFKEHDK'
+
+    # TODO: Implement prepend section option (ref12, currently not implemented)
+    START_STRING = ''
+    if prepend_event:
+        START_STRING = term
+
+    #
+    if random_sampled_words:
+        # method 5 is just a random bag of words
+        example_string = ' '.join(random.sample(ar_text.split(), nwords))
+    elif nwords == 3:
+        # nwords == 3 is a special case where we only include the term and nothing else
+        example_string = term
+    else:
+        # normal scenario
+        before_text = ar_text[:start_pos]
+        after_text = ar_text[(start_pos+length):]
+
+        before_parts = before_text.split()[-1*size_before:]
+        after_parts = after_text.split()[:size_after]
+
+        li = [START_STRING]
+
+        if prop_before > 0:
+            li.extend(before_parts)
+
+        li.append(EVENT_STRING)
+
+        if prop_before < 1:
+            li.extend(after_parts)
+
+        example_string = ' '.join(li)
+
+    if len(example_string.split()) > (nwords+length):
+        raise Exception(f"ERROR: Example string is too long for term={term}, was length {len(example_string.split())}, expected less than {nwords}")
+
+    return example_string
+
+
+# @deprecated
 def generate_examples(ar_text, llt, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, prop_before):
     parts = ar_text.split(llt)
 
@@ -261,6 +336,7 @@ def main():
     args, sub_event, sub_nonsense, prepend_event, sections, random_sampled_words = get_args()
 
     llts = load_meddra()
+    deepcadrme = load_deepcadrme()
 
     outfn = f'./data/ref{args.method}_nwords{args.nwords}_clinical_bert_reference_set_{args.section}.txt'
     outfh = open(outfn, 'w')
@@ -287,9 +363,11 @@ def main():
 
             pts_annotated, llts_annotated, string_annotated = get_annotations(drug, section_display_name)
 
+            set_meddra_terms = set([x[0] for x in llts.values()])
+
             print(f"\tPreferred terms annotated: {len(pts_annotated)}")
             print(f"\tLower level terms annotated: {len(llts_annotated)}")
-            print(f"\tIntersection of terms with local meddra map: {len(string_annotated & set(llts.values()))}")
+            print(f"\tIntersection of terms with local meddra map: {len(string_annotated & set_meddra_terms)}")
 
             # load text from the desired (e.g. ADVERSE REACTIONS) section
             ar_file_path = f'./data/200_training_set/{drug}_{suffix}'
@@ -306,48 +384,97 @@ def main():
 
             print(f"\tNumber of words in {section_display_name} text: {len(ar_text.split())}")
 
-            # find all the llts that are mentioned in the text
+            # find all the adverse event terms that are mentioned in the text
 
-            llts_mentioned = set()
-            string_mentioned = set()
+            # 1) exact string matches to the meddra term (either PT or LLT)
+            # NOTE: llts has both PTs and LLTs because of the structure of the file
+            found_terms = list()
+            for meddra_id, (llt_meddra_term, pt_meddra_term) in llts.items():
+                #print(f"{meddra_id}, {llt_meddra_term}, {pt_meddra_term}")
+                try:
+                    for start_pos in [m.start() for m in re.finditer(llt_meddra_term, ar_text)]:
+                        # we use the PT here so that there are fewere different terms prepended to the example strings
+                        # this should marginally improve performance
+                        found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_term))
+                except re.error as e:
+                    print(f"WARNING: Encountered re module error: {e}")
+
+            print(f"\tFound {len(found_terms)} terms using exact string matches.")
+
+            exact_term_list = list(zip(*found_terms))[0]
+
+            # 2) DeepCADRME mentions, normalized to meddra terms (PT only)
+            #    If DeepCADRME found string is exact match for a term (PT or LLT)
+            #    then we skip that. It will be handled by the exact matches done above
+            if not f'{drug}.xml' in deepcadrme:
+                raise Exception(f'ERROR: No DeepCADRME output found for {drug}.xml.')
+
+            for term, start, length, match_method, pt_meddra_id, pt_meddra_term in deepcadrme[f'{drug}.xml']:
+                if term in exact_term_list:
+                    # we don't need deepcadrme for this one, we will use the exact string matches
+                    continue
+
+                found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_term))
+
+            print(f"\tFound {len(found_terms)} terms using both exact matches and DeepCADRME.")
 
             num_pos = 0
             num_neg = 0
 
-            for llt_id, llt in llts.items():
-                if ar_text.find(llt) != -1:
-                    llts_mentioned.add(llt_id)
-                    string_mentioned.add(llt)
+            for found_term, meddra_id, start_pos, length, pt_meddra_term in found_terms:
 
-                    example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
+                # check if this event was annotated from the gold standard
+                # NOTE: llts_annotated contains both PTs and LLTs
+                if meddra_id in llts_annotated:
+                    string_class = 'is_event'
+                    num_pos += 1
+                else:
+                    string_class = 'not_event'
+                    num_neg += 1
 
-                    # check if this event was annotated from the gold standard
-                    if llt_id in llts_annotated:
-                        string_class = 'is_event'
-                        num_pos += len(example_strings)
-                    else:
-                        string_class = 'not_event'
-                        num_neg += len(example_strings)
+                example_string = generate_example(ar_text, pt_meddra_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
-                    # NOTE: was using the matching string to match between the two,
-                    # NOTE: but really should be using the LLT MedDRA identifier (above)
-                    # NOTE: keeping this in here so we know what we did initially - NPT 4/19/22
+                # NOTE: I would like to include the PT meddra term as well in this output, but there is
+                # NOTE: a lot of code that assumes the structure of this file that would then need to be
+                # NOTE: refactored. Therefore, I will leave this as a TODO for the future.
+                writer.writerow([section, drug, meddra_id, found_term, string_class, example_string])
 
-                    # if llt in string_annotated:
-                    #     string_class = 'is_event'
-                    #     num_pos += 1
-                    # else:
-                    #     string_class = 'not_event'
-                    #     num_neg += 1
-
-                    for example_string in example_strings:
-                        writer.writerow([section, drug, llt_id, llt, string_class, example_string])
-
-
-            print(f"\tNumber of terms mentioned in text: {len(llts_mentioned)}")
-
-            print(f"\tNumber of positive events: {len(string_annotated & string_mentioned)}")
-            print(f"\tNumber of negative events: {len(string_mentioned - string_annotated)}")
+            ################################################################################
+            # This was the previous method we used to do this that only relied on exact
+            # string matches. We have refactored the code to allow for different methods of
+            # identifying terms. -NPT 9/14/22
+            ################################################################################
+            # llts_mentioned = set()
+            # string_mentioned = set()
+            #
+            # num_pos = 0
+            # num_neg = 0
+            #
+            # for meddra_id, meddra_term in llts.items():
+            #     if ar_text.find(meddra_term) != -1:
+            #         llts_mentioned.add(meddra_id)
+            #         string_mentioned.add(meddra_term)
+            #
+            #         example_strings = generate_examples(ar_text, meddra_term, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
+            #
+            #         # check if this event was annotated from the gold standard
+            #         # NOTE: llts_annotated contains both PTs and LLTs
+            #         if meddra_id in llts_annotated:
+            #             string_class = 'is_event'
+            #             num_pos += len(example_strings)
+            #         else:
+            #             string_class = 'not_event'
+            #             num_neg += len(example_strings)
+            #
+            #         for example_string in example_strings:
+            #             writer.writerow([section, drug, meddra_id, meddra_term, string_class, example_string])
+            #
+            #
+            # print(f"\tNumber of terms mentioned in text: {len(llts_mentioned)}")
+            #
+            # print(f"\tNumber of positive events: {len(llts_annotated & llts_mentioned)}")
+            # print(f"\tNumber of negative events: {len(llts_mentions - llts_annotated)}")
+            ################################################################################
 
             print(f"\tNumber of positive training examples: {num_pos}")
             print(f"\tNumber of negative training examples: {num_neg}")
