@@ -16,7 +16,7 @@ import sys
 import csv
 import random
 import argparse
-
+import xml.etree.ElementTree as ET
 from collections import defaultdict
 
 section_suffices = {
@@ -33,6 +33,12 @@ section_names2codes = {
     'ADVERSE REACTIONS': 'AR',
     'BOXED WARNINGS': 'BW',
     'WARNINGS AND PRECAUTIONS': 'WP'
+}
+
+section_deepcadrme_names = {
+    'AR': 'adverse reactions',
+    'BW': 'boxed warnings',
+    'WP': 'warnings and precautions'
 }
 
 def get_args(addl_args = None):
@@ -167,7 +173,7 @@ def load_deepcadrme():
 
     deepcadrme = defaultdict(list)
     for _, xmlfile, term, start, length, match_method, meddra_id, meddra_string in reader:
-        deepcadrme[xmlfile].append( (term, int(start), int(length), match_method, meddra_id, meddra_string) )
+        deepcadrme[xmlfile].append( (term, start, length, match_method, meddra_id, meddra_string) )
 
     return deepcadrme
 
@@ -185,7 +191,7 @@ def get_annotations(drug, section_display_name):
     for row in reader:
         data = dict(zip(header, row))
 
-        if not data['Drug Name'] == drug:
+        if not data['Drug Name'].lower() == drug.lower():
             continue
 
         if not data['Section Display Name'] == section_display_name:
@@ -204,8 +210,30 @@ def get_annotations(drug, section_display_name):
 
 def generate_example(ar_text, term, start_pos, length, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, prop_before):
 
-    size_before = max(int((nwords-2*length)*prop_before), 1)
-    size_after = max(int((nwords-2*length)*(1-prop_before)), 1)
+    if type(start_pos) == str or type(length) == str:
+        if type(start_pos) != str:
+            start_pos = str(start_pos)
+        if type(length) != str:
+            length = str(length)
+
+        # this means we have a split term that was discovered using deepcadrme
+        # for these we use the start_pos of all of the first term (start_pos[0])
+        # and then the length will be start_pos[-1]+length[-1]
+        start_positions = list(map(int, start_pos.split(',')))
+        lengths = list(map(int, length.split(',')))
+        start_pos = start_positions[0]
+        length = (start_positions[-1]+lengths[-1])-start_positions[0]
+
+    print(f"type(start_pos) = {type(start_pos)}, {start_pos}")
+    print(f"type(length) = {type(length)}, {length}")
+    print(f"type(nwords) = {type(nwords)}, {nwords}")
+
+    term_nwords = len(term.split())
+    size_before = max(int((nwords-2*term_nwords)*prop_before), 1)
+    size_after = max(int((nwords-2*term_nwords)*(1-prop_before)), 1)
+
+    print(f"size_before = {size_before}")
+    print(f"size_after = {size_after}")
 
     EVENT_STRING = term
     if sub_event:
@@ -350,12 +378,16 @@ def main():
         suffix = section_suffices[section]
         section_display_name = section_display_names[section]
 
-        # derive a drug list from the training and testing data provided
-        train_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_training_set') if fn.find(suffix) != -1])
-        test_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_test_set') if fn.find(suffix) != -1])
+        use_deepcadrme = True
+        if use_deepcadrme:
+            all_drugs = [os.path.split(fn)[-1].strip('.xml') for fn in os.listdir('./data/deepcadrme/guess_xml')]
+        else:
+            # derive a drug list from the training and testing data provided
+            train_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_training_set') if fn.find(suffix) != -1])
+            test_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_test_set') if fn.find(suffix) != -1])
+            all_drugs = sorted(train_drugs | test_drugs)
 
-        all_drugs = sorted(train_drugs | test_drugs)
-        print(f"Found {len(all_drugs)} total drugs with *{suffix} files.")
+        print(f"Found {len(all_drugs)} total drugs with available files.")
 
         for drug in all_drugs:
 
@@ -370,17 +402,31 @@ def main():
             print(f"\tIntersection of terms with local meddra map: {len(string_annotated & set_meddra_terms)}")
 
             # load text from the desired (e.g. ADVERSE REACTIONS) section
-            ar_file_path = f'./data/200_training_set/{drug}_{suffix}'
-            if os.path.exists(ar_file_path):
-                ar_fh = open(ar_file_path)
+            use_deepcadrme = True
+            if use_deepcadrme:
+                # use the output of deepcadrme
+                ar_file_path = f'./data/deepcadrme/guess_xml/{drug}.xml'
+                print(ar_file_path)
+                if os.path.exists(ar_file_path):
+                    tree = ET.parse(ar_file_path)
+                    root = tree.getroot()
+                    xml_sections = root.findall("./Text/Section[@name='%s']" % section_deepcadrme_names[section])
+                    if len(xml_sections) != 1:
+                        raise Exception("ERROR: Unexpected number of sections named %s. Expected 1 found %s." % (section_deepcadrme_names[section], len(xml_sections)))
+                    ar_text = ' '.join(xml_sections[0].text.split()).lower()
             else:
-                ar_file_path = f'./data/200_test_set/{drug}_{suffix}'
+                # use the xml label files directly
+                # NOTE: This
+                ar_file_path = f'./data/200_training_set/{drug}_{suffix}'
                 if os.path.exists(ar_file_path):
                     ar_fh = open(ar_file_path)
                 else:
-                    raise Exception("Couldn't file adverse reactions file in either the training or testing set.")
-
-            ar_text = ' '.join(ar_fh.read().split()).lower()
+                    ar_file_path = f'./data/200_test_set/{drug}_{suffix}'
+                    if os.path.exists(ar_file_path):
+                        ar_fh = open(ar_file_path)
+                    else:
+                        raise Exception("Couldn't file adverse reactions file in either the training or testing set.")
+                ar_text = ' '.join(ar_fh.read().split()).lower()
 
             print(f"\tNumber of words in {section_display_name} text: {len(ar_text.split())}")
 
@@ -395,9 +441,10 @@ def main():
                     for start_pos in [m.start() for m in re.finditer(llt_meddra_term, ar_text)]:
                         # we use the PT here so that there are fewere different terms prepended to the example strings
                         # this should marginally improve performance
-                        found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_term))
+                        found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_term, 'exact'))
                 except re.error as e:
-                    print(f"WARNING: Encountered re module error: {e}")
+                    #print(f"WARNING: Encountered re module error: {e}")
+                    pass
 
             print(f"\tFound {len(found_terms)} terms using exact string matches.")
 
@@ -410,33 +457,41 @@ def main():
                 raise Exception(f'ERROR: No DeepCADRME output found for {drug}.xml.')
 
             for term, start, length, match_method, pt_meddra_id, pt_meddra_term in deepcadrme[f'{drug}.xml']:
-                if term in exact_term_list:
+                if term in exact_term_list and start.find(',') == -1:
                     # we don't need deepcadrme for this one, we will use the exact string matches
                     continue
 
-                found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_term))
+                found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_term, 'deepcadrme'))
 
             print(f"\tFound {len(found_terms)} terms using both exact matches and DeepCADRME.")
 
             num_pos = 0
-            num_neg = 0
+            num_pos_exact = 0
 
-            for found_term, meddra_id, start_pos, length, pt_meddra_term in found_terms:
+            num_neg = 0
+            num_neg_exact = 0
+
+            for found_term, meddra_id, start_pos, length, pt_meddra_term, source_method in found_terms:
 
                 # check if this event was annotated from the gold standard
                 # NOTE: llts_annotated contains both PTs and LLTs
                 if meddra_id in llts_annotated:
                     string_class = 'is_event'
                     num_pos += 1
+                    if source_method == 'exact':
+                        num_pos_exact += 1
                 else:
                     string_class = 'not_event'
                     num_neg += 1
+                    if source_method == 'exact':
+                        num_neg_exact += 1
 
                 example_string = generate_example(ar_text, pt_meddra_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
                 # NOTE: I would like to include the PT meddra term as well in this output, but there is
                 # NOTE: a lot of code that assumes the structure of this file that would then need to be
                 # NOTE: refactored. Therefore, I will leave this as a TODO for the future.
+                # NOTE: Same for source_method, I would like to add that to this output as well.
                 writer.writerow([section, drug, meddra_id, found_term, string_class, example_string])
 
             ################################################################################
@@ -478,6 +533,9 @@ def main():
 
             print(f"\tNumber of positive training examples: {num_pos}")
             print(f"\tNumber of negative training examples: {num_neg}")
+
+            print(f"\tNumber of positive training examples (from deepcadrme): {num_pos-num_pos_exact}")
+            print(f"\tNumber of negative training examples (from deepcadrme): {num_neg-num_neg_exact}")
 
             # print(string_annotated - string_mentioned)
             # print(llts_annotated)
