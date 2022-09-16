@@ -14,6 +14,7 @@ import os
 import re
 import sys
 import csv
+import time
 import random
 import argparse
 import xml.etree.ElementTree as ET
@@ -224,16 +225,16 @@ def generate_example(ar_text, term, start_pos, length, nwords, sub_event, sub_no
         start_pos = start_positions[0]
         length = (start_positions[-1]+lengths[-1])-start_positions[0]
 
-    print(f"type(start_pos) = {type(start_pos)}, {start_pos}")
-    print(f"type(length) = {type(length)}, {length}")
-    print(f"type(nwords) = {type(nwords)}, {nwords}")
+    # print(f"type(start_pos) = {type(start_pos)}, {start_pos}")
+    # print(f"type(length) = {type(length)}, {length}")
+    # print(f"type(nwords) = {type(nwords)}, {nwords}")
 
     term_nwords = len(term.split())
     size_before = max(int((nwords-2*term_nwords)*prop_before), 1)
     size_after = max(int((nwords-2*term_nwords)*(1-prop_before)), 1)
 
-    print(f"size_before = {size_before}")
-    print(f"size_after = {size_after}")
+    # print(f"size_before = {size_before}")
+    # print(f"size_after = {size_after}")
 
     EVENT_STRING = term
     if sub_event:
@@ -369,7 +370,8 @@ def main():
     outfn = f'./data/ref{args.method}_nwords{args.nwords}_clinical_bert_reference_set_{args.section}.txt'
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
-    writer.writerow(['section', 'drug', 'llt_id', 'llt', 'class', 'string'])
+
+    writer.writerow(['section', 'drug', 'meddra_id', 'source_method', 'pt_meddra_term', 'found_term', 'class', 'string'])
 
     total_num_neg = 0
     total_num_pos = 0
@@ -406,7 +408,7 @@ def main():
             if use_deepcadrme:
                 # use the output of deepcadrme
                 ar_file_path = f'./data/deepcadrme/guess_xml/{drug}.xml'
-                print(ar_file_path)
+                # print(ar_file_path)
                 if os.path.exists(ar_file_path):
                     tree = ET.parse(ar_file_path)
                     root = tree.getroot()
@@ -432,24 +434,40 @@ def main():
 
             # find all the adverse event terms that are mentioned in the text
 
+            start_time = time.time()
             # 1) exact string matches to the meddra term (either PT or LLT)
             # NOTE: llts has both PTs and LLTs because of the structure of the file
             found_terms = list()
             for meddra_id, (llt_meddra_term, pt_meddra_term) in llts.items():
                 #print(f"{meddra_id}, {llt_meddra_term}, {pt_meddra_term}")
-                try:
-                    for start_pos in [m.start() for m in re.finditer(llt_meddra_term, ar_text)]:
-                        # we use the PT here so that there are fewere different terms prepended to the example strings
-                        # this should marginally improve performance
-                        found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_term, 'exact'))
-                except re.error as e:
-                    #print(f"WARNING: Encountered re module error: {e}")
-                    pass
 
-            print(f"\tFound {len(found_terms)} terms using exact string matches.")
+                # Method using re module. Takes approx 4 seconds.
+                # try:
+                #     for start_pos in [m.start() for m in re.finditer(llt_meddra_term, ar_text)]:
+                #         # we use the PT here so that there are fewere different terms prepended to the example strings
+                #         # this should marginally improve performance
+                #         found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_term, 'exact'))
+                # except re.error as e:
+                #     #print(f"WARNING: Encountered re module error: {e}")
+                #     pass
+
+                # Method using string splits, Takes approx 0.2s
+                if ar_text.find(llt_meddra_term) == -1:
+                    continue
+
+                li = ar_text.split(llt_meddra_term)
+                start_pos = 0
+                for i in range(len(li)-1):
+                    # the occurrence of the word is at the end of the previous string
+                    start_pos = start_pos + len(li[i])
+                    found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_term, 'exact'))
+
+
+            print(f"\tFound {len(found_terms)} terms using exact string matches. Took {time.time()-start_time}s.")
 
             exact_term_list = list(zip(*found_terms))[0]
 
+            start_time = time.time()
             # 2) DeepCADRME mentions, normalized to meddra terms (PT only)
             #    If DeepCADRME found string is exact match for a term (PT or LLT)
             #    then we skip that. It will be handled by the exact matches done above
@@ -463,7 +481,7 @@ def main():
 
                 found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_term, 'deepcadrme'))
 
-            print(f"\tFound {len(found_terms)} terms using both exact matches and DeepCADRME.")
+            print(f"\tFound {len(found_terms)} terms using both exact and DeepCADRME. Took {time.time()-start_time}s.")
 
             num_pos = 0
             num_pos_exact = 0
@@ -486,13 +504,12 @@ def main():
                     if source_method == 'exact':
                         num_neg_exact += 1
 
-                example_string = generate_example(ar_text, pt_meddra_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
+                example_string = generate_example(ar_text, pt_meddra_term.lower(), start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
                 # NOTE: I would like to include the PT meddra term as well in this output, but there is
                 # NOTE: a lot of code that assumes the structure of this file that would then need to be
                 # NOTE: refactored. Therefore, I will leave this as a TODO for the future.
-                # NOTE: Same for source_method, I would like to add that to this output as well.
-                writer.writerow([section, drug, meddra_id, found_term, string_class, example_string])
+                writer.writerow([section, drug, meddra_id, source_method, string_class, pt_meddra_term, found_term, example_string])
 
             ################################################################################
             # This was the previous method we used to do this that only relied on exact
@@ -505,7 +522,7 @@ def main():
             # num_pos = 0
             # num_neg = 0
             #
-            # for meddra_id, meddra_term in llts.items():
+            # for meddra_id, (meddra_term, pt_meddra_term) in llts.items():
             #     if ar_text.find(meddra_term) != -1:
             #         llts_mentioned.add(meddra_id)
             #         string_mentioned.add(meddra_term)
@@ -522,7 +539,7 @@ def main():
             #             num_neg += len(example_strings)
             #
             #         for example_string in example_strings:
-            #             writer.writerow([section, drug, meddra_id, meddra_term, string_class, example_string])
+            #             writer.writerow([section, drug, meddra_id, 'depr_exact', string_class, meddra_term, meddra_term, example_string])
             #
             #
             # print(f"\tNumber of terms mentioned in text: {len(llts_mentioned)}")

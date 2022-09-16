@@ -3,6 +3,21 @@ experiment_tracker.py
 
 Keep track of the experiments we are running, which parameters are being tested, and
 where we are in generating the data.
+
+EXAMPLES
+
+To check status of all of the experiments. Use the skip models flag if you are not
+on a machine ready to train the neural networks (GPU ready).
+```
+python3 src/experiment_tracker.py --all [--skip-models]
+```
+
+To check the status of a specific experiment. Use the skip models flag if you are not
+on a machine ready to train the neural networks (GPU ready).
+```
+python3 src/experiment_tracker.py --id 0 [--skip-models]
+```
+
 """
 
 import os
