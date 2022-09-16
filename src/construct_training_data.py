@@ -371,7 +371,7 @@ def main():
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
 
-    writer.writerow(['section', 'drug', 'meddra_id', 'source_method', 'pt_meddra_term', 'found_term', 'class', 'string'])
+    writer.writerow(['section', 'drug', 'meddra_id', 'source_method', 'class', 'pt_meddra_term', 'found_term', 'string'])
 
     total_num_neg = 0
     total_num_pos = 0
