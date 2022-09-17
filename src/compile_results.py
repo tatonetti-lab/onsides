@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
         scored_pairs = set()
         for index, row in df_grouped.iterrows():
-            scored_pairs.add((row['section'], row['drug'], int(row['llt_id'])))
+            scored_pairs.add((row['section'], row['drug'], int(row['meddra_id'])))
 
         data_to_append = list()
         #print(len(scored_pairs))
@@ -172,12 +172,12 @@ if __name__ == '__main__':
         for s, d, e in (gold_standard-scored_pairs):
             data_to_append.append((s, d, e, 0.0, 0.0, 'is_event', 'not_scored'))
 
-        sections, drugs, llt_ids, pred1s, pred0s, classes, scoreds = zip(*data_to_append)
+        sections, drugs, meddra_ids, pred1s, pred0s, classes, scoreds = zip(*data_to_append)
 
         df_grouped = pd.concat([df_grouped,pd.DataFrame({
             'section': sections,
             'drug': drugs,
-            'llt_id': llt_ids,
+            'meddra_id': meddra_ids,
             'Pred1': pred1s,
             'Pred0': pred0s,
             'class': classes,
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     for df in dataframes[1:]:
         df_concat = pd.concat([df_concat, df], ignore_index=True)
 
-    df_concat["llt_id"] = [int(llt_id) for llt_id in df_concat["llt_id"]]
+    df_concat["meddra_id"] = [int(meddra_id) for meddra_id in df_concat["meddra_id"]]
     # print(df_concat.dtypes)
     grouped_filename = f"grouped-{args.group_function}-{prefix_nosplit}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
     print(f"Saving concatenated data frame {df_concat.shape} to file: {grouped_filename}")
