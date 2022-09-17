@@ -382,7 +382,7 @@ def main():
 
         use_deepcadrme = True
         if use_deepcadrme:
-            all_drugs = [os.path.split(fn)[-1].strip('.xml') for fn in os.listdir('./data/deepcadrme/guess_xml')]
+            all_drugs = sorted([os.path.split(fn)[-1].strip('.xml') for fn in os.listdir('./data/deepcadrme/guess_xml')])
         else:
             # derive a drug list from the training and testing data provided
             train_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_training_set') if fn.find(suffix) != -1])
@@ -503,8 +503,8 @@ def main():
                     num_neg += 1
                     if source_method == 'exact':
                         num_neg_exact += 1
-
-                example_string = generate_example(ar_text, pt_meddra_term.lower(), start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
+                
+                example_string = generate_example(ar_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
                 # NOTE: I would like to include the PT meddra term as well in this output, but there is
                 # NOTE: a lot of code that assumes the structure of this file that would then need to be
