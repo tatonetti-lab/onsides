@@ -106,8 +106,8 @@ if __name__ == '__main__':
 
         if not 'section' in res:
             res['section'] = refsection
-        
-        groupby_cols = ['section', 'drug', 'llt_id', 'class']
+
+        groupby_cols = ['section', 'drug', 'meddra_id', 'class']
 
         if args.group_function == 'mean':
             df_grouped = res.groupby(by=groupby_cols).mean().reset_index()
