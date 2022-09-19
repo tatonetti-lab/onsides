@@ -322,7 +322,7 @@ if __name__ == '__main__':
     print(f"Loading reference data...")
 
     # datapath = './data/clinical_bert_reference_set.txt'
-    df = load_reference_data(args.ref, args.source)
+    df = load_reference_data(args.ref, args.refsource)
 
     print(df.head())
     print(len(df))
