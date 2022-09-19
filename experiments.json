@@ -11,7 +11,8 @@
       "epochs": [25],
       "learning-rate": [1e-6],
       "ifexists": ["quit"],
-      "network": ["Bio_ClinicalBERT"]
+      "network": ["Bio_ClinicalBERT"],
+      "refsource": ["all"]
     },
     "analyze_results": {
       "skip-train": [true],
@@ -213,6 +214,23 @@
       "construct_training_data": {
         "method": [0, 8],
         "section": ["BW"]
+      }
+    },
+
+    "9": {
+      "name": "ADR Term Identification Method",
+      "description": "Compare different methods of identifying ADR terms from text, exact string match vs deepcadrme.",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": "refsource",
+        "labels": ["All", "Exact Only"]
+      },
+      "construct_training_data": {
+        "method": [8],
+        "nwords": [125]
+      },
+      "fit_clinicalbert": {
+        "refsource": ["all", "exact"]
       }
     }
 

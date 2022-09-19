@@ -128,6 +128,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         fit_clinicalbert_data.get("learning-rate", defaults["fit_clinicalbert"]["learning-rate"]),
         fit_clinicalbert_data.get("ifexists", defaults["fit_clinicalbert"]["ifexists"]),
         fit_clinicalbert_data.get("network", defaults["fit_clinicalbert"]["network"]),
+        fit_clinicalbert_data.get("refsource", defaults["fit_clinicalbert"]["refsource"]),
     )
     network_codes = {
         'Bio_ClinicalBERT': 'CB',
@@ -140,7 +141,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
 
     epochperf_files = list()
 
-    for (method, nwords, section, reffn), max_length, batch_size, epochs, lr, ifexists, network in fcbd_iterator:
+    for (method, nwords, section, reffn), max_length, batch_size, epochs, lr, ifexists, network, refsource in fcbd_iterator:
 
         if max_length == -1:
             max_length = 2**int(np.ceil(np.log2(2*nwords)))
@@ -149,9 +150,9 @@ def tracker(args_id, args, data, replicate, clean_experiment):
             batch_size = batch_size_estimate(max_length)
 
         network_path = os.path.join(MODELS_DIR, network)
-        finalmodfn = f"{MODELS_DIR}/final-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
-        bestepochmodfn = f"{MODELS_DIR}/bestepoch-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
-        epochsfn = f"{RESULTS_DIR}/epoch-results-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        finalmodfn = f"{MODELS_DIR}/final-bydrug-{network_codes[network]}_{method}-{section}-{nwords}-{refsource}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
+        bestepochmodfn = f"{MODELS_DIR}/bestepoch-bydrug-{network_codes[network]}_{method}-{section}-{nwords}-{refsource}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.pth"
+        epochsfn = f"{RESULTS_DIR}/epoch-results-{network_codes[network]}_{method}-{section}-{nwords}-{refsource}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
 
         output_files.append(finalmodfn)
         output_files.append(bestepochmodfn)
@@ -159,10 +160,10 @@ def tracker(args_id, args, data, replicate, clean_experiment):
 
         epochperf_files.append(epochsfn)
 
-        fcbd_params_outputs.append(('final', network, method, section, nwords, epochs, lr, max_length, batch_size, finalmodfn))
-        fcbd_params_outputs.append(('bestepoch', network, method, section, nwords, epochs, lr, max_length, batch_size, bestepochmodfn))
+        fcbd_params_outputs.append(('final', network, method, section, nwords, refsource, epochs, lr, max_length, batch_size, finalmodfn))
+        fcbd_params_outputs.append(('bestepoch', network, method, section, nwords, refsource, epochs, lr, max_length, batch_size, bestepochmodfn))
 
-        # eprint(method, nwords, section, reffn, max_length, batch_size, epoch, lr, ifexists, network)
+        # eprint(method, nwords, refsource, section, reffn, max_length, batch_size, epoch, lr, ifexists, network)
         file_exists = os.path.exists(finalmodfn)
         bestepoch_file_exists = os.path.exists(bestepochmodfn)
         epochs_file_exists = os.path.exists(epochsfn)
@@ -180,7 +181,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
             if not epochs_file_exists:
                 eprint(f"    NOT FOUND: epoch results file missing.")
 
-            command = f"python3 src/fit_clinicalbert.py --base-dir {BASE_DIR} --ref {reffn} --max-length {max_length} --batch-size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network_path}"
+            command = f"python3 src/fit_clinicalbert.py --base-dir {BASE_DIR} --ref {reffn} --refsource {refsource} --max-length {max_length} --batch-size {batch_size} --epochs {epochs} --learning-rate {lr} --ifexists {ifexists} --network {network_path}"
             eprint(f"    Create with: {command}")
             is_complete = False
             remaining_commands.append(command)
@@ -197,12 +198,12 @@ def tracker(args_id, args, data, replicate, clean_experiment):
 
     ard_param_outputs = list()
 
-    for (modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, modelfn), skip_train, _network in ard_iterator:
+    for (modeltype, network, method, section, nwords, refsource, epochs, lr, max_length, batch_size, modelfn), skip_train, _network in ard_iterator:
 
         network_path = os.path.join(MODELS_DIR, network)
 
-        testmodresfn = f"{RESULTS_DIR}/{modeltype}-bydrug-{network_codes[network]}-test_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
-        validmodresfn = f"{RESULTS_DIR}/{modeltype}-bydrug-{network_codes[network]}-valid_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        testmodresfn = f"{RESULTS_DIR}/{modeltype}-bydrug-{network_codes[network]}-test_{method}-{section}-{nwords}-{refsource}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        validmodresfn = f"{RESULTS_DIR}/{modeltype}-bydrug-{network_codes[network]}-valid_{method}-{section}-{nwords}-{refsource}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
 
         output_files.append(testmodresfn)
         output_files.append(validmodresfn)
@@ -219,7 +220,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
             is_complete = False
             remaining_commands.append(command)
 
-        ard_param_outputs.append((modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, [testmodresfn, validmodresfn]))
+        ard_param_outputs.append((modeltype, network, method, section, nwords, refsource, epochs, lr, max_length, batch_size, [testmodresfn, validmodresfn]))
 
     eprint("")
     eprint("Checking for grouped results files...")
@@ -232,9 +233,9 @@ def tracker(args_id, args, data, replicate, clean_experiment):
 
     grouped_files = {'final': list(), 'bestepoch': list()}
 
-    for (modeltype, network, method, section, nwords, epochs, lr, max_length, batch_size, (testmodresfn, validmodresfn)), grpfun in crd_iterator:
+    for (modeltype, network, method, section, nwords, refsource, epochs, lr, max_length, batch_size, (testmodresfn, validmodresfn)), grpfun in crd_iterator:
 
-        grpresfn = f"{RESULTS_DIR}/grouped-{grpfun}-{modeltype}-bydrug-{network_codes[network]}_{method}-{section}-{nwords}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
+        grpresfn = f"{RESULTS_DIR}/grouped-{grpfun}-{modeltype}-bydrug-{network_codes[network]}_{method}-{section}-{nwords}-{refsource}_222_24_{epochs}_{lr}_{max_length}_{batch_size}.csv"
         grouped_files[modeltype].append(grpresfn)
 
         output_files.append(grpresfn)

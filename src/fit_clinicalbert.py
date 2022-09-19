@@ -292,6 +292,18 @@ def parse_network_argument(args_network):
 
     return network_code, network_path, pretrained_state
 
+def load_reference_data(datapath, source):
+    df = pd.read_csv(datapath)
+
+    if source == 'all':
+        # nothing to do here
+        pass
+    elif source in ('exact', 'deepcadrme'):
+        df = df[df['source_method'] == source]
+    else:
+        raise Exception(f"ERROR: Unexpected value passed in for --refsource argument: {source}")
+
+    return df
 
 if __name__ == '__main__':
 
@@ -304,14 +316,14 @@ if __name__ == '__main__':
     parser.add_argument('--ifexists', help="what to do if model already exists with same parameters, options are 'replicate', 'overwrite', 'quit' - default is 'quit'", type=str, default='quit')
     parser.add_argument('--network', help="path to pretained network, default is 'models/Bio_ClinicalBERT', but you can use other pretrained models or you can use previously saved states.", type=str, default='models/Bio_ClinicalBERT/')
     parser.add_argument('--base-dir', type=str, default='.')
-
+    parser.add_argument('--refsource', help="restrict reference data to only one source type, values may be 'all', 'exact', or 'deepcadrme'.", type=str, default='all')
     args = parser.parse_args()
 
     print(f"Loading reference data...")
 
     # datapath = './data/clinical_bert_reference_set.txt'
-    datapath = args.ref
-    df = pd.read_csv(datapath)
+    df = load_reference_data(args.ref, args.source)
+
     print(df.head())
     print(len(df))
 
@@ -319,8 +331,9 @@ if __name__ == '__main__':
     refset = int(args.ref.split('ref')[1].split('_')[0])
     refsection = args.ref.split('_')[-1].split('.')[0]
     refnwords = int(args.ref.split('nwords')[1].split('_')[0])
+    refsource = args.source
 
-    print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}\n\tnwords: {refnwords}")
+    print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}\n\tnwords: {refnwords}\n\trefsource: {refsource}")
 
     np_random_seed = 222
     random_state = 24
@@ -359,7 +372,7 @@ if __name__ == '__main__':
             print(f" WARNING: the provided batch size ({batch_size}) is greater than what we would estimate ({est_batch_size}) will work. You may run into memory issues. If so, reduce the batch size or use the default option value.")
 
     # check for existing model file
-    filename_params = f'{refset}-{refsection}-{refnwords}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
+    filename_params = f'{refset}-{refsection}-{refnwords}-{refsource}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'{args.base_dir}/models/final-bydrug-{network_code}_{filename_params}.pth'
     if os.path.exists(final_model_filename):
         print(f"Found final model already saved at path: {final_model_filename}")

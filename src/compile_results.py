@@ -12,7 +12,7 @@ import sys
 import argparse
 import pandas as pd
 
-from fit_clinicalbert import split_train_val_test
+from fit_clinicalbert import split_train_val_test, load_reference_data
 
 from construct_training_data import section_names2codes
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     prefix = fnnoext.split('_')[0]
     prefix_nosplit = '-'.join(prefix.split('-')[:-1])
     refset = fnnoext.split('_')[1]
-    refmethod, refsection, refnwords = refset.split('-')
+    refmethod, refsection, refnwords, refsource = refset.split('-')
 
     valid_section_codes = None
     if refsection == 'ALL':
@@ -59,9 +59,8 @@ if __name__ == '__main__':
     LR = fnnoext.split('_')[5]
     max_length = fnnoext.split('_')[6]
     batch_size = fnnoext.split('_')[7]
-
-    examplespath = args.examples
-    dfex = pd.read_csv(examplespath)
+    
+    dfex = load_reference_data(args.examples, refsource)
 
     print(f"Loding reference examples file...", flush=True)
     print(f" ex.shape (before split): {dfex.shape}")
