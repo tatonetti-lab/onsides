@@ -331,7 +331,7 @@ if __name__ == '__main__':
     refset = int(args.ref.split('ref')[1].split('_')[0])
     refsection = args.ref.split('_')[-1].split('.')[0]
     refnwords = int(args.ref.split('nwords')[1].split('_')[0])
-    refsource = args.source
+    refsource = args.refsource
 
     print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}\n\tnwords: {refnwords}\n\trefsource: {refsource}")
 
