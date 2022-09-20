@@ -422,7 +422,7 @@ if __name__ == '__main__':
     lafh = open(f'{args.base_dir}/results/epoch-results-{network_code}_{filename_params}.csv', 'w')
     writer = csv.writer(lafh)
     writer.writerow(['epoch', 'train_loss', 'train_accuracy', 'valid_loss', 'valid_accuracy', 'epoch_time', 'epoch_saved'])
-    for epoch in range(EPOCHS):
+    for epoch in range(len(training_results[0])):
         writer.writerow([epoch+1] + [training_results[i][epoch] for i in range(len(training_results))])
     lafh.close()
 
