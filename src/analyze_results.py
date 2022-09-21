@@ -65,7 +65,7 @@ if __name__ == '__main__':
     if not os.path.exists(datapath):
         raise Exception(f"ERROR: No reference set file found at {datapath}")
 
-    df = load_reference_data(datapath, refsource)
+    df = cb.load_reference_data(datapath, refsource)
 
     # randomly select by drug/label
     druglist = sorted(set(df['drug']))
