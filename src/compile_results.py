@@ -107,7 +107,7 @@ if __name__ == '__main__':
         if not 'section' in res:
             res['section'] = refsection
 
-        groupby_cols = ['section', 'drug', 'meddra_id', 'class']
+        groupby_cols = ['section', 'drug', 'pt_meddra_id', 'class']
 
         if args.group_function == 'mean':
             df_grouped = res.groupby(by=groupby_cols).mean().reset_index()
@@ -134,7 +134,7 @@ if __name__ == '__main__':
         for row in reader:
             data = dict(zip(header, row))
 
-            if data['LLT ID'] == '':
+            if data['PT ID'] == '':
                 continue
 
             if not section_names2codes[data['Section Display Name']] in valid_section_codes:
@@ -146,7 +146,7 @@ if __name__ == '__main__':
                 continue
 
             try:
-                gold_standard.add((section_code, data['Drug Name'].lower(), int(data['LLT ID'])))
+                gold_standard.add((section_code, data['Drug Name'].lower(), int(data['PT ID'])))
             except ValueError:
                 raise Exception(f"Failed on row: {data}")
 
@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
         scored_pairs = set()
         for index, row in df_grouped.iterrows():
-            scored_pairs.add((row['section'], row['drug'].lower(), int(row['meddra_id'])))
+            scored_pairs.add((row['section'], row['drug'].lower(), int(row['pt_meddra_id'])))
 
         data_to_append = list()
         #print(len(scored_pairs))

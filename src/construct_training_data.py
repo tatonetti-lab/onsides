@@ -153,7 +153,7 @@ def load_meddra():
     # llt_concept_id|llt_concept_name|llt_concept_code|pt_concept_id|pt_concept_name|pt_concept_code
     for row in reader:
         data = dict(zip(header, row))
-        llts[data['llt_concept_code']] = (data['llt_concept_name'].lower(), data['pt_concept_name'])
+        llts[data['llt_concept_code']] = (data['llt_concept_name'].lower(), data['pt_concept_name'], data['pt_concept_code'])
 
     meddra_fh.close()
 
@@ -371,7 +371,7 @@ def main():
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
 
-    writer.writerow(['section', 'drug', 'meddra_id', 'source_method', 'class', 'pt_meddra_term', 'found_term', 'string'])
+    writer.writerow(['section', 'drug', 'meddra_id', 'pt_meddra_id', 'source_method', 'class', 'pt_meddra_term', 'found_term', 'string'])
 
     total_num_neg = 0
     total_num_pos = 0
@@ -438,7 +438,7 @@ def main():
             # 1) exact string matches to the meddra term (either PT or LLT)
             # NOTE: llts has both PTs and LLTs because of the structure of the file
             found_terms = list()
-            for meddra_id, (llt_meddra_term, pt_meddra_term) in llts.items():
+            for meddra_id, (llt_meddra_term, pt_meddra_term, pt_meddra_id) in llts.items():
                 #print(f"{meddra_id}, {llt_meddra_term}, {pt_meddra_term}")
 
                 # Method using re module. Takes approx 4 seconds.
@@ -460,7 +460,7 @@ def main():
                 for i in range(len(li)-1):
                     # the occurrence of the word is at the end of the previous string
                     start_pos = start_pos + len(li[i])
-                    found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_term, 'exact'))
+                    found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_id, pt_meddra_term, 'exact'))
 
 
             print(f"\tFound {len(found_terms)} terms using exact string matches. Took {time.time()-start_time}s.")
@@ -479,7 +479,7 @@ def main():
                     # we don't need deepcadrme for this one, we will use the exact string matches
                     continue
 
-                found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_term, 'deepcadrme'))
+                found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_id, pt_meddra_term, 'deepcadrme'))
 
             print(f"\tFound {len(found_terms)} terms using both exact and DeepCADRME. Took {time.time()-start_time}s.")
 
@@ -489,7 +489,7 @@ def main():
             num_neg = 0
             num_neg_exact = 0
 
-            for found_term, meddra_id, start_pos, length, pt_meddra_term, source_method in found_terms:
+            for found_term, meddra_id, start_pos, length, pt_meddra_id, pt_meddra_term, source_method in found_terms:
 
                 # check if this event was annotated from the gold standard
                 # NOTE: llts_annotated contains both PTs and LLTs
@@ -503,13 +503,13 @@ def main():
                     num_neg += 1
                     if source_method == 'exact':
                         num_neg_exact += 1
-                
+
                 example_string = generate_example(ar_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
                 # NOTE: I would like to include the PT meddra term as well in this output, but there is
                 # NOTE: a lot of code that assumes the structure of this file that would then need to be
                 # NOTE: refactored. Therefore, I will leave this as a TODO for the future.
-                writer.writerow([section, drug, meddra_id, source_method, string_class, pt_meddra_term, found_term, example_string])
+                writer.writerow([section, drug, meddra_id, pt_meddra_id, source_method, string_class, pt_meddra_term, found_term, example_string])
 
             ################################################################################
             # This was the previous method we used to do this that only relied on exact
