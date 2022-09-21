@@ -59,8 +59,9 @@ if __name__ == '__main__':
     LR = fnnoext.split('_')[5]
     max_length = fnnoext.split('_')[6]
     batch_size = fnnoext.split('_')[7]
-    
+
     dfex = load_reference_data(args.examples, refsource)
+    dfex['drug'] = dfex['drug'].str.lower()
 
     print(f"Loding reference examples file...", flush=True)
     print(f" ex.shape (before split): {dfex.shape}")
@@ -128,7 +129,7 @@ if __name__ == '__main__':
 
         gold_standard = set()
 
-        uniq_drugs = set(df_grouped['drug'])
+        uniq_drugs = set(df_grouped['drug'].str.lower())
 
         for row in reader:
             data = dict(zip(header, row))
@@ -141,11 +142,11 @@ if __name__ == '__main__':
 
             section_code = section_names2codes[data['Section Display Name']]
 
-            if not data['Drug Name'] in uniq_drugs:
+            if not data['Drug Name'].lower() in uniq_drugs:
                 continue
 
             try:
-                gold_standard.add((section_code, data['Drug Name'], int(data['LLT ID'])))
+                gold_standard.add((section_code, data['Drug Name'].lower(), int(data['LLT ID'])))
             except ValueError:
                 raise Exception(f"Failed on row: {data}")
 
@@ -156,7 +157,7 @@ if __name__ == '__main__':
 
         scored_pairs = set()
         for index, row in df_grouped.iterrows():
-            scored_pairs.add((row['section'], row['drug'], int(row['meddra_id'])))
+            scored_pairs.add((row['section'], row['drug'].lower(), int(row['meddra_id'])))
 
         data_to_append = list()
         #print(len(scored_pairs))
