@@ -1,6 +1,6 @@
 # generates xml file for outputs
 # make sure the data folder xml_output exists under ./data/
-# last edited 07/05/2022
+# last edited 09/23/2022
 
 import xml.etree.ElementTree as ET
 import pandas as pd
@@ -24,19 +24,50 @@ def load_meddra():
 
 	return llts
 
+def load_meddra2(): 
+	# this creates 2 additional dictionaries that will tell you if something is PT/LLT 
+	# and also what the PT match to the LLTs are
+
+	meddra_table = pd.read_csv('./data/meddra_llt_pt_map.txt', sep = '|')
+	meddra_table.head()
+
+	meddra_table['concept name'] = "LLT"
+
+	meddra_table.loc[meddra_table['llt_concept_code'] == meddra_table['pt_concept_code'] , 'concept name'] = "PT"
+
+	#create dict based on LLT concept code
+	dict_meddra_concept= meddra_table.set_index('llt_concept_code').to_dict()['concept name']
+
+	# create dict based on if something is a LLT, we want the PT that goes along with it
+	dict_llt_to_pt = meddra_table.set_index('llt_concept_code').to_dict()['pt_concept_code']
+
+	return dict_meddra_concept, dict_llt_to_pt
+
 def generate_subelement(row): # row = row index
 	id_reaction = section + str(row[0] + 1) # the id's dont get eval'd so it doesn't matter that much
 	id_norm = id_reaction + str(".N") + str(row[0] + 1)
 	meddra_pt_id = str(row.llt_id)
 	meddra_pt = meddra_dict.get(str(row.llt_id))
 	meddra_pt = meddra_pt.lower()
-	
-	
+
+	# pt or llt?
+	meddra_type = dict_meddra_concept.get(row.llt_id)
+
 	Reaction = ET.SubElement(Reactions, "Reaction")
 	Reaction.set("id", id_reaction) 
 	Reaction.set("str", meddra_pt)
-	
-	subelement_generated = ET.SubElement(Reaction, "Normalization", id=id_norm, meddra_pt=meddra_pt, meddra_pt_id=meddra_pt_id)
+
+	if meddra_type == "LLT":
+		pt_match = str(dict_llt_to_pt.get(row.llt_id)) # this gives the id
+		
+		pt_string = meddra_dict.get(str(pt_match)) # this gives the string version of the pt
+
+		subelement_generated = ET.SubElement(Reaction, "Normalization", id=id_norm, 
+											 meddra_pt=pt_string, meddra_pt_id=pt_match,
+											meddra_llt_id = meddra_pt_id, meddra_llt = meddra_pt)
+	else:
+		subelement_generated = ET.SubElement(Reaction, "Normalization", id=id_norm, 
+			meddra_pt=meddra_pt, meddra_pt_id=meddra_pt_id)
 
 	return subelement_generated
 
@@ -53,6 +84,8 @@ if __name__ == "__main__":
 	print(f"Loading data...")
 
 	meddra_dict = load_meddra()
+	dict_meddra_concept, dict_llt_to_pt = load_meddra2()
+
 
 	# PARAMETERS 
 	all_df = pd.read_csv(args.results) #pd.read_csv("grouped-mean-bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.csv")
