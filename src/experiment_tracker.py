@@ -109,7 +109,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         ctd_params_outputs.append((method, nwords, section, fn))
 
         file_exists = os.path.exists(fn)
-        eprint(f"  {fn}...{file_exists}")
+        eprint(f"  {fn} ...{file_exists}")
         if not file_exists:
             command = f"python3 src/construct_training_data.py --method {method} --nwords {nwords} --section {section}"
             eprint(f"    NOT FOUND, create with: {command}")
@@ -169,9 +169,9 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         epochs_file_exists = os.path.exists(epochsfn)
 
         if not args.skip_models:
-            eprint(f"  {finalmodfn}...{file_exists}")
-            eprint(f"  {bestepochmodfn}...{bestepoch_file_exists}")
-            eprint(f"  {epochsfn}...{epochs_file_exists}")
+            eprint(f"  {finalmodfn} ...{file_exists}")
+            eprint(f"  {bestepochmodfn} ...{bestepoch_file_exists}")
+            eprint(f"  {epochsfn} ...{epochs_file_exists}")
 
         if not args.skip_models and (not file_exists or not bestepoch_file_exists or not epochs_file_exists):
             if not file_exists:
@@ -210,8 +210,8 @@ def tracker(args_id, args, data, replicate, clean_experiment):
 
         test_file_exists = os.path.exists(testmodresfn)
         valid_file_exists = os.path.exists(validmodresfn)
-        eprint(f"  {testmodresfn}...{test_file_exists}")
-        eprint(f"  {validmodresfn}...{valid_file_exists}")
+        eprint(f"  {testmodresfn} ...{test_file_exists}")
+        eprint(f"  {validmodresfn} ...{valid_file_exists}")
 
         if not test_file_exists or not valid_file_exists:
             skip_train_str = '' if not skip_train else '--skip-train '
@@ -241,7 +241,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         output_files.append(grpresfn)
 
         file_exists = os.path.exists(grpresfn)
-        eprint(f"  {grpresfn}...{file_exists}")
+        eprint(f"  {grpresfn} ...{file_exists}")
 
         if not file_exists:
             command = f"python3 src/compile_results.py --base-dir {BASE_DIR} --group-function {grpfun} --results {testmodresfn} {validmodresfn} --examples ./data/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"

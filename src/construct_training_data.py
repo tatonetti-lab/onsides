@@ -174,7 +174,8 @@ def load_deepcadrme():
 
     deepcadrme = defaultdict(list)
     for _, xmlfile, term, start, length, match_method, meddra_id, meddra_string in reader:
-        deepcadrme[xmlfile].append( (term, start, length, match_method, meddra_id, meddra_string) )
+        drugname = xmlfile.strip('.xml').lower()
+        deepcadrme[drugname].append( (term, start, length, match_method, meddra_id, meddra_string) )
 
     return deepcadrme
 
@@ -380,14 +381,10 @@ def main():
         suffix = section_suffices[section]
         section_display_name = section_display_names[section]
 
-        use_deepcadrme = True
-        if use_deepcadrme:
-            all_drugs = sorted([os.path.split(fn)[-1].strip('.xml') for fn in os.listdir('./data/deepcadrme/guess_xml')])
-        else:
-            # derive a drug list from the training and testing data provided
-            train_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_training_set') if fn.find(suffix) != -1])
-            test_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_test_set') if fn.find(suffix) != -1])
-            all_drugs = sorted(train_drugs | test_drugs)
+        # derive a drug list from the training and testing data provided
+        train_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_training_set') if fn.find(suffix) != -1])
+        test_drugs = set([fn.split('_')[0] for fn in os.listdir('./data/200_test_set') if fn.find(suffix) != -1])
+        all_drugs = sorted(train_drugs | test_drugs)
 
         print(f"Found {len(all_drugs)} total drugs with available files.")
 
@@ -404,31 +401,32 @@ def main():
             print(f"\tIntersection of terms with local meddra map: {len(string_annotated & set_meddra_terms)}")
 
             # load text from the desired (e.g. ADVERSE REACTIONS) section
-            use_deepcadrme = True
-            if use_deepcadrme:
-                # use the output of deepcadrme
-                ar_file_path = f'./data/deepcadrme/guess_xml/{drug}.xml'
-                # print(ar_file_path)
-                if os.path.exists(ar_file_path):
-                    tree = ET.parse(ar_file_path)
-                    root = tree.getroot()
-                    xml_sections = root.findall("./Text/Section[@name='%s']" % section_deepcadrme_names[section])
-                    if len(xml_sections) != 1:
-                        raise Exception("ERROR: Unexpected number of sections named %s. Expected 1 found %s." % (section_deepcadrme_names[section], len(xml_sections)))
-                    ar_text = ' '.join(xml_sections[0].text.split()).lower()
+            # use_deepcadrme = True
+            # if use_deepcadrme:
+            #     # use the output of deepcadrme
+            #     ar_file_path = f'./data/deepcadrme/guess_xml/{drug}.xml'
+            #     # print(ar_file_path)
+            #     if os.path.exists(ar_file_path):
+            #         tree = ET.parse(ar_file_path)
+            #         root = tree.getroot()
+            #         xml_sections = root.findall("./Text/Section[@name='%s']" % section_deepcadrme_names[section])
+            #         if len(xml_sections) != 1:
+            #             raise Exception("ERROR: Unexpected number of sections named %s. Expected 1 found %s." % (section_deepcadrme_names[section], len(xml_sections)))
+            #         ar_text = ' '.join(xml_sections[0].text.split()).lower()
+            # else:
+            # TODO: It would be preferable if we could use the xml labels directly since it takes a lot of
+            # TODO: to process them into this format where the different sections are split out. That will
+            # TODO: take a bit of fancy xml parsing in python that we haven't implemented yet.
+            ar_file_path = f'./data/200_training_set/{drug}_{suffix}'
+            if os.path.exists(ar_file_path):
+                ar_fh = open(ar_file_path)
             else:
-                # use the xml label files directly
-                # NOTE: This
-                ar_file_path = f'./data/200_training_set/{drug}_{suffix}'
+                ar_file_path = f'./data/200_test_set/{drug}_{suffix}'
                 if os.path.exists(ar_file_path):
                     ar_fh = open(ar_file_path)
                 else:
-                    ar_file_path = f'./data/200_test_set/{drug}_{suffix}'
-                    if os.path.exists(ar_file_path):
-                        ar_fh = open(ar_file_path)
-                    else:
-                        raise Exception("Couldn't file adverse reactions file in either the training or testing set.")
-                ar_text = ' '.join(ar_fh.read().split()).lower()
+                    raise Exception("Couldn't file adverse reactions file in either the training or testing set.")
+            ar_text = ' '.join(ar_fh.read().split()).lower()
 
             print(f"\tNumber of words in {section_display_name} text: {len(ar_text.split())}")
 
@@ -471,15 +469,16 @@ def main():
             # 2) DeepCADRME mentions, normalized to meddra terms (PT only)
             #    If DeepCADRME found string is exact match for a term (PT or LLT)
             #    then we skip that. It will be handled by the exact matches done above
-            if not f'{drug}.xml' in deepcadrme:
-                raise Exception(f'ERROR: No DeepCADRME output found for {drug}.xml.')
+            drugname = drug.lower()
+            if not drugname in deepcadrme:
+                print(f'WARNING: No DeepCADRME output found for {drugname}.')
+            else:
+                for term, start, length, match_method, pt_meddra_id, pt_meddra_term in deepcadrme[drugname]:
+                    if term in exact_term_list and start.find(',') == -1:
+                        # we don't need deepcadrme for this one, we will use the exact string matches
+                        continue
 
-            for term, start, length, match_method, pt_meddra_id, pt_meddra_term in deepcadrme[f'{drug}.xml']:
-                if term in exact_term_list and start.find(',') == -1:
-                    # we don't need deepcadrme for this one, we will use the exact string matches
-                    continue
-
-                found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_id, pt_meddra_term, 'deepcadrme'))
+                    found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_id, pt_meddra_term, 'deepcadrme'))
 
             print(f"\tFound {len(found_terms)} terms using both exact and DeepCADRME. Took {time.time()-start_time}s.")
 

@@ -295,6 +295,11 @@ def parse_network_argument(args_network):
 def load_reference_data(datapath, source):
     df = pd.read_csv(datapath)
 
+    if not 'source_method' in df:
+        if source != 'exact':
+            raise Exception(f"ERROR: Invalid source ({source}) for old reference file format. Must be 'exact'.")
+        return df
+
     if source == 'all':
         # nothing to do here
         pass
