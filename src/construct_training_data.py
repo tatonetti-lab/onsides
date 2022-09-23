@@ -401,19 +401,19 @@ def main():
             print(f"\tIntersection of terms with local meddra map: {len(string_annotated & set_meddra_terms)}")
 
             # load text from the desired (e.g. ADVERSE REACTIONS) section
-            # use_deepcadrme = True
-            # if use_deepcadrme:
-            #     # use the output of deepcadrme
-            #     ar_file_path = f'./data/deepcadrme/guess_xml/{drug}.xml'
-            #     # print(ar_file_path)
-            #     if os.path.exists(ar_file_path):
-            #         tree = ET.parse(ar_file_path)
-            #         root = tree.getroot()
-            #         xml_sections = root.findall("./Text/Section[@name='%s']" % section_deepcadrme_names[section])
-            #         if len(xml_sections) != 1:
-            #             raise Exception("ERROR: Unexpected number of sections named %s. Expected 1 found %s." % (section_deepcadrme_names[section], len(xml_sections)))
-            #         ar_text = ' '.join(xml_sections[0].text.split()).lower()
-            # else:
+
+            # use the output of deepcadrme
+            ar_file_path = f'./data/deepcadrme/guess_xml/{drug}.xml'
+            # print(ar_file_path)
+            deepcadrme_ar_text = None
+            if os.path.exists(ar_file_path):
+                tree = ET.parse(ar_file_path)
+                root = tree.getroot()
+                xml_sections = root.findall("./Text/Section[@name='%s']" % section_deepcadrme_names[section])
+                if len(xml_sections) != 1:
+                    raise Exception("ERROR: Unexpected number of sections named %s. Expected 1 found %s." % (section_deepcadrme_names[section], len(xml_sections)))
+                deepcadrme_ar_text = ' '.join(xml_sections[0].text.split()).lower()
+
             # TODO: It would be preferable if we could use the xml labels directly since it takes a lot of
             # TODO: to process them into this format where the different sections are split out. That will
             # TODO: take a bit of fancy xml parsing in python that we haven't implemented yet.
@@ -503,11 +503,12 @@ def main():
                     if source_method == 'exact':
                         num_neg_exact += 1
 
-                example_string = generate_example(ar_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
+                label_text = ar_text
+                if source_method == 'deepcadrme':
+                    label_text = deepcadrme_ar_text
 
-                # NOTE: I would like to include the PT meddra term as well in this output, but there is
-                # NOTE: a lot of code that assumes the structure of this file that would then need to be
-                # NOTE: refactored. Therefore, I will leave this as a TODO for the future.
+                example_string = generate_example(label_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
+                
                 writer.writerow([section, drug, meddra_id, pt_meddra_id, source_method, string_class, pt_meddra_term, found_term, example_string])
 
             ################################################################################
