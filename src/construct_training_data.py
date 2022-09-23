@@ -403,7 +403,7 @@ def main():
             # load text from the desired (e.g. ADVERSE REACTIONS) section
 
             # use the output of deepcadrme
-            ar_file_path = f'./data/deepcadrme/guess_xml/{drug}.xml'
+            ar_file_path = f'./data/deepcadrme/guess_xml/{drug.upper()}.xml'
             # print(ar_file_path)
             deepcadrme_ar_text = None
             if os.path.exists(ar_file_path):
@@ -508,7 +508,7 @@ def main():
                     label_text = deepcadrme_ar_text
 
                 example_string = generate_example(label_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
-                
+
                 writer.writerow([section, drug, meddra_id, pt_meddra_id, source_method, string_class, pt_meddra_term, found_term, example_string])
 
             ################################################################################
