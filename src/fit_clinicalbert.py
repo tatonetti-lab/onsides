@@ -245,10 +245,11 @@ def batch_size_estimate(max_length):
 def split_train_val_test(df, np_random_seed):
     # randomly select by drug/label
     druglist = sorted(set(df['drug']))
-
+    print(druglist)
     random.seed(np_random_seed)
     random.shuffle(druglist)
-
+    print(druglist)
+    
     np.random.seed(np_random_seed)
     drugs_train, drugs_val, drugs_test = np.split(druglist, [int(0.8*len(druglist)), int(0.9*len(druglist))])
 
@@ -258,7 +259,7 @@ def split_train_val_test(df, np_random_seed):
     df_train = df[df['drug'].isin(drugs_train)]
     df_val = df[df['drug'].isin(drugs_val)]
     df_test = df[df['drug'].isin(drugs_test)]
-    
+
     print(f"Starting examples has shape: {df.shape}")
     print(f"Resulting examples have shapes: ")
     print(f"\t df_train.shape = {df_train.shape}")
