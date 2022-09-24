@@ -65,13 +65,11 @@ if __name__ == '__main__':
     print(f"Loding reference examples file...", flush=True)
     print(f" ex.shape (before split): {dfex.shape}")
 
+
     df_ref = dict()
     df_ref['train'], df_ref['valid'], df_ref['test'] = split_train_val_test(dfex, np_random_seed)
+    # dfex['drug'] = dfex['drug'].str.lower()
 
-    # need to lowercase the names after we do the random splits, otherwise we get
-    # a different order of drugs
-    
-    dfex['drug'] = dfex['drug'].str.lower()
     dataframes = list()
     for resultspath in args.results:
         fnnoext = os.path.split(resultspath)[-1].split('.')[0]
@@ -132,7 +130,7 @@ if __name__ == '__main__':
         header = next(reader)
 
         gold_standard = set()
-
+        
         uniq_drugs = set(df_grouped['drug'].str.lower())
 
         for row in reader:

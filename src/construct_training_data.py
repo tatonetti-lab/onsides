@@ -390,6 +390,10 @@ def main():
 
         for drug in all_drugs:
 
+            # NOTE: This is temporary to try to recreate some results/solve a mystery.
+            if drug.lower() == 'zytiga':
+                continue
+
             print(f"Generating reference data for: {drug}")
 
             pts_annotated, llts_annotated, string_annotated = get_annotations(drug, section_display_name)
@@ -425,7 +429,7 @@ def main():
                 if os.path.exists(ar_file_path):
                     ar_fh = open(ar_file_path)
                 else:
-                    raise Exception("Couldn't file adverse reactions file in either the training or testing set.")
+                    raise Exception("Couldn't find adverse reactions file in either the training or testing set.")
             ar_text = ' '.join(ar_fh.read().split()).lower()
 
             print(f"\tNumber of words in {section_display_name} text: {len(ar_text.split())}")
@@ -509,7 +513,7 @@ def main():
 
                 example_string = generate_example(label_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
-                writer.writerow([section, drug, meddra_id, pt_meddra_id, source_method, string_class, pt_meddra_term, found_term, example_string])
+                writer.writerow([section, drug.upper(), meddra_id, pt_meddra_id, source_method, string_class, pt_meddra_term, found_term, example_string])
 
             ################################################################################
             # This was the previous method we used to do this that only relied on exact
