@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     df = cb.load_reference_data(datapath, refsource)
 
-    df_train, df_val, df_test = split_train_val_test(df, np_random_seed)
+    df_train, df_val, df_test = cb.split_train_val_test(df, np_random_seed)
 
     # # randomly select by drug/label
     # druglist = sorted(set(df['drug']))
