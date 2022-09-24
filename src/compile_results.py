@@ -61,7 +61,6 @@ if __name__ == '__main__':
     batch_size = fnnoext.split('_')[7]
 
     dfex = load_reference_data(args.examples, refsource)
-    dfex['drug'] = dfex['drug'].str.lower()
 
     print(f"Loding reference examples file...", flush=True)
     print(f" ex.shape (before split): {dfex.shape}")
@@ -69,6 +68,10 @@ if __name__ == '__main__':
     df_ref = dict()
     df_ref['train'], df_ref['valid'], df_ref['test'] = split_train_val_test(dfex, np_random_seed)
 
+    # need to lowercase the names after we do the random splits, otherwise we get
+    # a different order of drugs
+    
+    dfex['drug'] = dfex['drug'].str.lower()
     dataframes = list()
     for resultspath in args.results:
         fnnoext = os.path.split(resultspath)[-1].split('.')[0]
@@ -93,7 +96,7 @@ if __name__ == '__main__':
 
         ex = df_ref[split]
         print(f" ex.shape : {ex.shape}")
-        
+
         if ex.shape[0] != res.shape[0]:
             raise Exception("ERROR: Results file and examples file have different numbers of rows.")
 
