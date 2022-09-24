@@ -92,7 +92,8 @@ if __name__ == '__main__':
         print(f" res.shape: {res.shape}")
 
         ex = df_ref[split]
-
+        print(f" ex.shape : {ex.shape}")
+        
         if ex.shape[0] != res.shape[0]:
             raise Exception("ERROR: Results file and examples file have different numbers of rows.")
 

@@ -67,28 +67,31 @@ if __name__ == '__main__':
 
     df = cb.load_reference_data(datapath, refsource)
 
-    # randomly select by drug/label
-    druglist = sorted(set(df['drug']))
+    df_train, df_val, df_test = split_train_val_test(df, np_random_seed)
 
-    random.seed(np_random_seed)
-    random.shuffle(druglist)
-
-    drugs_train, drugs_val, drugs_test = np.split(druglist, [int(0.8*len(druglist)), int(0.9*len(druglist))])
-
-    print(f"Split labels in train, val, test by drug:")
-    print(len(drugs_train), len(drugs_val), len(drugs_test))
-
-    df_train = df[df['drug'].isin(drugs_train)]
-    df_val = df[df['drug'].isin(drugs_val)]
-    df_test = df[df['drug'].isin(drugs_test)]
-
-    print(len(df_train), len(df_val), len(df_test))
+    # # randomly select by drug/label
+    # druglist = sorted(set(df['drug']))
+    #
+    # random.seed(np_random_seed)
+    # random.shuffle(druglist)
+    #
+    # drugs_train, drugs_val, drugs_test = np.split(druglist, [int(0.8*len(druglist)), int(0.9*len(druglist))])
+    #
+    # print(f"Split labels in train, val, test by drug:")
+    # print(len(drugs_train), len(drugs_val), len(drugs_test))
+    #
+    # df_train = df[df['drug'].isin(drugs_train)]
+    # df_val = df[df['drug'].isin(drugs_val)]
+    # df_test = df[df['drug'].isin(drugs_test)]
+    #
+    # print(len(df_train), len(df_val), len(df_test))
 
     file_parameters = f'{refset}-{refsection}-{refnwords}-{refsource}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
 
     test_filename = f'{args.base_dir}/results/{prefix}-test_{file_parameters}.csv'
 
     print(f"Evaluating testing data, will save to: {test_filename}")
+    print(f"\t df_test.shape = {df_test.shape}")
     outputs = cb.evaluate(model, df_test, max_length, batch_size)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
@@ -98,6 +101,7 @@ if __name__ == '__main__':
     valid_filename = f'{args.base_dir}/results/{prefix}-valid_{file_parameters}.csv'
 
     print(f"Evaluating validation data, will save to: {valid_filename}")
+    print(f"\t df_val.shape = {df_val.shape}")
     outputs = cb.evaluate(model, df_val, max_length, batch_size)
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
@@ -108,6 +112,7 @@ if __name__ == '__main__':
         train_filename = f'{args.base_dir}/results/{prefix}-train_{file_parameters}.csv'
 
         print(f"Evaluating training data, will save to: {train_filename}")
+        print(f"\t df_train.shape = {df_train.shape}")
         outputs = cb.evaluate(model, df_train, max_length, batch_size)
         npoutputs = [x.cpu().detach().numpy() for x in outputs]
         predictions = np.vstack(npoutputs)
