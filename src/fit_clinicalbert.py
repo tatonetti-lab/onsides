@@ -258,7 +258,8 @@ def split_train_val_test(df, np_random_seed):
     df_train = df[df['drug'].isin(drugs_train)]
     df_val = df[df['drug'].isin(drugs_val)]
     df_test = df[df['drug'].isin(drugs_test)]
-
+    
+    print(f"Starting examples has shape: {df.shape}")
     print(f"Resulting examples have shapes: ")
     print(f"\t df_train.shape = {df_train.shape}")
     print(f"\t df_val.shape = {df_val.shape}")
