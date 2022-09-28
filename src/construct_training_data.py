@@ -390,10 +390,6 @@ def main():
 
         for drug in all_drugs:
 
-            # NOTE: This is temporary to try to recreate some results/solve a mystery.
-            if drug.lower() == 'zytiga':
-                continue
-
             print(f"Generating reference data for: {drug}")
 
             pts_annotated, llts_annotated, string_annotated = get_annotations(drug, section_display_name)
