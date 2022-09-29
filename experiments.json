@@ -223,14 +223,14 @@
       "factor": {
         "script": "fit_clinicalbert",
         "parameter": "refsource",
-        "labels": ["All", "Exact Only", "DeepCADRME Only"]
+        "labels": ["All", "Exact Only"]
       },
       "construct_training_data": {
         "method": [8],
         "nwords": [125]
       },
       "fit_clinicalbert": {
-        "refsource": ["all", "exact", "deepcadrme"]
+        "refsource": ["all", "exact"]
       }
     }
 
