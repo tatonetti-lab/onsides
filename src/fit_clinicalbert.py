@@ -22,8 +22,8 @@ from tqdm import tqdm
 
 labels = {'not_event': 0, 'is_event': 1}
 pretrained_state_ids = {
-    'bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth': '0',
-    'bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth': '1'
+    'bestepoch-bydrug-CB_0-AR-125-all_222_24_25_1e-06_256_32.pth': '0',
+    'bestepoch-bydrug-CB_0-BW-125-all_222_24_25_1e-06_256_32.pth': '1'
 }
 
 class Dataset(torch.utils.data.Dataset):
