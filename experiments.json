@@ -279,6 +279,19 @@
         "epochs": [25],
         "refsource": ["exact"]
       }
+    },
+    "V02-BW": {
+      "name": "Onsides Version 02 - Boxed Warnings",
+      "description": "V02 of the model to extract side effect terms from the Boxed Warnings section of the labels, created on April 29, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 9. Max F1 was 0.683 on the validation set and 0.657 on the test set. AUROC was 0.821 on the validation set and 0.798 on the test set. AUPR was 0.660 on the validation set and 0.657 on the test set.",
+      "construct_training_data": {
+        "method": [8],
+        "nwords": [125],
+        "section": ["BW"]
+      },
+      "fit_clinicalbert": {
+        "epochs": [25],
+        "refsource": ["all"]
+      }
     }
 
   }

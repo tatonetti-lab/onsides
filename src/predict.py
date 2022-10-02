@@ -6,8 +6,11 @@ predict.py
 # NOTE: this split command cats the header row to each split file:
 part=part2
 section=AR
-epochs=10
+epochs=25
 gpu=2
+
+**TODO: Need to update these instructions to account for new refsource parameter.**
+
 cd data/
 gunzip output-$part-rx_method8_nwords125_clinical_bert_application_set_$section.txt.gz
 tail -n +2 output-$part-rx_method8_nwords125_clinical_bert_application_set_$section.txt | split -d -C 100m - --filter='sh -c "{ head -n1 output-'$part'-rx_method8_nwords125_clinical_bert_application_set_'$section'.txt; cat; } > $FILE"' output-$part-rx_method8_nwords125_clinical_bert_application_set_$section\_split

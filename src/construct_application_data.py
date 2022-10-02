@@ -1,7 +1,7 @@
 """
 construct_application_data.py
 
-Generate applicationd data for all drug labels (~45k) in the same format as the
+Generate application data for all drug labels (~45k) in the same format as the
 reference data were generated.
 
 For each mentioned MedDRA term, we grab the nearest ~60 words on either side

@@ -13,6 +13,8 @@ import pandas as pd
 
 # These are determined in the Compare notebook by looking at the validation data
 
+# TODO: Need to add in Version 02.
+
 thresholds = {
 # Onsides V01, reference method 8, nwords 125, epochs 10, all other parmas are defaults
 # this value is taken from the Experiment 7 notebook.
