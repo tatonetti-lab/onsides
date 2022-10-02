@@ -128,8 +128,8 @@
       },
       "fit_clinicalbert": {
         "network": [
-          "bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth",
-          "bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth"
+          "bestepoch-bydrug-CB_0-AR-125-all_222_24_25_1e-06_256_32.pth",
+          "bestepoch-bydrug-CB_0-BW-125-all_222_24_25_1e-06_256_32.pth"
         ],
         "epochs": [0, 10]
       }
