@@ -133,8 +133,8 @@ def tracker(args_id, args, data, replicate, clean_experiment):
     network_codes = {
         'Bio_ClinicalBERT': 'CB',
         'microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract': 'PMB',
-        'bestepoch-bydrug-CB_0-AR-125_222_24_25_1e-06_256_32.pth': 'CB0',
-        'bestepoch-bydrug-CB_0-BW-125_222_24_25_1e-06_256_32.pth': 'CB1'
+        'bestepoch-bydrug-CB_0-AR-125-all_222_24_25_1e-06_256_32.pth': 'CB0',
+        'bestepoch-bydrug-CB_0-BW-125-all_222_24_25_1e-06_256_32.pth': 'CB1'
     }
 
     fcbd_params_outputs = list()
