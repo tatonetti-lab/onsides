@@ -251,7 +251,20 @@
         "section": ["AR"]
       },
       "fit_clinicalbert": {
-        "epochs": [10]
+        "epochs": [10],
+        "refsource": ["exact"]
+      }
+    },
+    "V02-AR": {
+      "name": "Onsides Version 02 - Adverse Reactions",
+      "description": "V02 of the model to extract side effect terms from the Adverse Reactions section of the labels, created on October 2, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 9. Max F1 (threshold = 2.6559) was 0.873 on the validation set and 0.865 on the test set. AUROC was 0.902 on the validation set and 0.889 on the test set. AUPR was 0.916 on the validation set and 0.904 on the test set.",
+      "construct_training_data": {
+        "method": [8],
+        "nwords": [125],
+        "section": ["AR"]
+      },
+      "fit_clinicalbert": {
+        "epochs": [25]
       }
     },
     "V01-BW": {
@@ -263,7 +276,8 @@
         "section": ["BW"]
       },
       "fit_clinicalbert": {
-        "epochs": [25]
+        "epochs": [25],
+        "refsource": ["exact"]
       }
     }
 
