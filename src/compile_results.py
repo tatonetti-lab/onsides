@@ -32,7 +32,7 @@ if __name__ == '__main__':
     for resultspath in args.results:
         fnnoext = os.path.split(resultspath)[-1].split('.')[0]
         if len(fnnoext.split('_')) != 8:
-            raise Exception("ERROR: Results filename ({resultspath}) not in format expected: {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth")
+            raise Exception("ERROR: Results filename ({resultspath}) not in format expected: {prefix}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth")
 
     if len(set([rp.replace('test', '').replace('valid', '').replace('train', '') for rp in args.results])) > 1:
         raise Exception("ERROR: Results files should match in all paramters besides the split (train/valid/test).")
@@ -54,7 +54,7 @@ if __name__ == '__main__':
         valid_section_codes = (refsection,)
 
     np_random_seed = int(fnnoext.split('_')[2])
-    random_state = int(fnnoext.split('_')[3])
+    split_method = fnnoext.split('_')[3]
     EPOCHS = int(fnnoext.split('_')[4])
     LR = fnnoext.split('_')[5]
     max_length = fnnoext.split('_')[6]
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
 
     df_ref = dict()
-    df_ref['train'], df_ref['valid'], df_ref['test'] = split_train_val_test(dfex, np_random_seed)
+    df_ref['train'], df_ref['valid'], df_ref['test'] = split_train_val_test(dfex, np_random_seed, split_method)
     # dfex['drug'] = dfex['drug'].str.lower()
 
     dataframes = list()
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         print(f" split: {split}")
         print(f" refset: {refset}")
         print(f" np_random_seed: {np_random_seed}")
-        print(f" random_state: {random_state}")
+        print(f" split_method: {split_method}")
         print(f" EPOCHS: {EPOCHS}")
         print(f" LR: {LR}")
         print(f" max_length: {max_length}")
@@ -130,8 +130,8 @@ if __name__ == '__main__':
         header = next(reader)
 
         gold_standard = set()
-        
-        uniq_drugs = set(df_grouped['drug'].str.lower())
+
+        uniq_drugs = set(df_grouped['drug'].str.upper())
 
         for row in reader:
             data = dict(zip(header, row))
@@ -144,11 +144,11 @@ if __name__ == '__main__':
 
             section_code = section_names2codes[data['Section Display Name']]
 
-            if not data['Drug Name'].lower() in uniq_drugs:
+            if not data['Drug Name'].upper() in uniq_drugs:
                 continue
 
             try:
-                gold_standard.add((section_code, data['Drug Name'].lower(), int(data['PT ID'])))
+                gold_standard.add((section_code, data['Drug Name'].upper(), int(data['PT ID'])))
             except ValueError:
                 raise Exception(f"Failed on row: {data}")
 
@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
         scored_pairs = set()
         for index, row in df_grouped.iterrows():
-            scored_pairs.add((row['section'], row['drug'].lower(), int(row['pt_meddra_id'])))
+            scored_pairs.add((row['section'], row['drug'].upper(), int(row['pt_meddra_id'])))
 
         data_to_append = list()
         #print(len(scored_pairs))
@@ -199,6 +199,6 @@ if __name__ == '__main__':
 
     df_concat["meddra_id"] = [int(meddra_id) for meddra_id in df_concat["meddra_id"]]
     # print(df_concat.dtypes)
-    grouped_filename = f"grouped-{args.group_function}-{prefix_nosplit}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
+    grouped_filename = f"grouped-{args.group_function}-{prefix_nosplit}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
     print(f"Saving concatenated data frame {df_concat.shape} to file: {grouped_filename}")
     df_concat.to_csv(os.path.join(args.base_dir, 'results', grouped_filename))

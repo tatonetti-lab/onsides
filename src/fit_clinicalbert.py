@@ -242,7 +242,7 @@ def batch_size_estimate(max_length):
     power = np.log2(bs)
     return 2**round(power)
 
-def split_train_val_test(df, np_random_seed):
+def split_train_val_test(df, np_random_seed, split_method):
     # randomly select by drug/label
     druglist = sorted(set(df['drug']))
     # print(druglist)
@@ -251,7 +251,18 @@ def split_train_val_test(df, np_random_seed):
     # print(druglist)
 
     np.random.seed(np_random_seed)
-    drugs_train, drugs_val, drugs_test = np.split(druglist, [int(0.8*len(druglist)), int(0.9*len(druglist))])
+    if split_method == 'TAC':
+        # split accoding to TAC training/testing splits
+        if not 'tac' in df:
+            raise Exception("ERROR: The 'tac' column was not found in the reference data. This is likely due to the ref file being generated using an old version of create_training_data.py. Regenerating using construct_training_data.py should fix this issue.")
+
+        train_drugs = sorted(set(df[df['tac']=='train']['drug']))
+        drugs_train, drugs_val = np.split(train_drugs, [int(0.9*len(train_drugs))])
+        drugs_test = sorted(set(df[df['tac']=='test']['drug']))
+
+    elif int(split_method) == 24:
+        # default approach, use all drugs split 80/10/10
+        drugs_train, drugs_val, drugs_test = np.split(druglist, [int(0.8*len(druglist)), int(0.9*len(druglist))])
 
     print(f"Split labels in train, val, test by drug:")
     print(len(drugs_train), len(drugs_val), len(drugs_test))
@@ -329,6 +340,7 @@ if __name__ == '__main__':
     parser.add_argument('--network', help="path to pretained network, default is 'models/Bio_ClinicalBERT', but you can use other pretrained models or you can use previously saved states.", type=str, default='models/Bio_ClinicalBERT/')
     parser.add_argument('--base-dir', type=str, default='.')
     parser.add_argument('--refsource', help="restrict reference data to only one source type, values may be 'all', 'exact', or 'deepcadrme'.", type=str, default='all')
+    parser.add_argument('--split-method', help="which method to use to split the data into train/valid/test, default is 90/10/10 and possible values are 24 or TAC", type=str, default='24')
     args = parser.parse_args()
 
     print(f"Loading reference data...")
@@ -348,7 +360,13 @@ if __name__ == '__main__':
     print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}\n\tnwords: {refnwords}\n\trefsource: {refsource}")
 
     np_random_seed = 222
-    random_state = 24
+
+    # training/validation/testing split method
+    # 24 => Default, randomly split by drugs 80/10/10
+    # TAC => training/validation split 90/10 from tac training data (101 labels)
+    #        testing is 100 of tac testing data (99 labels)
+    split_method = args.split_method
+
     max_length = None
     batch_size = args.batch_size
     EPOCHS = args.epochs
@@ -384,7 +402,7 @@ if __name__ == '__main__':
             print(f" WARNING: the provided batch size ({batch_size}) is greater than what we would estimate ({est_batch_size}) will work. You may run into memory issues. If so, reduce the batch size or use the default option value.")
 
     # check for existing model file
-    filename_params = f'{refset}-{refsection}-{refnwords}-{refsource}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
+    filename_params = f'{refset}-{refsection}-{refnwords}-{refsource}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
     final_model_filename = f'{args.base_dir}/models/final-bydrug-{network_code}_{filename_params}.pth'
     if os.path.exists(final_model_filename):
         print(f"Found final model already saved at path: {final_model_filename}")
@@ -406,7 +424,7 @@ if __name__ == '__main__':
         else:
             raise Exception(f"ERROR: Unexpected option set for --ifexists argument: {args.ifexists}")
 
-    df_train, df_val, df_test = split_train_val_test(df, np_random_seed)
+    df_train, df_val, df_test = split_train_val_test(df, np_random_seed, split_method)
 
     print(f"Resulting dataframes have sizes:")
     print(len(df_train), len(df_val), len(df_test))
@@ -423,6 +441,10 @@ if __name__ == '__main__':
 
     print("Fitting the model...")
     best_epoch_model_filename = f'{args.base_dir}/models/bestepoch-bydrug-{network_code}_{filename_params}.pth'
+
+    # Set the random seed so the results are exactly reproducible
+    # Random seeds for the system and numpy are set when before they are used
+    torch.manual_seed(np_random_seed)
 
     training_results = train(model, df_train, df_val, LR, EPOCHS, max_length, batch_size, best_epoch_model_filename)
 

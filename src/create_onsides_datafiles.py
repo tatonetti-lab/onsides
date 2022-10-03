@@ -38,14 +38,14 @@ if __name__ == '__main__':
 
     fnnoext = os.path.split(resultspath)[-1].split('.')[0]
     if len(fnnoext.split('_')) != 9:
-        raise Exception("Results filename not in format expected: {prefix}_{appset}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz")
+        raise Exception("Results filename not in format expected: {prefix}_{appset}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz")
 
     prefix = fnnoext.split('_')[0]
     appset = fnnoext.split('_')[1]
     refset = fnnoext.split('_')[2]
     refsection = refset.split('-')[1]
     np_random_seed = int(fnnoext.split('_')[3])
-    random_state = int(fnnoext.split('_')[4])
+    split_method = fnnoext.split('_')[4]
     EPOCHS = int(fnnoext.split('_')[5])
     LR = fnnoext.split('_')[6]
     max_length = fnnoext.split('_')[7]
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     print(f" appset: {appset}")
     print(f" refset: {refset}")
     print(f" np_random_seed: {np_random_seed}")
-    print(f" random_state: {random_state}")
+    print(f" split_method: {split_method}")
     print(f" EPOCHS: {EPOCHS}")
     print(f" LR: {LR}")
     print(f" threshold: {thresholds[refsection]}")
@@ -89,6 +89,6 @@ if __name__ == '__main__':
     print(f"Predictions data frame created...")
     print(f" predictions.shape: {predictions.shape}")
 
-    out_filename = f'./results/onsides.db/{prefix}_{appset}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
+    out_filename = f'./results/onsides.db/{prefix}_{appset}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
     print(f"Saving to gzipped file: {out_filename}...")
     predictions.to_csv(out_filename)

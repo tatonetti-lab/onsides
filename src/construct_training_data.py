@@ -372,7 +372,7 @@ def main():
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
 
-    writer.writerow(['section', 'drug', 'meddra_id', 'pt_meddra_id', 'source_method', 'class', 'pt_meddra_term', 'found_term', 'string'])
+    writer.writerow(['section', 'drug', 'tac', 'meddra_id', 'pt_meddra_id', 'source_method', 'class', 'pt_meddra_term', 'found_term', 'string'])
 
     total_num_neg = 0
     total_num_pos = 0
@@ -509,7 +509,15 @@ def main():
 
                 example_string = generate_example(label_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
-                writer.writerow([section, drug.upper(), meddra_id, pt_meddra_id, source_method, string_class, pt_meddra_term, found_term, example_string])
+                tac = None
+                if drug in train_drugs:
+                    tac = 'train'
+                elif drug in test_drugs:
+                    tac = 'test'
+                else:
+                    raise Exception(f"ERROR: Drug {drug} not found in either train_drugs or test_drugs. This shouldn't happen.")
+
+                writer.writerow([section, drug.upper(), tac, meddra_id, pt_meddra_id, source_method, string_class, pt_meddra_term, found_term, example_string])
 
             ################################################################################
             # This was the previous method we used to do this that only relied on exact

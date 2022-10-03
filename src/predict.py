@@ -61,11 +61,11 @@ if __name__ == '__main__':
     model_file_noext = os.path.split(model_file)[-1].split('.')[0]
 
     if len(model_file_noext.split('_')) != 8:
-        raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth")
+        raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth")
 
     refset, refsection, refnwords = model_file_noext.split('_')[1].split('-')
     np_random_seed = int(model_file_noext.split('_')[2])
-    random_state = int(model_file_noext.split('_')[3])
+    split_method = model_file_noext.split('_')[3]
     EPOCHS = int(model_file_noext.split('_')[4])
     LR = model_file_noext.split('_')[5]
     max_length = int(model_file_noext.split('_')[6])
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     print(f" refsection: {refsection}")
     print(f" refnwords: {refnwords}")
     print(f" np_random_seed: {np_random_seed}")
-    print(f" random_state: {random_state}")
+    print(f" split_method: {split_method}")
     print(f" EPOCHS: {EPOCHS}")
     print(f" LR: {LR}")
     print(f" max_length: {max_length}")
@@ -105,7 +105,7 @@ if __name__ == '__main__':
         is_split = True
         split_no = '-' + ex_filename.split('split')[1]
 
-    results_path = f'./results/{prefix}-{ex_prefix}{split_no}_app{ex_refset}-{ex_section}_ref{refset}-{refsection}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
+    results_path = f'./results/{prefix}-{ex_prefix}{split_no}_app{ex_refset}-{ex_section}_ref{refset}-{refsection}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
 
     print(f"Examples")
     print(f"-------------------")

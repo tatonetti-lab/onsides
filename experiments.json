@@ -12,7 +12,8 @@
       "learning-rate": [1e-6],
       "ifexists": ["quit"],
       "network": ["Bio_ClinicalBERT"],
-      "refsource": ["all"]
+      "refsource": ["all"],
+      "split-method": ["24"]
     },
     "analyze_results": {
       "skip-train": [true],
@@ -231,6 +232,23 @@
       },
       "fit_clinicalbert": {
         "refsource": ["all", "exact"]
+      }
+    },
+
+    "10": {
+      "name": "TAC Training/Testing Split",
+      "description": "Use the TAC training and testing splits instead of randomly splitting.",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": "split-method",
+        "labels": ["Default (80/10/10)", "TAC (45/5/50)"]
+      },
+      "construct_training_data": {
+        "method": [8],
+        "nwords": [125]
+      },
+      "fit_clinicalbert": {
+        "split-method": ["24", "TAC"]
       }
     }
 

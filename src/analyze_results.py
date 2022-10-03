@@ -26,11 +26,11 @@ if __name__ == '__main__':
     fnnoext = os.path.split(model_file)[-1].split('.')[0]
 
     if not len(fnnoext.split('_')) in (6, 8):
-        raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}.pth or {prefix}_{refset}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{MAX_LENGTH}_{BATCH_SIZE}.pth")
+        raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}.pth or {prefix}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{MAX_LENGTH}_{BATCH_SIZE}.pth")
 
     refset, refsection, refnwords, refsource = fnnoext.split('_')[1].split('-')
     np_random_seed = int(fnnoext.split('_')[2])
-    random_state = int(fnnoext.split('_')[3])
+    split_method = fnnoext.split('_')[3]
     EPOCHS = int(fnnoext.split('_')[4])
     LR = fnnoext.split('_')[5]
 
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     print(f" prefix: {prefix}")
     print(f" refset: {refset}")
     print(f" np_random_seed: {np_random_seed}")
-    print(f" random_state: {random_state}")
+    print(f" split_method: {split_method}")
     print(f" EPOCHS: {EPOCHS}")
     print(f" LR: {LR}")
     print(f" max_length: {max_length}")
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     df = cb.load_reference_data(datapath, refsource)
 
-    df_train, df_val, df_test = cb.split_train_val_test(df, np_random_seed)
+    df_train, df_val, df_test = cb.split_train_val_test(df, np_random_seed, split_method)
 
     # # randomly select by drug/label
     # druglist = sorted(set(df['drug']))
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     #
     # print(len(df_train), len(df_val), len(df_test))
 
-    file_parameters = f'{refset}-{refsection}-{refnwords}-{refsource}_{np_random_seed}_{random_state}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
+    file_parameters = f'{refset}-{refsection}-{refnwords}-{refsource}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}'
 
     test_filename = f'{args.base_dir}/results/{prefix}-test_{file_parameters}.csv'
 
