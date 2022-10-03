@@ -109,7 +109,8 @@ if __name__ == '__main__':
         if not 'section' in res:
             res['section'] = refsection
 
-        groupby_cols = ['section', 'drug', 'pt_meddra_id', 'class']
+        groupby_cols = ['section', 'drug', 'meddra_id', 'class']
+        # print(res)
 
         if args.group_function == 'mean':
             df_grouped = res.groupby(by=groupby_cols).mean().reset_index()
@@ -121,6 +122,10 @@ if __name__ == '__main__':
             df_grouped = res.groupby(by=groupby_cols).min().reset_index()
         else:
             raise Exception("ERROR. Should not be able to get to this code.")
+
+        df_grouped = df_grouped.drop('pt_meddra_id', axis=1)
+
+        # print(df_grouped)
 
         # For drug, event pairs that couldn't be scored we add them with 0's
         # otherwise we would way overestimate our total recall
@@ -159,7 +164,7 @@ if __name__ == '__main__':
 
         scored_pairs = set()
         for index, row in df_grouped.iterrows():
-            scored_pairs.add((row['section'], row['drug'].upper(), int(row['pt_meddra_id'])))
+            scored_pairs.add((row['section'], row['drug'].upper(), int(row['meddra_id'])))
 
         data_to_append = list()
         #print(len(scored_pairs))
