@@ -109,7 +109,7 @@ if __name__ == '__main__':
         if not 'section' in res:
             res['section'] = refsection
 
-        groupby_cols = ['section', 'drug', 'meddra_id', 'class']
+        groupby_cols = ['section', 'drug', 'pt_meddra_id', 'class']
         # print(res)
 
         if args.group_function == 'mean':
@@ -123,7 +123,7 @@ if __name__ == '__main__':
         else:
             raise Exception("ERROR. Should not be able to get to this code.")
 
-        df_grouped = df_grouped.drop('pt_meddra_id', axis=1)
+        df_grouped = df_grouped.drop('meddra_id', axis=1)
 
         # print(df_grouped)
 
@@ -164,7 +164,7 @@ if __name__ == '__main__':
 
         scored_pairs = set()
         for index, row in df_grouped.iterrows():
-            scored_pairs.add((row['section'], row['drug'].upper(), int(row['meddra_id'])))
+            scored_pairs.add((row['section'], row['drug'].upper(), int(row['pt_meddra_id'])))
 
         data_to_append = list()
         #print(len(scored_pairs))
@@ -179,12 +179,12 @@ if __name__ == '__main__':
         for s, d, e in (gold_standard-scored_pairs):
             data_to_append.append((s, d, e, 0.0, 0.0, 'is_event', 'not_scored'))
 
-        sections, drugs, meddra_ids, pred1s, pred0s, classes, scoreds = zip(*data_to_append)
+        sections, drugs, pt_meddra_ids, pred1s, pred0s, classes, scoreds = zip(*data_to_append)
 
         df_grouped = pd.concat([df_grouped,pd.DataFrame({
             'section': sections,
             'drug': drugs,
-            'meddra_id': meddra_ids,
+            'pt_meddra_id': pt_meddra_ids,
             'Pred1': pred1s,
             'Pred0': pred0s,
             'class': classes,
@@ -202,7 +202,7 @@ if __name__ == '__main__':
     for df in dataframes[1:]:
         df_concat = pd.concat([df_concat, df], ignore_index=True)
 
-    df_concat["meddra_id"] = [int(meddra_id) for meddra_id in df_concat["meddra_id"]]
+    df_concat["pt_meddra_id"] = [int(meddra_id) for meddra_id in df_concat["pt_meddra_id"]]
     # print(df_concat.dtypes)
     grouped_filename = f"grouped-{args.group_function}-{prefix_nosplit}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv"
     print(f"Saving concatenated data frame {df_concat.shape} to file: {grouped_filename}")

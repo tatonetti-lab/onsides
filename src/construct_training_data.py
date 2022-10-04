@@ -207,7 +207,8 @@ def get_annotations(drug, section_display_name):
 
     # NOTE: llts_annotated actually contains both PTs and LLTs
     # NOTE: because in the reference csv if the string found was directly mapped
-    # NOTE: to a PT then it's in both columns.
+    # NOTE: to a PT then it's in both columns. However, they may not contain
+    # NOTE: allof the PTs if only the LLT version of the term was annotated.
     return pts_annotated, llts_annotated, string_annotated
 
 def generate_example(ar_text, term, start_pos, length, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, prop_before):
@@ -490,9 +491,7 @@ def main():
 
             for found_term, meddra_id, start_pos, length, pt_meddra_id, pt_meddra_term, source_method in found_terms:
 
-                # check if this event was annotated from the gold standard
-                # NOTE: llts_annotated contains both PTs and LLTs
-                if meddra_id in llts_annotated:
+                if meddra_id in llts_annotated or meddra_id in pts_annotated or pt_meddra_id in pts_annotated:
                     string_class = 'is_event'
                     num_pos += 1
                     if source_method == 'exact':
