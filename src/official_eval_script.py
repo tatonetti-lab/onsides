@@ -214,7 +214,7 @@ def read(file):
                         attrib('meddra_pt_id', elem2), \
                         attrib('meddra_llt', elem2), \
                         attrib('meddra_llt_id', elem2), \
-                        attrib('flag', elem2))) 
+                        attrib('flag', elem2)))
 
   return label
 
@@ -509,4 +509,3 @@ if args.task4:
   print('--------------------------------------------------')
   print('Task 4 Results:')
   print_macro_f(results.task4.classifications)
-
