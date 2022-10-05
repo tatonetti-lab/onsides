@@ -206,7 +206,7 @@
 
     "8": {
       "name": "BW reference methods",
-      "description": "Compare refernece method 0 with reference metod 8 (top two) for Boxed Warnings.",
+      "description": "Compare refernece method 0 with reference method 8 (top two) for Boxed Warnings.",
       "factor": {
         "script": "construct_training_data",
         "parameter": "method",
@@ -223,15 +223,21 @@
       "description": "Compare different methods of identifying ADR terms from text, exact string match vs deepcadrme.",
       "factor": {
         "script": "fit_clinicalbert",
-        "parameter": "refsource",
-        "labels": ["All", "Exact Only"]
+        "parameter": ["refsource", "network"],
+        "labels": [
+          "All: ClinicalBERT",
+          "All: PubMedBERT",
+          "Exact Only: ClinicalBERT",
+          "Exact Only: PubMedBERT"
+        ]
       },
       "construct_training_data": {
         "method": [8],
         "nwords": [125]
       },
       "fit_clinicalbert": {
-        "refsource": ["all", "exact"]
+        "refsource": ["all", "exact"],
+        "network": ["Bio_ClinicalBERT", "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
     },
 
@@ -240,15 +246,21 @@
       "description": "Use the TAC training and testing splits instead of randomly splitting.",
       "factor": {
         "script": "fit_clinicalbert",
-        "parameter": "split-method",
-        "labels": ["Default (80/10/10)", "TAC (45/5/50)"]
+        "parameter": ["split-method", "network"],
+        "labels": [
+          "Default (80/10/10): CB",
+          "Default (80/10/10): PMB",
+          "TAC (45/5/50): CB",
+          "TAC (45/5/50): PBM"
+        ]
       },
       "construct_training_data": {
         "method": [8],
         "nwords": [125]
       },
       "fit_clinicalbert": {
-        "split-method": ["24", "TAC"]
+        "split-method": ["24", "TAC"],
+        "network": ["Bio_ClinicalBERT", "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
     }
 
