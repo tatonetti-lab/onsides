@@ -65,6 +65,7 @@ def get_args(addl_args = None):
     sub_event = False
     sub_nonsense = False
     prepend_event = False
+    prepend_source = False
     # prepend_section = False
     random_sampled_words = False
 
@@ -112,10 +113,10 @@ def get_args(addl_args = None):
         sub_event = True
         prepend_event = True
         args.prop_before = 0.875
-    # elif args.method == 12:
-    #     sub_event = True
-    #     prepend_event = True
-    #     prepend_section = True
+    elif args.method == 12:
+        sub_event = True
+        prepend_event = True
+        prepend_source = True
     else:
         raise Exception(f"Expected method argument to be an integer value (0-11). Got {args.method}")
 
@@ -139,7 +140,7 @@ def get_args(addl_args = None):
     else:
         raise Exception(f"ERROR: Unknown section specificed: {args.section}")
 
-    return args, sub_event, sub_nonsense, prepend_event, sections, random_sampled_words
+    return args, sub_event, sub_nonsense, prepend_event, prepend_source, sections, random_sampled_words
 
 def load_meddra():
     # load preferred terms and lower level terms
@@ -211,7 +212,7 @@ def get_annotations(drug, section_display_name):
     # NOTE: allof the PTs if only the LLT version of the term was annotated.
     return pts_annotated, llts_annotated, string_annotated
 
-def generate_example(ar_text, term, start_pos, length, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, prop_before):
+def generate_example(ar_text, term, start_pos, length, nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, prop_before, source):
 
     if type(start_pos) == str or type(length) == str:
         if type(start_pos) != str:
@@ -244,12 +245,20 @@ def generate_example(ar_text, term, start_pos, length, nwords, sub_event, sub_no
     if sub_nonsense:
         EVENT_STRING = 'YIHFKEHDK'
 
-    # TODO: Implement prepend section option (ref12, currently not implemented)
+    # TODO: Implement prepend section option
     START_STRING = ''
     if prepend_event:
         START_STRING = term
 
-    #
+    # Prepend source if it is not None type
+    if not source is None:
+        if source == 'exact':
+            START_STRING += ' ' + 'exact'
+        elif source == 'deepcadrme':
+            START_STRING += ' ' + 'split'
+        else:
+            raise Exception(f"ERROR: Encountered unexpected source value: {source}. Expected either 'exact' or 'deepcadrme'.")
+    
     if random_sampled_words:
         # method 5 is just a random bag of words
         example_string = ' '.join(random.sample(ar_text.split(), nwords))
@@ -364,7 +373,7 @@ def main():
 
     random.seed(222)
 
-    args, sub_event, sub_nonsense, prepend_event, sections, random_sampled_words = get_args()
+    args, sub_event, sub_nonsense, prepend_event, prepend_source, sections, random_sampled_words = get_args()
 
     llts = load_meddra()
     deepcadrme = load_deepcadrme()
@@ -506,7 +515,12 @@ def main():
                 if source_method == 'deepcadrme':
                     label_text = deepcadrme_ar_text
 
-                example_string = generate_example(label_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
+                # This is for reference method 12
+                source = None
+                if prepend_source:
+                    source = source_method
+
+                example_string = generate_example(label_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before, source)
 
                 tac = None
                 if drug in train_drugs:
