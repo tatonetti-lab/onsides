@@ -117,6 +117,21 @@ def get_args(addl_args = None):
         sub_event = True
         prepend_event = True
         prepend_source = True
+    elif args.method == 13:
+        sub_event = True
+        prepend_event = True
+        prepend_source = True
+        args.prop_before = 0.25
+    elif args.method == 14:
+        sub_event = True
+        prepend_event = True
+        prepend_source = True
+        args.prop_before = 0.125
+    elif args.method == 15:
+        sub_event = True
+        prepend_event = True
+        prepend_source = True
+        args.prop_before = 0.0
     else:
         raise Exception(f"Expected method argument to be an integer value (0-11). Got {args.method}")
 
@@ -258,7 +273,7 @@ def generate_example(ar_text, term, start_pos, length, nwords, sub_event, sub_no
             START_STRING += ' ' + 'split'
         else:
             raise Exception(f"ERROR: Encountered unexpected source value: {source}. Expected either 'exact' or 'deepcadrme'.")
-    
+
     if random_sampled_words:
         # method 5 is just a random bag of words
         example_string = ' '.join(random.sample(ar_text.split(), nwords))

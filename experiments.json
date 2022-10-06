@@ -186,6 +186,25 @@
       }
     },
 
+    "6B": {
+      "name": "Compare string before to string after with prepend refsource",
+      "description": "Same as Experiment 6A but now including refsource which was found in Experiment 0 to add value.",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "method",
+        "labels": [
+          "After Only",
+          "87.5% After",
+          "75% After",
+          "Before and After"
+        ]
+      },
+      "construct_training_data": {
+        "method": [15, 14, 13, 12],
+        "section": ["AR"]
+      }
+    },
+
     "7": {
       "name": "Compare values for nwords",
       "description": "Same as experiment 2 except for reference method 8, rather than 0. The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
