@@ -26,8 +26,8 @@
 
   "experiments":{
     "0": {
-      "name": "Compare Example Construction Methods",
-      "description": "We have five different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, or 4). See construct_training_data.py for more detials.",
+      "name": "Compare Example Construction Methods, ClinicalBERT",
+      "description": "We have six different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, or 4). See construct_training_data.py for more detials.",
       "factor": {
         "script": "construct_training_data",
         "parameter": "method",
@@ -47,6 +47,33 @@
         "section": ["AR"]
       },
       "fit_clinicalbert": {
+        "max-length": [32]
+      }
+    },
+
+    "0A": {
+      "name": "Compare Example Construction Methods, PubMedBERT",
+      "description": "We have six different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, or 4). See construct_training_data.py for more detials.",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "method",
+        "labels": [
+          "Substitute Term, Prepend Term",
+          "Prepend Term Only",
+          "Substitute Term Only",
+          "No Changes",
+          "Subsitute with Nonsense",
+          "Random Sentences",
+          "Substitute Term, Prepend Term, Prepend Source"
+        ]
+      },
+      "construct_training_data": {
+        "method": [0, 1, 2, 3, 4, 5, 12],
+        "nwords": [30],
+        "section": ["AR"]
+      },
+      "fit_clinicalbert": {
+        "network": ["Bio_ClinicalBERT", "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"],
         "max-length": [32]
       }
     },
