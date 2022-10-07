@@ -251,16 +251,35 @@
       }
     },
 
+    "7A": {
+      "name": "Compare values for nwords, for prepend ref source",
+      "description": "Same as experiment 2 except for reference method 8, rather than 0. The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "nwords",
+        "labels": [
+          "6", "15", "30", "60", "125", "250"
+        ]
+      },
+      "construct_training_data": {
+        "method": [14],
+        "nwords": [6, 15, 30, 60, 125, 250]
+      },
+      "fit_clinicalbert": {
+        "epochs": [10]
+      }
+    },
+
     "8": {
       "name": "BW reference methods",
-      "description": "Compare refernece method 0 with reference method 8 (top two) for Boxed Warnings.",
+      "description": "Compare top three reference methods (0, 8, and 14) for Boxed Warnings.",
       "factor": {
         "script": "construct_training_data",
         "parameter": "method",
-        "labels": ["0", "8"]
+        "labels": ["0", "8", "14"]
       },
       "construct_training_data": {
-        "method": [0, 8],
+        "method": [0, 8, 14],
         "section": ["BW"]
       }
     },
@@ -303,6 +322,29 @@
       },
       "construct_training_data": {
         "method": [8],
+        "nwords": [125]
+      },
+      "fit_clinicalbert": {
+        "split-method": ["24", "TAC"],
+        "network": ["Bio_ClinicalBERT", "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
+      }
+    },
+
+    "10A": {
+      "name": "TAC Training/Testing Split - prepend refsource",
+      "description": "Use the TAC training and testing splits instead of randomly splitting.",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": ["split-method", "network"],
+        "labels": [
+          "Default (80/10/10): CB",
+          "Default (80/10/10): PMB",
+          "TAC (45/5/50): CB",
+          "TAC (45/5/50): PBM"
+        ]
+      },
+      "construct_training_data": {
+        "method": [14],
         "nwords": [125]
       },
       "fit_clinicalbert": {
