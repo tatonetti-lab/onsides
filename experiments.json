@@ -73,7 +73,7 @@
         "section": ["AR"]
       },
       "fit_clinicalbert": {
-        "network": ["Bio_ClinicalBERT", "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"],
+        "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"],
         "max-length": [32]
       }
     },
