@@ -139,6 +139,20 @@
       }
     },
 
+    "4A": {
+      "name": "Compare performance across AR, BW, and WP sections, method 14 (prepend refsource, 87.5 After)",
+      "description": "Compare performance for each of the sections: Adverse Reactions (AR), Boxed Warnings (BW), and Warnings and Precautions (WP). For this experiment we train all of them independently from the pre-trained ClinicalBERT network. Also compare grouping all of the sections together. We may see improved performance of the lower frequency sections in this scenario.",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "section",
+        "labels": ["AR", "BW", "WP", "ALL", "ARBW"]
+      },
+      "construct_training_data": {
+        "section": ["AR", "BW", "WP", "ALL", "ARBW"],
+        "method": [14],
+      }
+    },
+
     "5": {
       "name": "Investigate pretraining with AR for Boxed Warning performance",
       "description": "Boxed warnings do not have as many training examples and suffer in performance. We want to investigate using the pretrained model from the Adverse Reactions sections with no additional training and with additional training to see how it performs.",
@@ -298,8 +312,7 @@
         ]
       },
       "construct_training_data": {
-        "method": [8],
-        "nwords": [125]
+        "method": [8]
       },
       "fit_clinicalbert": {
         "refsource": ["all", "exact"],
@@ -307,6 +320,28 @@
       }
     },
 
+    "9A": {
+      "name": "ADR Term Identification Method, prepend refsource",
+      "description": "Compare different methods of identifying ADR terms from text, exact string match vs deepcadrme.",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": ["refsource", "network"],
+        "labels": [
+          "All: ClinicalBERT",
+          "All: PubMedBERT",
+          "Exact Only: ClinicalBERT",
+          "Exact Only: PubMedBERT"
+        ]
+      },
+      "construct_training_data": {
+        "method": [14]
+      },
+      "fit_clinicalbert": {
+        "refsource": ["all", "exact"],
+        "network": ["Bio_ClinicalBERT", "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
+      }
+    },
+    
     "10": {
       "name": "TAC Training/Testing Split",
       "description": "Use the TAC training and testing splits instead of randomly splitting.",
