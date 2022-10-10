@@ -149,7 +149,7 @@
       },
       "construct_training_data": {
         "section": ["AR", "BW", "WP", "ALL", "ARBW"],
-        "method": [14],
+        "method": [14]
       }
     },
 
@@ -341,7 +341,7 @@
         "network": ["Bio_ClinicalBERT", "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
     },
-    
+
     "10": {
       "name": "TAC Training/Testing Split",
       "description": "Use the TAC training and testing splits instead of randomly splitting.",
