@@ -27,7 +27,7 @@
   "experiments":{
     "0": {
       "name": "Compare Example Construction Methods, ClinicalBERT",
-      "description": "We have six different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, or 4). See construct_training_data.py for more detials.",
+      "description": "We have six different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, 4, 5, or 12). See construct_training_data.py for more detials.",
       "factor": {
         "script": "construct_training_data",
         "parameter": "method",
@@ -53,7 +53,7 @@
 
     "0A": {
       "name": "Compare Example Construction Methods, PubMedBERT",
-      "description": "We have six different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, or 4). See construct_training_data.py for more detials.",
+      "description": "We have six different methods of creating the example strings based on whether or not we replace the adverse event term with a common term 'EVENT', prepend the adverse event term to the beginning of the example string, or replace the event with a nonsense (unmappable) term. These different methods are built using the construct_training_data.py script using the method argument to choose between the five (0, 1, 2, 3, 4, 5, or 12). See construct_training_data.py for more detials.",
       "factor": {
         "script": "construct_training_data",
         "parameter": "method",
@@ -246,8 +246,8 @@
       }
     },
 
-    "7": {
-      "name": "Compare values for nwords",
+    "2A": {
+      "name": "Compare values for nwords, ref method 8 (87.5% after)",
       "description": "Same as experiment 2 except for reference method 8, rather than 0. The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
       "factor": {
         "script": "construct_training_data",
@@ -265,8 +265,8 @@
       }
     },
 
-    "7A": {
-      "name": "Compare values for nwords, for prepend ref source",
+    "2B": {
+      "name": "Compare values for nwords, for ref method 14 (87.5% after, prepend ref source)",
       "description": "Same as experiment 2 except for reference method 8, rather than 0. The number of words we extract from the labels and use to make the examples is a core component of the reference set. Essentially the thinking is the more words the better, however, that also exponentially increases the running time. In this experiment we adjust the number of words used in the example strings from 30 up to 250 (our maximum).",
       "factor": {
         "script": "construct_training_data",
@@ -286,7 +286,7 @@
 
     "8": {
       "name": "BW reference methods",
-      "description": "Compare top three reference methods (0, 8, and 14) for Boxed Warnings.",
+      "description": "Compare top three reference methods (0, 8, and 14) for Boxed Warnings. Note these are only trained on the Boxed Warnings examples. See 8A for a version where we evalaute performance of BW but trained on ALL (as was found in Experiment 4 to produce better results for the BW section).",
       "factor": {
         "script": "construct_training_data",
         "parameter": "method",
@@ -295,6 +295,20 @@
       "construct_training_data": {
         "method": [0, 8, 14],
         "section": ["BW"]
+      }
+    },
+
+    "8A": {
+      "name": "BW reference methods, trained on ALL",
+      "description": "Compare top three reference methods (0, 8, and 14) for Boxed Warnings. This using the models trained on data from ALL sections and then the rows corresponding to Boxed Warnings are extracted. NOTE for Notebook Implementation: The extraction of the rows for BW will have to be done inline within the evaluate notebook. See Experiment 4 notebook for how to do this.",
+      "factor": {
+        "script": "construct_training_data",
+        "parameter": "method",
+        "labels": ["0", "8", "14"]
+      },
+      "construct_training_data": {
+        "method": [0, 8, 14],
+        "section": ["ALL"]
       }
     },
 
@@ -386,6 +400,18 @@
         "split-method": ["24", "TAC"],
         "network": ["Bio_ClinicalBERT", "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
+    },
+
+    "10B": {
+      "name": "TAC Training/Testing Split - prepend refsource, nwords explore",
+      "description": "Use the TAC training and testing splits instead of randomly splitting.",
+      "construct_training_data": {
+        "method": [14],
+        "nwords": [60, 125]
+      },
+      "fit_clinicalbert": {
+        "split-method": ["24", "TAC"]
+      }
     }
 
   },
@@ -411,9 +437,9 @@
     },
     "V02-AR": {
       "name": "Onsides Version 02 - Adverse Reactions",
-      "description": "V02 of the model to extract side effect terms from the Adverse Reactions section of the labels, created on October 2, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 9. Max F1 (threshold = 2.6559) was 0.873 on the validation set and 0.865 on the test set. AUROC was 0.902 on the validation set and 0.889 on the test set. AUPR was 0.916 on the validation set and 0.904 on the test set.",
+      "description": "V02 of the model to extract side effect terms from the Adverse Reactions section of the labels, created on October 24, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 1.848) was 0.880 on the validation set and 0.868 on the test set. AUROC was 0.922 on the validation set and 0.909 on the test set. AUPR was 0.942 on the validation set and 0.928 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.881, AUROC=0.895, and AUPR=0.921.",
       "construct_training_data": {
-        "method": [8],
+        "method": [14],
         "nwords": [125],
         "section": ["AR"]
       },
