@@ -161,9 +161,11 @@
         "parameter": ["network", "epochs"],
         "labels": [
           "PreTrain:AR, Fit 0 Epochs",
-          "PreTrain:AR, Fit 10 Epochs",
           "PreTrain:BW, Fit 0 Epochs",
-          "PreTrain:BW, Fit 10 Epochs"
+          "PreTrain:ALL, Fit 0 Epochs",
+          "PreTrain:AR, Fit 10 Epochs",
+          "PreTrain:BW, Fit 10 Epochs",
+          "PreTrain:ALL, Fit 10 Epochs"
         ]
       },
       "construct_training_data": {
@@ -172,7 +174,8 @@
       "fit_clinicalbert": {
         "network": [
           "bestepoch-bydrug-CB_0-AR-125-all_222_24_25_1e-06_256_32.pth",
-          "bestepoch-bydrug-CB_0-BW-125-all_222_24_25_1e-06_256_32.pth"
+          "bestepoch-bydrug-CB_0-BW-125-all_222_24_25_1e-06_256_32.pth",
+          "bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth"
         ],
         "epochs": [0, 10]
       }
@@ -320,8 +323,8 @@
         "parameter": ["refsource", "network"],
         "labels": [
           "All: ClinicalBERT",
-          "All: PubMedBERT",
           "Exact Only: ClinicalBERT",
+          "All: PubMedBERT",
           "Exact Only: PubMedBERT"
         ]
       },
@@ -342,8 +345,8 @@
         "parameter": ["refsource", "network"],
         "labels": [
           "All: ClinicalBERT",
-          "All: PubMedBERT",
           "Exact Only: ClinicalBERT",
+          "All: PubMedBERT",
           "Exact Only: PubMedBERT"
         ]
       },
@@ -364,9 +367,9 @@
         "parameter": ["split-method", "network"],
         "labels": [
           "Default (80/10/10): CB",
-          "Default (80/10/10): PMB",
           "TAC (45/5/50): CB",
-          "TAC (45/5/50): PBM"
+          "Default (80/10/10): PMB",
+          "TAC (45/5/50): PMB"
         ]
       },
       "construct_training_data": {
@@ -387,9 +390,9 @@
         "parameter": ["split-method", "network"],
         "labels": [
           "Default (80/10/10): CB",
-          "Default (80/10/10): PMB",
           "TAC (45/5/50): CB",
-          "TAC (45/5/50): PBM"
+          "Default (80/10/10): PMB",
+          "TAC (45/5/50): PMB"
         ]
       },
       "construct_training_data": {
@@ -405,6 +408,16 @@
     "10B": {
       "name": "TAC Training/Testing Split - prepend refsource, nwords explore",
       "description": "Use the TAC training and testing splits instead of randomly splitting.",
+      "factor": {
+        "script": ["construct_training_data", "fit_clinicalbert"],
+        "parameter": ["nwords", "split-method"],
+        "xlabels": [
+          "Nwords=60, Default Split (80/10/10)",
+          "Nwords=125, Default Split (80/10/10)",
+          "Nwords=60, TAC (45/5/50)",
+          "Nwords=125, TAC (45/5/50)"
+        ]
+      },
       "construct_training_data": {
         "method": [14],
         "nwords": [60, 125]

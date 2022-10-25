@@ -309,19 +309,30 @@ def tracker(args_id, args, data, replicate, clean_experiment):
             else:
                 analysis = {"experiments": dict()}
 
-            if type(experiment["factor"]["parameter"]) is list:
-                factor_name = experiment["factor"]["script"]
-                param_levels = list()
-
-                for param in experiment["factor"]["parameter"]:
-                    factor_name += '.' + param
-                    param_levels.append(experiment[experiment["factor"]["script"]][param])
-
-                factor_levels = list(itertools.product(*param_levels))
-
+            factor_scripts = list()
+            if type(experiment["factor"]["script"]) is list:
+                factor_scripts = experiment["factor"]["script"]
             else:
-                factor_name = f'{experiment["factor"]["script"]}.{experiment["factor"]["parameter"]}'
-                factor_levels = experiment[experiment["factor"]["script"]][experiment["factor"]["parameter"]]
+                factor_scripts.append(experiment["factor"]["script"])
+
+            factor_name = ''
+            factor_levels = list()
+
+            for factor_script in factor_scripts:
+                if type(experiment["factor"]["parameter"]) is list:
+                    factor_name = experiment["factor"]["script"]
+                    param_levels = list()
+
+                    for param in experiment["factor"]["parameter"]:
+                        factor_name += '.' + param
+                        param_levels.append(experiment[experiment["factor"]["script"]][param])
+
+                    param_levels.reverse()
+                    factor_levels.extend( list(itertools.product(*param_levels)) )
+
+                else:
+                    factor_name += f'{experiment["factor"]["script"]}.{experiment["factor"]["parameter"]}.'
+                    factor_levels.extend( experiment[experiment["factor"]["script"]][experiment["factor"]["parameter"]] )
 
             if not "labels" in experiment["factor"]:
                 factor_labels = [f"{factor_name}:{l}" for l in factor_levels]
