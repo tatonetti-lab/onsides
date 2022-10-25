@@ -413,8 +413,8 @@
         "parameter": [["nwords"], ["split-method"]],
         "labels": [
           "Nwords=60, Default Split (80/10/10)",
-          "Nwords=125, Default Split (80/10/10)",
           "Nwords=60, TAC (45/5/50)",
+          "Nwords=125, Default Split (80/10/10)",
           "Nwords=125, TAC (45/5/50)"
         ]
       },
@@ -429,20 +429,42 @@
 
     "10C": {
       "name": "TAC Training/Testing Split - PubMedBERT, prepend refsource, nwords explore",
-      "description": "Use the TAC training and testing splits instead of randomly splitting. Network used here is PubMedBERT which was found to have better performance in TAC in 10A.",
+      "description": "Use the TAC training and testing splits instead of randomly splitting. Network used here is PubMedBERT which was found to have better performance in head-to-head comparions (See Experiments 0, 0A, 1, and 10A).",
       "factor": {
         "script": ["construct_training_data", "fit_clinicalbert"],
         "parameter": [["nwords"], ["split-method"]],
         "labels": [
           "Nwords=60, Default Split (80/10/10)",
-          "Nwords=125, Default Split (80/10/10)",
           "Nwords=60, TAC (45/5/50)",
+          "Nwords=125, Default Split (80/10/10)",
           "Nwords=125, TAC (45/5/50)"
         ]
       },
       "construct_training_data": {
         "method": [14],
         "nwords": [60, 125]
+      },
+      "fit_clinicalbert": {
+        "split-method": ["24", "TAC"],
+        "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
+      }
+    },
+
+    "10D": {
+      "name": "TAC Training/Testing Split - Boxed Warnings: PubMedBERT, refmeth 14, nwords 60, ALL sections",
+      "description": "Use the TAC training and testing splits instead of randomly splitting. Network used here is PubMedBERT which was found to have better performance in head-to-head comparions (See Experiments 0, 0A, 1, and 10A). Using 60 as nwords, found to have the best performance (See Experiments 2-2B and 10C). Training on ALL sections so that we can evaluate BW method on TAC gold standard.",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": "split-method",
+        "labels": [
+          "Default Split (80/10/10)",
+          "TAC (45/5/50)"
+        ]
+      },
+      "construct_training_data": {
+        "method": [14],
+        "nwords": [60],
+        "section": ["ALL"]
       },
       "fit_clinicalbert": {
         "split-method": ["24", "TAC"],
@@ -476,11 +498,12 @@
       "description": "V02 of the model to extract side effect terms from the Adverse Reactions section of the labels, created on October 24, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 1.848) was 0.880 on the validation set and 0.868 on the test set. AUROC was 0.922 on the validation set and 0.909 on the test set. AUPR was 0.942 on the validation set and 0.928 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.881, AUROC=0.895, and AUPR=0.921.",
       "construct_training_data": {
         "method": [14],
-        "nwords": [125],
+        "nwords": [60],
         "section": ["AR"]
       },
       "fit_clinicalbert": {
-        "epochs": [25]
+        "epochs": [25],
+        "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
     },
     "V01-BW": {
@@ -500,13 +523,13 @@
       "name": "Onsides Version 02 - Boxed Warnings",
       "description": "V02 of the model to extract side effect terms from the Boxed Warnings section of the labels, created on April 29, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 9. Max F1 was 0.683 on the validation set and 0.657 on the test set. AUROC was 0.821 on the validation set and 0.798 on the test set. AUPR was 0.660 on the validation set and 0.657 on the test set.",
       "construct_training_data": {
-        "method": [8],
-        "nwords": [125],
-        "section": ["BW"]
+        "method": [14],
+        "nwords": [60],
+        "section": ["ALL"]
       },
       "fit_clinicalbert": {
         "epochs": [25],
-        "refsource": ["all"]
+        "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
     }
 

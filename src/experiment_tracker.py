@@ -313,6 +313,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
             factor_scripts = list()
             factor_params = list()
             #print(experiment)
+            # TODO: Labels are not working correctly when there are multiple scripts. Eg. Experiment 10B.
             if type(experiment["factor"]["script"]) is list:
                 factor_scripts = experiment["factor"]["script"]
                 # if factor_scripts is a list then factor_params must be a
