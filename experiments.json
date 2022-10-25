@@ -411,7 +411,7 @@
       "factor": {
         "script": ["construct_training_data", "fit_clinicalbert"],
         "parameter": ["nwords", "split-method"],
-        "xlabels": [
+        "labels": [
           "Nwords=60, Default Split (80/10/10)",
           "Nwords=125, Default Split (80/10/10)",
           "Nwords=60, TAC (45/5/50)",
