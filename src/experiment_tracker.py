@@ -135,7 +135,8 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         'Bio_ClinicalBERT': 'CB',
         'microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract': 'PMB',
         'bestepoch-bydrug-CB_0-AR-125-all_222_24_25_1e-06_256_32.pth': 'CB0',
-        'bestepoch-bydrug-CB_0-BW-125-all_222_24_25_1e-06_256_32.pth': 'CB1'
+        'bestepoch-bydrug-CB_0-BW-125-all_222_24_25_1e-06_256_32.pth': 'CB1',
+        'bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth': 'CB2'
     }
 
     fcbd_params_outputs = list()
@@ -325,7 +326,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
 
                     for param in experiment["factor"]["parameter"]:
                         factor_name += '.' + param
-                        param_levels.append(experiment[experiment["factor"]["script"]][param])
+                        param_levels.append(experiment[factor_script][param])
 
                     param_levels.reverse()
                     factor_levels.extend( list(itertools.product(*param_levels)) )
