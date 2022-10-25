@@ -312,6 +312,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
 
             factor_scripts = list()
             factor_params = list()
+            #print(experiment)
             if type(experiment["factor"]["script"]) is list:
                 factor_scripts = experiment["factor"]["script"]
                 # if factor_scripts is a list then factor_params must be a
@@ -343,9 +344,12 @@ def tracker(args_id, args, data, replicate, clean_experiment):
 
             for factor_script_idx, factor_script in enumerate(factor_scripts):
                 if type(experiment["factor"]["parameter"]) is list:
-                    factor_name = experiment["factor"]["script"]
+                    factor_name = str(experiment["factor"]["script"])
                     param_levels = list()
 
+                    #print(factor_params)
+                    #print(factor_scripts)
+                    #print(factor_script_idx)
                     for param in factor_params[factor_script_idx]:
                         factor_name += '.' + param
                         param_levels.append(experiment[factor_script][param])
