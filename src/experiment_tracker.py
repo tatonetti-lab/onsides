@@ -311,20 +311,42 @@ def tracker(args_id, args, data, replicate, clean_experiment):
                 analysis = {"experiments": dict()}
 
             factor_scripts = list()
+            factor_params = list()
             if type(experiment["factor"]["script"]) is list:
                 factor_scripts = experiment["factor"]["script"]
+                # if factor_scripts is a list then factor_params must be a
+                # list of lists and the number of lists must match the length
+                # of the factor_scripts list.
+                if not type(experiment["factor"]["parameter"]) is list:
+                    raise Exception(f'factor:script is list, factor:parameter must be list as well. Error on experiment: {experiment}')
+
+                if not type(experiment["factor"]["parameter"][0] is list):
+                    raise Exception(f'factor:script is list, factor:parameter must be list of lists. Error on experiment: {experiment}')
+
+                factor_params = experiment["factor"]["parameter"]
             else:
                 factor_scripts.append(experiment["factor"]["script"])
+                if type(experiment["factor"]["parameter"]) is list:
+                    if type(experiment["factor"]["parameter"][0]) is list:
+                        factor_params = experiment["factor"]["parameter"]
+                    elif type(experiment["factor"]["parameter"][0]) is str:
+                        factor_params.append(experiment["factor"]["parameter"])
+                    else:
+                        raise Exception("Unexpected type.")
+                elif type(experiment["factor"]["parameter"]) is str:
+                    factor_params.append([experiment["factor"]["parameter"]])
+                else:
+                    raise Exception("Unexpected type.")
 
             factor_name = ''
             factor_levels = list()
 
-            for factor_script in factor_scripts:
+            for factor_script_idx, factor_script in enumerate(factor_scripts):
                 if type(experiment["factor"]["parameter"]) is list:
                     factor_name = experiment["factor"]["script"]
                     param_levels = list()
 
-                    for param in experiment["factor"]["parameter"]:
+                    for param in factor_params[factor_script_idx]:
                         factor_name += '.' + param
                         param_levels.append(experiment[factor_script][param])
 

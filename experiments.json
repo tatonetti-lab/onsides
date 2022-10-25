@@ -410,7 +410,7 @@
       "description": "Use the TAC training and testing splits instead of randomly splitting.",
       "factor": {
         "script": ["construct_training_data", "fit_clinicalbert"],
-        "parameter": ["nwords", "split-method"],
+        "parameter": [["nwords"], ["split-method"]],
         "labels": [
           "Nwords=60, Default Split (80/10/10)",
           "Nwords=125, Default Split (80/10/10)",
