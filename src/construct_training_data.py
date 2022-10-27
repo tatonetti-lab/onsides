@@ -530,7 +530,7 @@ def main():
                 if source_method == 'deepcadrme':
                     label_text = deepcadrme_ar_text
 
-                # This is for reference method 12
+                # This is for reference methods 12+
                 source = None
                 if prepend_source:
                     source = source_method

@@ -20,7 +20,7 @@ import argparse
 
 from construct_training_data import get_args
 from construct_training_data import load_meddra
-from construct_training_data import generate_examples
+from construct_training_data import generate_example
 from construct_training_data import section_suffices
 from construct_training_data import section_display_names
 
@@ -47,9 +47,11 @@ def main():
 
     random.seed(222)
 
-    args, sub_event, sub_nonsense, prepend_event, sections, random_sampled_words = get_args(addl_args)
+    args, sub_event, sub_nonsense, prepend_event, prepend_source, sections, random_sampled_words = get_args()
 
     llts = load_meddra()
+    # if DeepCADRME has been run on these labels, load them here
+    deepcadrme = None
 
     file_prefix = f'{os.path.split(args.dir)[-1]}-{args.medtype}'
 
@@ -58,7 +60,8 @@ def main():
 
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
-    writer.writerow(['section', 'drug', 'llt_id', 'llt', 'string'])
+    #writer.writerow(['section', 'drug', 'llt_id', 'llt', 'string'])
+    writer.writerow(['section', 'drug', 'meddra_id', 'pt_meddra_id', 'source_method', 'pt_meddra_term', 'found_term', 'string'])
 
     for section in sections:
         suffix = section_suffices[section]
@@ -86,18 +89,74 @@ def main():
 
             # find all the llts that are mentioned in the text
 
-            llts_mentioned = set()
-            string_mentioned = set()
+            # 1) exact string matches to the meddra term (either PT or LLT)
+            # NOTE: llts has both PTs and LLTs because of the structure of the file
+            found_terms = list()
+            for meddra_id, (llt_meddra_term, pt_meddra_term, pt_meddra_id) in llts.items():
+                #print(f"{meddra_id}, {llt_meddra_term}, {pt_meddra_term}")
+                # Method using string splits, Takes approx 0.2s
+                if ar_text.find(llt_meddra_term) == -1:
+                    continue
 
-            for llt_id, llt in llts.items():
-                if ar_text.find(llt) != -1:
-                    llts_mentioned.add(llt_id)
-                    string_mentioned.add(llt)
+                li = ar_text.split(llt_meddra_term)
+                start_pos = 0
+                for i in range(len(li)-1):
+                    # the occurrence of the word is at the end of the previous string
+                    start_pos = start_pos + len(li[i])
+                    found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_id, pt_meddra_term, 'exact'))
 
-                    example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
 
-                    for example_string in example_strings:
-                        writer.writerow([section, drug, llt_id, llt, example_string])
+            print(f"\tFound {len(found_terms)} terms using exact string matches. Took {time.time()-start_time}s.")
+            exact_term_list = list(zip(*found_terms))[0]
+
+            if not deepcadrme is None:
+                # 2) DeepCADRME mentions, normalized to meddra terms (PT only)
+                #    If DeepCADRME found string is exact match for a term (PT or LLT)
+                #    then we skip that. It will be handled by the exact matches done above
+                drugname = drug.lower()
+                if not drugname in deepcadrme:
+                    print(f'WARNING: No DeepCADRME output found for {drugname}.')
+                else:
+                    for term, start, length, match_method, pt_meddra_id, pt_meddra_term in deepcadrme[drugname]:
+                        if term in exact_term_list and start.find(',') == -1:
+                            # we don't need deepcadrme for this one, we will use the exact string matches
+                            continue
+
+                        found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_id, pt_meddra_term, 'deepcadrme'))
+                print(f"\tFound {len(found_terms)} terms using both exact and DeepCADRME. Took {time.time()-start_time}s.")
+
+            for found_term, meddra_id, start_pos, length, pt_meddra_id, pt_meddra_term, source_method in found_terms:
+
+                label_text = ar_text
+                if source_method == 'deepcadrme':
+                    label_text = deepcadrme_ar_text
+
+                # This is for reference methods 12+
+                source = None
+                if prepend_source:
+                    source = source_method
+
+                example_string = generate_example(label_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before, source)
+
+                writer.writerow([section, drug.upper(), meddra_id, pt_meddra_id, source_method, pt_meddra_term, found_term, example_string])
+
+            ################################################################################
+            # This was the previous method we used to do this that only relied on exact
+            # string matches. We have refactored the code to allow for different methods of
+            # identifying terms. -NPT 9/14/22
+            ################################################################################
+            # llts_mentioned = set()
+            # string_mentioned = set()
+            # for llt_id, llt in llts.items():
+            #     if ar_text.find(llt) != -1:
+            #         llts_mentioned.add(llt_id)
+            #         string_mentioned.add(llt)
+            #
+            #         example_strings = generate_examples(ar_text, llt, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before)
+            #
+            #         for example_string in example_strings:
+            #             writer.writerow([section, drug, llt_id, llt, example_string])
+            ################################################################################
 
     outfh.close()
 
