@@ -6,7 +6,7 @@ Generating the database is done in five steps:
 2. identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`)
 3. apply the model to score feature sentence fragments (`predict.py`)
 4. compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`)
-5. create the SQL schema, load the raw data, and generate derivative tables (`load_onsides_db.sql`)
+5. create the SQL schema, load the raw data, and generate derivative tables (`load_onsides_db.py`)
 
 ## Generate semi-automatically using Experiment Tracker
 
@@ -84,7 +84,7 @@ as the examples. For example, the above creates a file named:
 data/spl/rx/dm_spl_release_human_rx_part5/bestepoch-bydrug-PMB-sentences-rx_app14-AR_ref14-AR_222_24_25_1e-06_128_128.csv.gz
 ```
 
-*Really Large Files*
+####*Really Large Files*
 
 This step can run into memory and compute time errors with very large sentence files. Most
 of the parts of the full release download tend to cause issues. To avoid these errors and
@@ -122,3 +122,26 @@ cd -
 ```
 
 ### Step 4. Compile results into CSV files
+
+The previous step produced scores for each ADR mention in each label. However, a single ADR
+is often mentioned multiple times per label. We collapse these different instances down into
+a single score using an aggregation function (e.g. mean) and produce files that we can
+then load into an SQL database. We do this using `create_onsides_datafiles.py`. There are
+three required parameters to this script: the path to the results file (`--results`), the
+path to the sentences file (`--examples`), and which deployment release was used to generate
+the scores (`--release`). The releases available can be found in the `experiments.json` file
+under `deployments`.
+
+To compile the results for `AR-V02`, for example:
+
+```
+python3 src/create_onsides_datafiles.py --release V02-AR --results data/spl/rx/dm_spl_release_human_rx_part5/bestepoch-bydrug-PMB-sentences-rx_app14-AR_ref14-AR-60-all_222_24_25_1e-06_128_128.csv.gz --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt.gz
+```
+
+Which will create a "compiled" file in the labels directory:
+
+```
+data/spl/rx/dm_spl_release_human_rx_part5/compiled_bestepoch-bydrug-PMB-sentences-rx_app14-AR_ref14-AR-60-all_222_24_25_1e-06_128_128.csv.gz
+```
+
+### Step 5.

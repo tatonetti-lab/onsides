@@ -1,4 +1,4 @@
-# Onsides
+# OnSIDES
 A resource of adverse drug effects extracted from FDA structured product labels.
 
 ## V01
@@ -93,7 +93,7 @@ Each experiment has a corresponding Jupyter notebook for evaluation (See noteboo
 
 ### Generating the OnSIDES Database
 
-Generating the database is done in five steps: i) download and pre-process the structured product labels (`spl_processor.py`), ii) identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`), iii) apply the model to score feature sentence fragments (`predict.py`), iv) compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`), and v) create the SQL schema, load the raw data, and generate derivative tables (`load_onsides_db.sql`).
+Generating the database is done in five steps: i) download and pre-process the structured product labels (`spl_processor.py`), ii) identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`), iii) apply the model to score feature sentence fragments (`predict.py`), iv) compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`), and v) create the SQL schema, load the raw data, and generate derivative tables (`load_onsides_db.py`).
 
 See [DATABASE.md](DATABASE.md) for a step-by-step walkthrough.
 

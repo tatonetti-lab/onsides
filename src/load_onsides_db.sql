@@ -8,10 +8,11 @@ CREATE TABLE `adverse_reactions_bylabel` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 # Prescription Drug Labels
-load data local infile './bestepoch-bydrug-CB-output-part1_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-load data local infile './bestepoch-bydrug-CB-output-part2_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-load data local infile './bestepoch-bydrug-CB-output-part3_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-load data local infile './bestepoch-bydrug-CB-output-part4_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+{LOAD_AR_DATA_COMMANDS}
+-- load data local infile './bestepoch-bydrug-CB-output-part1_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+-- load data local infile './bestepoch-bydrug-CB-output-part2_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+-- load data local infile './bestepoch-bydrug-CB-output-part3_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+-- load data local infile './bestepoch-bydrug-CB-output-part4_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
 
 alter table adverse_reactions_bylabel add index (`concept_code`);
 alter table adverse_reactions_bylabel add index (`xml_id`);
@@ -26,24 +27,26 @@ CREATE TABLE `boxed_warnings_bylabel` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 # Prescription Drug Labels
-load data local infile './bestepoch-bydrug-CB-output-part1-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-load data local infile './bestepoch-bydrug-CB-output-part2-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-load data local infile './bestepoch-bydrug-CB-output-part3-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-load data local infile './bestepoch-bydrug-CB-output-part4-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+{LOAD_BW_DATA_COMMANDS}
+-- load data local infile './bestepoch-bydrug-CB-output-part1-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+-- load data local infile './bestepoch-bydrug-CB-output-part2-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+-- load data local infile './bestepoch-bydrug-CB-output-part3-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+-- load data local infile './bestepoch-bydrug-CB-output-part4-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
 
 alter table boxed_warnings_bylabel add index (`concept_code`);
 alter table boxed_warnings_bylabel add index (`xml_id`);
 
-CREATE TABLE `label_map` (
-`xml_id` varchar(37) DEFAULT NULL,
-`zip_id` varchar(46) DEFAULT NULL,
-`set_id` varchar(37) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
-load data local infile './labels_to_xmlfiles_to_drugs.txt' into table label_map fields terminated by '|' lines terminated by '\n';
-
-alter table label_map add index (`xml_id`);
-alter table label_map add index (`set_id`);
+-- Removed in V02
+-- CREATE TABLE `label_map` (
+-- `xml_id` varchar(37) DEFAULT NULL,
+-- `zip_id` varchar(46) DEFAULT NULL,
+-- `set_id` varchar(37) DEFAULT NULL
+-- ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+--
+-- load data local infile './labels_to_xmlfiles_to_drugs.txt' into table label_map fields terminated by '|' lines terminated by '\n';
+--
+-- alter table label_map add index (`xml_id`);
+-- alter table label_map add index (`set_id`);
 
 CREATE TABLE `rxnorm_map` (
 `set_id` varchar(37) DEFAULT NULL,
@@ -69,9 +72,9 @@ alter table rxnorm_to_setid add index (`rx_cui`);
 create table rxnorm_product_to_ingredient
 select a.concept_code product_concept_code, a.concept_name product_concept_name, a.concept_id product_concept_id,
 	   b.concept_code ingredient_concept_code, b.concept_name ingredient_concept_name, b.concept_id ingredient_concept_id
-from clinical_merge_v5_2022q1.concept a
-join clinical_merge_v5_2022q1.concept_ancestor on (a.concept_id = descendant_concept_id)
-join clinical_merge_v5_2022q1.concept b on (b.concept_id = ancestor_concept_id)
+from {OMOP_V5_SCHEMA}.concept a
+join {OMOP_V5_SCHEMA}.concept_ancestor on (a.concept_id = descendant_concept_id)
+join {OMOP_V5_SCHEMA}.concept b on (b.concept_id = ancestor_concept_id)
 where a.vocabulary_id = 'RxNorm'
 and b.vocabulary_id = 'RxNorm'
 and b.concept_class_id = 'Ingredient';
@@ -83,9 +86,9 @@ alter table rxnorm_product_to_ingredient add index (`ingredient_concept_id`);
 
 create table ingredients
 select xml_id, ingredient_concept_code, ingredient_concept_name, ingredient_concept_id, 'RxNorm' as vocabulary_id, 'Ingredient' as concept_class_id
-from effect_onsides_v01.label_map
-join effect_onsides_v01.rxnorm_to_setid using (set_id)
-join effect_onsides_v01.rxnorm_product_to_ingredient on (product_concept_code = rx_cui)
+from label_map
+join rxnorm_to_setid using (set_id)
+join rxnorm_product_to_ingredient on (product_concept_code = rx_cui)
 group by xml_id, ingredient_concept_code, ingredient_concept_name, ingredient_concept_id;
 
 alter table ingredients add index (`xml_id`);
@@ -123,7 +126,7 @@ create table adverse_reactions
 select xml_id, c.concept_name, vocabulary_id, domain_id, concept_class_id, concept_code as meddra_id, concept_id as omop_concept_id, ingredients, concept_codes as rxnorm_ids, concept_ids as drug_concept_ids
 from adverse_reactions_bylabel l
 join latest_labels_bydrug on (xml_id = latest_xml_id)
-join clinical_merge_v5_2022q1.concept c using (concept_code)
+join {OMOP_V5_SCHEMA}.concept c using (concept_code)
 where vocabulary_id = 'MedDRA';
 
 alter table adverse_reactions add index (`xml_id`);
@@ -134,7 +137,7 @@ create table boxed_warnings
 select xml_id, c.concept_name, vocabulary_id, domain_id, concept_class_id, concept_code as meddra_id, concept_id as omop_concept_id, ingredients, concept_codes as rxnorm_ids, concept_ids as drug_concept_ids
 from boxed_warnings_bylabel l
 join latest_labels_bydrug on (xml_id = latest_xml_id)
-join clinical_merge_v5_2022q1.concept c using (concept_code)
+join {OMOP_V5_SCHEMA}.concept c using (concept_code)
 where vocabulary_id = 'MedDRA';
 
 alter table boxed_warnings add index (`xml_id`);
