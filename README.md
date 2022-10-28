@@ -60,18 +60,18 @@ Model training and evaluation is handled through the use of a helper script name
 
 Model Training consists of four steps: i) constructing the training data (`construct_training_data.py`), ii) fitting the BERT model (`fit_clinicalbert.py`), iii) generating probabilities for the example sentence fragments (`analyze_results.py`), and iv) aggregating the probabilities across sentence fragments at the adverse event term level (`compile_results.py`). The Experiment Tracker (`experiment_tracker.py`) will keep track of this entire process. It will track where each experiment is in this process and what commands need to be run to complete the experiment. Experiments are managed by editing the experiments entries in the `experiments.json` file. In each experiments entry, the parameters that are to be explored can be specified. Any parameters not specified are assumed to be the default values.
 
-To track the status of the experiment run the following:
+To track the status of the experiment run the script with the experiment identifier. For example:
 ```
 python3 src/experiment_tracker.py --id 0
 ```
 
-If any steps in the process of the experimenter incomplete, the script will print out a list of bash commands to the standard output that can be used to complete the experiment. For example you could run those commands with the following:
+If any steps in the process of the experiment are incomplete, the script will print out a list of bash commands to the standard output that can be used to complete the experiment. For example you could run those commands with the following:
 
 ```
 python3 src/experiment_tracker.py --id 0 | bash
 ```
 
-If running on the GPU enabled machine, it may be beneficial to specify which GPU to use. The experiment tracker can automatically take care of this for you through the use of the CUDA_VISIBLE_DEVICES environment variable. This is set with the GPU flag. For example:
+If running on a GPU enabled machine, it may be beneficial to specify which GPU to use. The experiment tracker can automatically take care of this for you through the use of the CUDA_VISIBLE_DEVICES environment variable. This is set with the `--gpu` flag. For example:
 
 ```
 python3 src/experiment_tracker.py --id 0 --gpu 1
@@ -93,14 +93,14 @@ Each experiment has a corresponding Jupyter notebook for evaluation (See noteboo
 
 ### Generating the OnSIDES Database
 
-Generating the database is done in five steps: i) download and pre-process the structured product labels (`spl_processor.py`), ii) identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`), iii) apply the model to score feature sentence fragments (`predict.py`), iv) compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`), and v) create the SQL schema, load the raw data, and generate derivative tables (`load_onsides_db.sql`).
-
+Generating the database is done in five steps: i) download and pre-process the structured product labels (`spl_processor.py`), ii) identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`), iii) apply the model to score feature sentence fragments (`predict.py`), iv) compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`), and v) create the SQL schema, load the raw data, and generate derivative tables (`load_onsides_db.sql`). See [DATABASE.md](DATABASE.md) for a step-by-step walkthrough.
 
 ### Caveats
 
 The Onsides database is intended for research purposes only. The extraction process is far from perfect, side effects will be missed and some identified will be incorrect. Patients seeking health information should not trust these data and instead refer to the FDA's website (fda.gov) and consult their doctor.
 
-The project is under active development. Validation of extracted information is yet to be independently verified and the data, methods, and statistics are subject to change at any time. Check back to this page for updates. If you would like to to contribute to the project or have ideas on how the methods, data, or evaluation can be improved please reach out to Dr. Tatonetti via email or [Twitter](http://twitter.com/nicktatonetti).
+The project is under active development. Validation of extracted information is yet to be independently verified and the data, methods, and statistics are subject to change at any time. Check back to this page for updates. If you would like to to contribute to the project or have ideas on how the methods, data, or evaluation can be improved please reach out to Dr. Tatonetti via [email]
+(https://tatonettilab.org/people/) or [Twitter](http://twitter.com/nicktatonetti).
 
 ### Citation
 
