@@ -87,7 +87,7 @@ if __name__ == '__main__':
     print(f" LR: {LR}")
     print(f" max_length: {max_length}")
     print(f" batch_size: {batch_size}\n")
-    
+
     ex_filename = os.path.split(args.examples)[-1].split('.')[0]
     ex_refset = int(ex_filename.split('_')[1].strip('method'))
     ex_nwords = ex_filename.split('_')[2].strip('nwords')
@@ -106,7 +106,10 @@ if __name__ == '__main__':
         is_split = True
         split_no = '-' + ex_filename.split('split')[1]
 
-    results_path = f'./results/{prefix}-{ex_prefix}{split_no}_app{ex_refset}-{ex_section}_ref{refset}-{refsection}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
+    results_fn = f'{prefix}-{ex_prefix}{split_no}_app{ex_refset}-{ex_section}_ref{refset}-{refsection}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
+    examples_dir = os.path.dirname(args.examples)
+
+    results_path = os.path.join(examples_dir, results_fn)
 
     print(f"Examples")
     print(f"-------------------")

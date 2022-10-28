@@ -55,11 +55,15 @@ def main():
     # if DeepCADRME has been run on these labels, load them here
     deepcadrme = None
 
-    condensed_name = os.path.split(args.dir)[-1].replace('_','').replace('-','')
-    file_prefix = f'{condensed_name}-{args.medtype}'
+    #condensed_name = os.path.split(args.dir)[-1].replace('_','').replace('-','')
+    file_prefix = f'sentences-{args.medtype}'
 
     outfn = os.path.join(args.dir, f'{file_prefix}_method{args.method}_nwords{args.nwords}_clinical_bert_application_set_{args.section}.txt')
     print(f"Application data will be written to {outfn}")
+
+    if os.path.exists(outfn):
+        print(f"Feature sentences file already exists at this path. Quitting.")
+        sys.exit(0)
 
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)

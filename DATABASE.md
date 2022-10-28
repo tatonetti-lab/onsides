@@ -60,6 +60,21 @@ python3 src/construct_application_data.py --method 14 --nwords 60 --section AR -
 ```
 
 This will need to be run for each subdirectory of labels and for each section (Adverse Reactions,
-  Boxed Warnings, etc.).
+Boxed Warnings, etc.). This script will create a sentences file at the directory path provided.
+For example, the above command creates a file named:
+
+```
+data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt
+```
 
 ### Step 3. Apply the model to score ADR sentences
+
+The trained model can be then applied to each of the feature files created in step 2 using
+the `predict.py` script. The required parameters are the trained model path (`--model`) and
+the path to the feature file generated in Step 2 (`--examples`). For example:
+
+```
+python3 src/predict.py --model models/bestepoch-bydrug-PMB_14-AR-60-all_222_24_25_1e-06_128_128.pth --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt
+```
+
+### Step 4. Compile results into CSV files
