@@ -9,6 +9,7 @@ results
 scripts/
 *.bu
 analysis.json
+spl.json
 replicates/
 replicates
 
