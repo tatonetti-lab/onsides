@@ -106,7 +106,7 @@ if __name__ == '__main__':
         is_split = True
         split_no = '-' + ex_filename.split('split')[1]
 
-    results_fn = f'{prefix}-{ex_prefix}{split_no}_app{ex_refset}-{ex_section}_ref{refset}-{refsection}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
+    results_fn = f'{prefix}-{ex_prefix}{split_no}_app{ex_refset}-{ex_section}_ref{refset}-{refsection}-{refnwords}-{refsource}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
     examples_dir = os.path.dirname(args.examples)
 
     results_path = os.path.join(examples_dir, results_fn)

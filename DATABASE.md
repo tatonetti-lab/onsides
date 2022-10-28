@@ -64,7 +64,7 @@ Boxed Warnings, etc.). This script will create a sentences file at the directory
 For example, the above command creates a file named:
 
 ```
-data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt
+data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt.gz
 ```
 
 ### Step 3. Apply the model to score ADR sentences
@@ -74,7 +74,51 @@ the `predict.py` script. The required parameters are the trained model path (`--
 the path to the feature file generated in Step 2 (`--examples`). For example:
 
 ```
-python3 src/predict.py --model models/bestepoch-bydrug-PMB_14-AR-60-all_222_24_25_1e-06_128_128.pth --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt
+python3 src/predict.py --model models/bestepoch-bydrug-PMB_14-AR-60-all_222_24_25_1e-06_128_128.pth --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt.gz
+```
+
+The resulting gzipped csv file of model outputs will be saved in the same directory
+as the examples. For example, the above creates a file named:
+
+```
+data/spl/rx/dm_spl_release_human_rx_part5/bestepoch-bydrug-PMB-sentences-rx_app14-AR_ref14-AR_222_24_25_1e-06_128_128.csv.gz
+```
+
+*Really Large Files*
+
+This step can run into memory and compute time errors with very large sentence files. Most
+of the parts of the full release download tend to cause issues. To avoid these errors and
+speed up the process overall the sentence files can be split, processed individually, and
+then recombined.
+
+The following bash code snippet will split the file into 100 MB chunks, each with their
+own header.
+
+```
+cd data/spl/rx/dm_spl_release_human_rx_part5/
+mkdir -p splits
+gunzip sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt.gz
+tail -n +2 sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt | split -d -C 100m - --filter='sh -c "{ head -n1 sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt; cat; } > $FILE"' splits/sentences-rx_method14_nwords60_clinical_bert_application_set_AR_split
+gzip sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt
+cd -
+```
+
+Then run `predict.py` on each split:
+
+```
+for f in data/spl/rx/dm_spl_release_human_rx_part5/splits/*
+do
+  echo python3 src/predict.py --model models/bestepoch-bydrug-PMB_14-AR-60-all_222_24_25_1e-06_128_128.pth --examples $f
+done | bash
+```
+
+Finally, recombine the results and archive them:
+
+```
+cd data/spl/rx/dm_spl_release_human_rx_part5/
+zcat splits/*.csv.gz | gzip > bestepoch-bydrug-PMB-sentences-rx_app14-AR-60-all_ref14-AR_222_24_25_1e-06_128_128.csv.gz
+rm -rf splits
+cd -
 ```
 
 ### Step 4. Compile results into CSV files
