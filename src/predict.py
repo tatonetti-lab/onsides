@@ -63,7 +63,7 @@ if __name__ == '__main__':
     if len(model_file_noext.split('_')) != 8:
         raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth")
 
-    refset, refsection, refnwords = model_file_noext.split('_')[1].split('-')
+    refset, refsection, refnwords, refsource = model_file_noext.split('_')[1].split('-')
     np_random_seed = int(model_file_noext.split('_')[2])
     split_method = model_file_noext.split('_')[3]
     EPOCHS = int(model_file_noext.split('_')[4])
@@ -78,6 +78,7 @@ if __name__ == '__main__':
     print(f" prefix: {prefix}")
     print(f" network: {network}")
     print(f" refset: {refset}")
+    print(f" refsource: {refsource}")
     print(f" refsection: {refsection}")
     print(f" refnwords: {refnwords}")
     print(f" np_random_seed: {np_random_seed}")
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     print(f" LR: {LR}")
     print(f" max_length: {max_length}")
     print(f" batch_size: {batch_size}\n")
-
+    
     ex_filename = os.path.split(args.examples)[-1].split('.')[0]
     ex_refset = int(ex_filename.split('_')[1].strip('method'))
     ex_nwords = ex_filename.split('_')[2].strip('nwords')

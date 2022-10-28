@@ -15,7 +15,7 @@ USAGE
 =====
 
 The first time the processor is run must be to download a full release of the
-labels. Parsed labels are stored in ./data/spl/rx/downloads/[release-file-name]/prescription/.
+labels. Parsed labels are stored in ./data/spl/rx/[release-file-name]/prescription/.
 
 python3 src/spl_processor.py --full
 
@@ -81,7 +81,7 @@ def download_and_verify(download, archive_info, max_retries=2):
         # download
         if not archive_info['downloaded'] == 'yes':
             print(f"Downloading {download['url']}...")
-            local_path = os.path.join('data', 'spl', 'rx', 'downloads', download['name'])
+            local_path = os.path.join('data', 'spl', 'rx', download['name'])
             if not os.path.exists(local_path):
                 download_spl_file(download['url'], local_path)
 

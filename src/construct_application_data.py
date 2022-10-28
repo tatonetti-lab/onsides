@@ -15,6 +15,8 @@ import os
 import sys
 import csv
 import tqdm
+import json
+import time
 import random
 import argparse
 
@@ -47,51 +49,65 @@ def main():
 
     random.seed(222)
 
-    args, sub_event, sub_nonsense, prepend_event, prepend_source, sections, random_sampled_words = get_args()
+    args, sub_event, sub_nonsense, prepend_event, prepend_source, sections, random_sampled_words = get_args(addl_args)
 
     llts = load_meddra()
     # if DeepCADRME has been run on these labels, load them here
     deepcadrme = None
 
-    file_prefix = f'{os.path.split(args.dir)[-1]}-{args.medtype}'
+    condensed_name = os.path.split(args.dir)[-1].replace('_','').replace('-','')
+    file_prefix = f'{condensed_name}-{args.medtype}'
 
-    outfn = f'./data/{file_prefix}_method{args.method}_nwords{args.nwords}_clinical_bert_application_set_{args.section}.txt'
+    outfn = os.path.join(args.dir, f'{file_prefix}_method{args.method}_nwords{args.nwords}_clinical_bert_application_set_{args.section}.txt')
     print(f"Application data will be written to {outfn}")
 
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
     #writer.writerow(['section', 'drug', 'llt_id', 'llt', 'string'])
-    writer.writerow(['section', 'drug', 'meddra_id', 'pt_meddra_id', 'source_method', 'pt_meddra_term', 'found_term', 'string'])
+    # drug = SetID
+    writer.writerow(['section', 'drug', 'label_id', 'set_id', 'meddra_id', 'pt_meddra_id', 'source_method', 'pt_meddra_term', 'found_term', 'string'])
 
     for section in sections:
-        suffix = section_suffices[section]
+
         section_display_name = section_display_names[section]
         print(f"Parsing section: {section_display_name} ({section})")
 
         # derive a drug list from the training and testing data provided
-        all_drugs = set([fn.split('_')[0] for fn in os.listdir(args.dir) if fn.endswith(suffix)])
-        print(f"Found {len(all_drugs)} total drugs")
+        labels_dir_path = None
+        if args.medtype == 'rx':
+            labels_dir_path = os.path.join(args.dir, 'prescription')
+        elif args.medtype == 'otc':
+            labels_dir_path = os.path.join(args.dir, 'otc')
+        else:
+            raise Exception("ERROR: Unexpected medtype provided {args.medtype}, must be either rx or otc.")
+
+        all_drugs = set([fn.replace('.json', '') for fn in os.listdir(labels_dir_path) if fn.endswith('json')])
+        print(f"Found {len(all_drugs)} parsed label json files at {labels_dir_path}")
 
         for drug in tqdm.tqdm(all_drugs):
             #print(f"Generating application data for: {drug}")
 
             # load text from adverse events section
-            ar_file_path = os.path.join(args.dir, f'{drug}_{suffix}')
-            if not os.path.exists(ar_file_path):
-                #raise Exception(f"Did not file an adverse event file for {ar_file_path}")
-                print(f"Did not file an adverse event file for {ar_file_path}, skipping.")
+            json_file_path = os.path.join(labels_dir_path, f'{drug}.json')
+            if not os.path.exists(json_file_path):
+                raise Exception(f"ERROR: Did not find a parsed adverse event file for {json_file_path}.")
+
+            json_fh = open(json_file_path)
+            label_data = json.loads(json_fh.read())
+            json_fh.close()
+
+            if not section in label_data['sections']:
+                # no text was parsed for this section, move on
                 continue
 
-            ar_fh = open(ar_file_path)
-            ar_text = ' '.join(ar_fh.read().split()).lower()
+            ar_text = ' '.join(label_data['sections'][section].split()).lower()
 
-            #print(f"\tNumber of words in ADVERSE EVENTS text: {len(ar_text.split())}")
-
-            # find all the llts that are mentioned in the text
+            # find all the adverse event terms that are mentioned in the text
 
             # 1) exact string matches to the meddra term (either PT or LLT)
             # NOTE: llts has both PTs and LLTs because of the structure of the file
             found_terms = list()
+            start_time = time.time()
             for meddra_id, (llt_meddra_term, pt_meddra_term, pt_meddra_id) in llts.items():
                 #print(f"{meddra_id}, {llt_meddra_term}, {pt_meddra_term}")
                 # Method using string splits, Takes approx 0.2s
@@ -106,14 +122,15 @@ def main():
                     found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_id, pt_meddra_term, 'exact'))
 
 
-            print(f"\tFound {len(found_terms)} terms using exact string matches. Took {time.time()-start_time}s.")
+            # print(f"\tFound {len(found_terms)} terms using exact string matches. Took {time.time()-start_time}s.")
             exact_term_list = list(zip(*found_terms))[0]
 
             if not deepcadrme is None:
                 # 2) DeepCADRME mentions, normalized to meddra terms (PT only)
                 #    If DeepCADRME found string is exact match for a term (PT or LLT)
                 #    then we skip that. It will be handled by the exact matches done above
-                drugname = drug.lower()
+                drugname = drug
+                start_time = time.time()
                 if not drugname in deepcadrme:
                     print(f'WARNING: No DeepCADRME output found for {drugname}.')
                 else:
@@ -123,7 +140,7 @@ def main():
                             continue
 
                         found_terms.append((term, pt_meddra_id, start_pos, length, pt_meddra_id, pt_meddra_term, 'deepcadrme'))
-                print(f"\tFound {len(found_terms)} terms using both exact and DeepCADRME. Took {time.time()-start_time}s.")
+                # print(f"\tFound {len(found_terms)} terms using both exact and DeepCADRME. Took {time.time()-start_time}s.")
 
             for found_term, meddra_id, start_pos, length, pt_meddra_id, pt_meddra_term, source_method in found_terms:
 
@@ -138,7 +155,7 @@ def main():
 
                 example_string = generate_example(label_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before, source)
 
-                writer.writerow([section, drug.upper(), meddra_id, pt_meddra_id, source_method, pt_meddra_term, found_term, example_string])
+                writer.writerow([section, drug, label_data['label_id'], label_data['set_id'], meddra_id, pt_meddra_id, source_method, pt_meddra_term, found_term, example_string])
 
             ################################################################################
             # This was the previous method we used to do this that only relied on exact

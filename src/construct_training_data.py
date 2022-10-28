@@ -439,9 +439,8 @@ def main():
                     raise Exception("ERROR: Unexpected number of sections named %s. Expected 1 found %s." % (section_deepcadrme_names[section], len(xml_sections)))
                 deepcadrme_ar_text = ' '.join(xml_sections[0].text.split()).lower()
 
-            # TODO: It would be preferable if we could use the xml labels directly since it takes a lot of
-            # TODO: to process them into this format where the different sections are split out. That will
-            # TODO: take a bit of fancy xml parsing in python that we haven't implemented yet.
+            # TODO: Replace the use of these provided files with our method of parsing into
+            # TODO: json files using the spl_processor.py script. 
             ar_file_path = f'./data/200_training_set/{drug}_{suffix}'
             if os.path.exists(ar_file_path):
                 ar_fh = open(ar_file_path)
