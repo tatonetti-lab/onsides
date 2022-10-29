@@ -30,9 +30,9 @@ if __name__ == '__main__':
 
     # check the inputs
     for resultspath in args.results:
-        fnnoext = os.path.split(resultspath)[-1].split('.')[0]
+        fnnoext = os.path.splitext(os.path.split(resultspath)[-1])[0]
         if len(fnnoext.split('_')) != 8:
-            raise Exception("ERROR: Results filename ({resultspath}) not in format expected: {prefix}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth")
+            raise Exception(f"ERROR: Results filename ({resultspath}) not in format expected: {prefix}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth")
 
     if len(set([rp.replace('test', '').replace('valid', '').replace('train', '') for rp in args.results])) > 1:
         raise Exception("ERROR: Results files should match in all paramters besides the split (train/valid/test).")
