@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # since the files are the same except for the split, we grab all the parameters
     # from the first file in the list.
-    fnnoext = os.path.split(args.results[0])[-1].split('.')[0]
+    fnnoext = os.path.splitext(os.path.split(resultspath)[-1])[0]
     prefix = fnnoext.split('_')[0]
     prefix_nosplit = '-'.join(prefix.split('-')[:-1])
     refset = fnnoext.split('_')[1]
@@ -64,15 +64,14 @@ if __name__ == '__main__':
 
     print(f"Loding reference examples file...", flush=True)
     print(f" ex.shape (before split): {dfex.shape}")
-
-
+    
     df_ref = dict()
     df_ref['train'], df_ref['valid'], df_ref['test'] = split_train_val_test(dfex, np_random_seed, split_method)
     # dfex['drug'] = dfex['drug'].str.lower()
 
     dataframes = list()
     for resultspath in args.results:
-        fnnoext = os.path.split(resultspath)[-1].split('.')[0]
+        fnnoext = os.path.splitext(os.path.split(resultspath)[-1])[0]
         prefix = fnnoext.split('_')[0]
         split = prefix.split('-')[3]
 

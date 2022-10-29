@@ -84,7 +84,7 @@ as the examples. For example, the above creates a file named:
 data/spl/rx/dm_spl_release_human_rx_part5/bestepoch-bydrug-PMB-sentences-rx_app14-AR_ref14-AR_222_24_25_1e-06_128_128.csv.gz
 ```
 
-####*Really Large Files*
+#### Really Large Files
 
 This step can run into memory and compute time errors with very large sentence files. Most
 of the parts of the full release download tend to cause issues. To avoid these errors and
@@ -144,4 +144,4 @@ Which will create a "compiled" file in the labels directory:
 data/spl/rx/dm_spl_release_human_rx_part5/compiled_bestepoch-bydrug-PMB-sentences-rx_app14-AR_ref14-AR-60-all_222_24_25_1e-06_128_128.csv.gz
 ```
 
-### Step 5.
+### Step 5. Load into SQL and create derivative databases
