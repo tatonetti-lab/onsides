@@ -317,6 +317,9 @@
         "parameter": "learning-rate",
         "labels": [
           "1e-4",
+          "7.5e-5",
+          "5e-5",
+          "2.5e-5",
           "1e-5",
           "1e-6",
           "1e-7",
@@ -327,7 +330,7 @@
         "method": [14]
       },
       "fit_clinicalbert": {
-        "learning-rate": [1e-4, 1e-5, 1e-6, 1e-7, 1e-8],
+        "learning-rate": [1e-4, 7.5e-5, 5e-5, 2.5e-5, 1e-5, 1e-6, 1e-7, 1e-8],
         "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
     },
@@ -356,7 +359,7 @@
         "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
     },
-    
+
     "8": {
       "name": "BW reference methods",
       "description": "Compare top three reference methods (0, 8, and 14) for Boxed Warnings. Note these are only trained on the Boxed Warnings examples. See 8A for a version where we evalaute performance of BW but trained on ALL (as was found in Experiment 4 to produce better results for the BW section).",
