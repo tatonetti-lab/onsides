@@ -543,6 +543,51 @@
         "split-method": ["24", "TAC"],
         "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
+    },
+
+    "10E": {
+      "name": "TAC Training/Testing Split - PubMedBERT, prepend refsource",
+      "description": "Use the TAC training and testing splits instead of randomly splitting. Network used here is PubMedBERT which was found to have better performance in head-to-head comparions (See Experiments 0, 0A, 1, and 10A).",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": "split-method",
+        "labels": [
+          "Default Split (80/10/10)",
+          "TAC (45/5/50)"
+        ]
+      },
+      "construct_training_data": {
+        "method": [14],
+        "nwords": [125]
+      },
+      "fit_clinicalbert": {
+        "split-method": ["24", "TAC"],
+        "learning-rate": [1e-5],
+        "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
+      }
+    },
+    
+    "10F": {
+      "name": "TAC Training/Testing Split - Boxed Warnings: PubMedBERT, refmeth 14, nwords 125, pretrained with ALL sections",
+      "description": "Use the TAC training and testing splits instead of randomly splitting. Network used here is PubMedBERT which was found to have better performance in head-to-head comparions (See Experiments 0, 0A, 1, and 10A). Using 60 as nwords, found to have the best performance (See Experiments 2-2B and 10C). Training on ALL sections so that we can evaluate BW method on TAC gold standard.",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": "split-method",
+        "labels": [
+          "Default Split (80/10/10)",
+          "TAC (45/5/50)"
+        ]
+      },
+      "construct_training_data": {
+        "method": [14],
+        "nwords": [125],
+        "section": ["BW"]
+      },
+      "fit_clinicalbert": {
+        "split-method": ["24", "TAC"],
+        "learning-rate": [1e-5],
+        "network": ["bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth"]
+      }
     }
 
   },
@@ -601,12 +646,13 @@
       "threshold": null,
       "construct_training_data": {
         "method": [14],
-        "nwords": [60],
-        "section": ["ALL"]
+        "nwords": [125],
+        "section": ["BW"]
       },
       "fit_clinicalbert": {
         "epochs": [25],
-        "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
+        "learning-rate": [1e-5],
+        "network": ["bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth"]
       }
     }
 
