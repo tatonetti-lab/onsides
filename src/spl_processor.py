@@ -283,7 +283,7 @@ def process_label_archive(archive_info):
         # filter out any labels that are not prescription
         zip_files = [f for f in zip_obj.namelist() if f.startswith('prescription') and f.endswith('zip')]
         print(f"  > {archive_info['local_path']} ({len(zip_files)} files.)")
-        
+
         for zip_i, zip_file in tqdm(enumerate(zip_files), total=len(zip_files)):
 
             if zip_i % int(len(zip_files) / 10) == 0:
@@ -455,7 +455,7 @@ def main():
     page = requests.get(dailymed_spl_resources_url)
     soup = BeautifulSoup(page.content, "html.parser")
 
-    spl_status = {"full_release": {"status": "in_progress", "parts": dict()}, "updates": dict(), "mappings": dict()}
+    spl_status = {"full_release": {"status": "in_progress", "parts": dict()}, "updates": dict(), "mappings": dict(), "last_updated": "20010101"}
     if os.path.exists('./spl.json'):
         splfh = open('./spl.json')
         spl_status = json.loads(splfh.read())
@@ -474,6 +474,8 @@ def main():
 
     download_and_verify_mapping_files(soup, spl_status)
 
+    spl_status["last_updated"] = datetime.now().strftime("%Y%d%m")
+    update_spl_status(spl_status)
 
 if __name__ == '__main__':
     main()

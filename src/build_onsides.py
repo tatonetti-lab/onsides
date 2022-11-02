@@ -34,6 +34,14 @@ def main():
 
     args = parser.parse_args()
 
+    release_version_path = os.path.join('releases', args.version)
+    if not os.path.exists(release_version_path):
+        os.mkdir(release_version_path)
+
+    release_version_date_path = os.path.join(release_version_path, datetime.now().strftime('%Y%m%d'))
+    if not os.path.exists(release_version_date_path):
+        os.mkdir(release_version_date_path)
+
     ###
     # Step 0. Load the concept and concept_ancestor tables
     ###
@@ -180,8 +188,6 @@ def main():
                 #print(f"No ingredients found for rxcui {rxcui}")
                 continue
 
-            found_count += 1
-
             for ingredient_id in rxnorm2ingredients[rxcui]:
                 if not ingredient_id in concept:
                     print(f"No concept found for ingredient rxcui {ingredient_id}")
@@ -227,23 +233,19 @@ def main():
             print(f"\t{section}")
             section_compiled_files[section].append(os.path.join(version_path, compiled_file))
 
-    release_version_path = os.path.join('releases', args.version)
-    if not os.path.exists(release_version_path):
-        os.mkdir(release_version_path)
-
-    release_version_date_path = os.path.join(release_version_path, datetime.now().strftime('%Y%m%d'))
-    if not os.path.exists(release_version_date_path):
-        os.mkdir(release_version_date_path)
+    print("Building active labels dictioanry.")
+    active_spl_versions = dict()
+    for index, row in latest_dfs['dm_spl_zip_files_meta_data'].iterrows():
+        active_spl_versions[row['SETID']] = row['SPL_VERSION']
 
     print(f"Collating each of the compiled files.")
 
-
     for section, compiled_files in section_compiled_files.items():
 
-        ofn = os.path.join(release_version_date_path, section_names[section] + "_bylabel.csv.gz")
+        ofn = os.path.join(release_version_date_path, section_names[section] + "_all_labels.csv.gz")
         ofh = gzip.open(ofn, 'wt')
         writer = csv.writer(ofh)
-        header = ['section','zip_id','label_id','set_id','spl_version','pt_meddra_id','pt_meddra_term','meddra_id','Pred0','Pred1']
+        header = ['section','zip_id','label_id','set_id','spl_version','pt_meddra_id','pt_meddra_term','Pred0','Pred1']
         writer.writerow(header)
 
         ofn2 = os.path.join(release_version_date_path, section_names[section] + ".csv.gz")
@@ -260,16 +262,20 @@ def main():
 
             for row in reader:
                 writer.writerow(row)
-                data = zip(header, row)
+                data = dict(zip(header, row[1:]))
 
-                if latest_dfs[latest_dfs['dm_spl_zip_files_meta_data']['SETID'] == data['set_id']]['spl_version'] == data['spl_version']:
+                if int(active_spl_versions[data['set_id']]) == int(data['spl_version']):
                     ingredients = set()
                     for product_rxcui in setid2rxcui[data['set_id']]:
                         for ingredient_concept_id in rxnorm2ingredients[product_rxcui]:
                             ingredients.add( (concept[ingredient_concept_id]['concept_code'], concept[ingredient_concept_id]['concept_name']) )
 
                     ingredients = sorted(ingredients)
-                    ingredients_rxcuis, ingredients_names = zip(*ingredients)
+                    if len(ingredients) > 0:
+                        ingredients_rxcuis, ingredients_names = zip(*ingredients)
+                    else:
+                        ingredients_rxcuis = list()
+                        ingredients_names = list()
 
                     writer2.writerow([data['set_id'], data['spl_version'], data['pt_meddra_id'], data['pt_meddra_term'], len(ingredients_rxcuis), ', '.join(ingredients_rxcuis), ', '.join(ingredients_names)])
 

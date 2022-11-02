@@ -11,10 +11,29 @@ Generating the database is done in five steps:
 ## Generate semi-automatically using Deployment Tracker
 
 The steps above are detailed below. However, note that as with the experiments,
-this process is assisted by the Deployment Tracker (`demployment_tracker.py`).
+this process is assisted by the Deployment Tracker (`demployment_tracker.py`). The
+Deployment Tracker will walk through the process checking for the necessary files. If
+any are missing it will print the command used to generate them to the standard output.
+Some steps (SPL Processing) need to be performed before running the tracker. In this case
+the tracker confirms a recent run and prompts the user to re-run if potentially out of date.
+
+To run the Deployment Tracker:
 
 ```
-python3 src/deployment_tracker.py --id V02-AR
+python3 src/deployment_tracker.py --release V02-AR
+```
+
+For convenience the remaining commands can be piped to bash as follows:
+
+```
+python3 src/deployment_tracker.py --release V02-AR | bash
+```
+
+If on a GPU-enabled machine, the `--gpu` flag can be used to specify which
+gpu to use for the steps that require it.
+
+```
+python3 src/deployment_tracker.py --release V02-AR --gpu 2
 ```
 
 ## Generate by running each step manually
@@ -74,14 +93,14 @@ the `predict.py` script. The required parameters are the trained model path (`--
 the path to the feature file generated in Step 2 (`--examples`). For example:
 
 ```
-python3 src/predict.py --model ./models/final-bydrug-PMB_14-AR-125-all_222_24_25_1e-05_256_32.pth --examples data/spl/rx/dm_spl_release_human_rx_part1/sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
+python3 src/predict.py --model ./models/final-bydrug-PMB_14-AR-125-all_222_24_25_1e-05_256_32.pth --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
 ```
 
 The resulting gzipped csv file of model outputs will be saved in the same directory
 as the examples. For example, the above creates a file named:
 
 ```
-data/spl/rx/dm_spl_release_human_rx_part1/final-bydrug-PMB-sentences-rx_app14-AR_ref14-AR-125-all_222_24_25_1e-05_256_32.csv.gz
+data/spl/rx/dm_spl_release_human_rx_part5/final-bydrug-PMB-sentences-rx_ref14-AR-125-all_222_24_25_1e-05_256_32.csv.gz
 ```
 
 #### Really Large Files
@@ -96,7 +115,7 @@ as of Oct 2022. The part5 file will split the file into 100 MB chunks, each with
 own header.
 
 ```
-cd data/spl/rx/dm_spl_release_human_rx_part1/
+cd data/spl/rx/dm_spl_release_human_rx_part5/
 mkdir -p splits
 gunzip sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
 tail -n +2 sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt | split -d -C 100m - --filter='sh -c "{ head -n1 sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt; cat; } > $FILE"' splits/sentences-rx_method14_nwords125_clinical_bert_application_set_AR_split
@@ -107,7 +126,7 @@ cd -
 Then run `predict.py` on each split:
 
 ```
-for f in data/spl/rx/dm_spl_release_human_rx_part1/splits/*
+for f in data/spl/rx/dm_spl_release_human_rx_part5/splits/*
 do
   echo python3 src/predict.py --model ./models/final-bydrug-PMB_14-AR-125-all_222_24_25_1e-05_256_32.pth --examples $f
 done | bash
@@ -116,7 +135,7 @@ done | bash
 Finally, recombine the results and archive them:
 
 ```
-cd data/spl/rx/dm_spl_release_human_rx_part1/
+cd data/spl/rx/dm_spl_release_human_rx_part5/
 zcat splits/*.csv.gz | gzip > final-bydrug-PMB-sentences-rx_app14-AR-125-all_ref14-AR_222_24_25_1e-05_256_32.csv.gz
 rm -rf splits
 cd -
@@ -140,7 +159,7 @@ under `deployments`.
 To compile the results for `AR-V02`, for example:
 
 ```
-python3 src/create_onsides_datafiles.py --release V02-AR --results data/spl/rx/dm_spl_release_human_rx_part5/bestepoch-bydrug-PMB-sentences-rx_app14-AR_ref14-AR-60-all_222_24_25_1e-06_128_128.csv.gz --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt.gz
+python3 src/create_onsides_datafiles.py --release V02-AR --results data/spl/rx/dm_spl_release_human_rx_part5/final-bydrug-PMB-sentences-rx_ref14-AR-125-all_222_24_25_1e-05_256_32.csv.gz --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
 ```
 
 Which will create a "compiled" file in the labels directory:

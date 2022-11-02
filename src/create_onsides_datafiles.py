@@ -95,10 +95,12 @@ if __name__ == '__main__':
     df = pd.concat([ex, res], axis=1)
 
     print(f"Grouping predictions by drug label and adverse event term, and taking the mean prediction score...", flush=True)
-    df_grouped = df.groupby(by=['section', 'drug', 'label_id', 'set_id', 'pt_meddra_id', 'pt_meddra_term']).mean().reset_index()
+    df_grouped = df.groupby(by=['section', 'drug', 'label_id', 'set_id', 'spl_version', 'pt_meddra_id', 'pt_meddra_term']).mean().reset_index()
 
     print(f"Applying the pre-determined threshold to the prediction values to get predictions...")
     predictions = df_grouped[df_grouped['Pred1'] > threshold]
+    predictions.drop("meddra_id", axis=1, inplace=True)
+
     # print(predictions.head())
     # predictions = predictions.rename(columns={'drug': 'xml_id', 'llt': 'concept_name', 'llt_id':'concept_id'})
 
