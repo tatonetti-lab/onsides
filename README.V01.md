@@ -1,46 +1,46 @@
 # OnSIDES
-
 A resource of adverse drug effects extracted from FDA structured product labels.
 
-## V02
+## V01
 
-Second release of the OnSIDES database of adverse reactions and boxed warnings extracted from the FDA structured product labels (SPLs). This version contains significant model improvements as well as updated labels. All labels available to download from DailyMed (https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 2, 2022 were processed in this analysis. In total XXX million adverse reactions were extracted from XX,000 labels for just under X,000 drug ingredients or combination of ingredients.
+Initial release of the Onsides database of adverse reactions and boxed warnings extracted from the FDA structured product labels. All labels available to download from DailyMed (https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of April 2022 were processed in this analysis. In total 2.7 million adverse reactions were extracted from 42,000 labels for just under 2,000 drug ingredients or combination of ingredients.
 
-OnSIDES was created using the PubMedBERT language model and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.94 at extracting effects from the ADVERSE REACTIONS section of the label. This constitutes an absolute increase of 4% in each of the performance metrics over V01. For the BOXED WARNINGS section, the model achieves a F1 score of 0.76, AUROC of 0.83, and AUPR of 0.77. This constitutes an absolute increase of 10-17% in the performance metrics over V01.
+Onsides was created using the ClinicalBERT language model and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.86, AUROC of 0.88, and AUPR of 0.91 at extracting effects from the ADVERSE REACTIONS section of the label and an F1 score of 0.66, AUROC of 0.71, and AUPR of 0.60 at extracting effects from the BOXED WARNINGS section.
 
 ### Download
 
 The data are available as a set of SQL tables or as flat files in CSV format.
 
-#### CSV Files
-[onsides_v02_20221102.tar.gz]
-
 #### SQL File
-[onsides_v02_20221102.sql.gz]
+[onsides_v01_20220430.sql.gz](https://github.com/tatonetti-lab/onsides/releases/download/v01/onsides_v01_20220430.sql.gz) (81MB, md5:b386e9485e943120c9a783edf843d68e)
+
+#### CSV Files
+[onsides_v01_20220430.tar.gz](https://github.com/tatonetti-lab/onsides/releases/download/v01/onsides_v01_20220430.tar.gz) (81MB, md5:f73ded83cf5edc63447f6ca8b80add66)
+
 
 ### Description of Tables
 
 Below is a brief description of the tables. See [`SCHEMA.md`](SCHEMA.md) for column descriptions and [`src/load_onsides_db.sql`](src/load_onsides_db.sql) for more details.
 
-`adverse_reactions` - Main table of adverse reactions. This table includes adverse reactions extracted from the ADVERSE REACTIONS section of the current active label for each product. XX,XXX rows.
+`adverse_reactions` - Main table of adverse reactions. This table includes adverse reactions extracted from the ADVERSE REACTIONS section of the most recent label for each ingredient or combination of ingredients. 94,029 rows.
 
-`adverse_reactions_all_labels` - All extracted adverse reactions from the ADVERSE REACTIONS section of all labels. Each drug will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. X,XXX,XXX rows.
+`adverse_reactions_bylabel` - All extracted adverse reactions from the ADVERSE REACTIONS section of all labels. Each drug will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. 2,764,338 rows.
 
-`boxed_warnings` - Main table of boxed warnings. This table includes adverse reactions extracted from the BOXED WARNINGS section of the current active label for each drug product. X,XXX rows.
+`boxed_warnings` - Main table of boxed warnings. This table includes adverse reactions extracted from the BOXED WARNINGS section of the most recent label for each ingredient or combination of ingredients. 2,907 rows.
 
-`boxed_warnings_all_labels` - All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc). XX,XXX rows.
+`boxed_warnings_bylabel` - All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc). 67,984 rows.
 
-`ingredients` - Active ingredients for each of the parsed labels. If the label is for a drug with a single active compound then there will be only a single row for that label.  If the label is for a combination of compounds then there will be multiple rows for that label. XX,XXX rows.
+`ingredients` - Active ingredients for each of the parsed labels. If the label is for a drug with a single active compound then there will be only a single row for that label.  If the label is for a combination of compounds then there will be multiple rows for that label. 52,646 rows.
 
-`dm_spl_zip_files_meta_data` - Meta data provided by DailyMed that indicates which SPL version is the current for each Set ID.
+`label_map` - Map between the xml_id (xml filename), zip_id (zip filename), and set_id (drug identifier). 45,989 rows.
 
-`pharmacologic_class_mappings` -
+`latest_labels_bydrug` - Most recent label (as determined from the zip filename for each drug or combination of drugs. 2,051 rows.
 
-`rxcui_setid_map` - Map between Set IDs and RxNorm product identifiers. XX,XXX rows.
+`rxnorm_map` - Map between set_id and rx_cui (product level) and also includes the structured product label version and a string description of the product. 443,620 rows.
 
-`rxnorm_mappings` -
+`rxnorm_product_to_ingredient` - Map between the RxNorm product to the active ingredients in that product. 254,036 rows.
 
-`rxnorm_to_setid` - Map between the RxNorm product to the active ingredients in that product. XXX,XXX rows.
+`rxnorm_to_setid` - Map between set_id and rx_cui. 141,915 rows.
 
 ### Replication, Retraining, and Improving the Model
 
@@ -48,7 +48,7 @@ Below is a brief description of the tables. See [`SCHEMA.md`](SCHEMA.md) for col
 
 In addition to the cloned repository, a `data` subdirectory is required that contains three pieces of data.
 
-1. A file that maps MedDRA preferred terms to lower level terms.
+1. A file that maps meddra preferred terms to lower level terms.
 2. You will also need the manual annotations from Denmer-Fushman, et al paper and TAC.
 3. The TAC labels in XML format with the Adverse Reactions, Boxed Warnings, and Warnings and Precautions sections parsed.
 
@@ -93,7 +93,7 @@ Each experiment has a corresponding Jupyter notebook for evaluation (See noteboo
 
 ### Generating the OnSIDES Database
 
-Generating the database is done in five steps: i) download and pre-process the structured product labels (`spl_processor.py`), ii) identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`), iii) apply the model to score feature sentence fragments (`predict.py`), iv) compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`), and v) integrate the results with standard vocabularies and build the csv files (`build_onsides.py`). All five steps are automated and managed through the Deployment Tracker (`deployment_tracker.py`).
+Generating the database is done in five steps: i) download and pre-process the structured product labels (`spl_processor.py`), ii) identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`), iii) apply the model to score feature sentence fragments (`predict.py`), iv) compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`), and v) integrate the results with standard vocabularies and build the csv files (`build_onsides.py`). All five steps are automated and managed thorugh the Deployment Tracker (`deployment_tracker.py`).
 
 See [DATABASE.md](DATABASE.md) for a step-by-step walkthrough.
 
