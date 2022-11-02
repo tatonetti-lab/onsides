@@ -36,6 +36,23 @@ gpu to use for the steps that require it.
 python3 src/deployment_tracker.py --release V02-AR --gpu 2
 ```
 
+Run the deployment tracker for each section and release version. A full re-deployment of
+`V02` would require the following set of commands:
+
+```
+# check for any updates to the SPLs
+python3 src/spl_processor.py --update
+
+# deploy for Adverse Reactions section
+python3 src/deployment_tracker.py --release V02-AR | bash
+
+# deploy for Boxed Warnings section
+python3 src/deployment_tracker.py --release V02-BW | bash
+
+# generate database files
+python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --version V02
+```
+
 ## Generate by running each step manually
 
 ### Step 1. Download and Pre-process the SPLs
