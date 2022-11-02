@@ -93,7 +93,7 @@ Each experiment has a corresponding Jupyter notebook for evaluation (See noteboo
 
 ### Generating the OnSIDES Database
 
-Generating the database is done in five steps: i) download and pre-process the structured product labels (`spl_processor.py`), ii) identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`), iii) apply the model to score feature sentence fragments (`predict.py`), iv) compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`), and v) create the SQL schema, load the raw data, and generate derivative tables (`load_onsides_db.py`).
+Generating the database is done in five steps: i) download and pre-process the structured product labels (`spl_processor.py`), ii) identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`), iii) apply the model to score feature sentence fragments (`predict.py`), iv) compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`), and v) integrate the results with standard vocabularies and build the csv files (`build_onsides.py`). All five steps are automated and managed thorugh the Deployment Tracker (`deployment_tracker.py`).
 
 See [DATABASE.md](DATABASE.md) for a step-by-step walkthrough.
 

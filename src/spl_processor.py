@@ -40,6 +40,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 
 dailymed_spl_resources_url = 'https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm'
+dailymed_spl_mapping_resources_url = 'https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-mapping-files.cfm'
 
 section_codes = {
     'AR': '34084-4', # Adverse Reactions
@@ -75,18 +76,17 @@ def download_spl_file(url, local_path):
             with open(local_path, 'wb') as output:
                 shutil.copyfileobj(raw, output)
 
-def download_and_verify(download, archive_info, max_retries=2):
+def download_and_verify(download, archive_info, spl_subdir = 'rx', max_retries=2):
     retry_attemps = 0
     while retry_attemps < max_retries:
         # download
         if not archive_info['downloaded'] == 'yes':
             print(f"Downloading {download['url']}...")
-            local_path = os.path.join('data', 'spl', 'rx', download['name'])
+            local_path = os.path.join('data', 'spl', spl_subdir, download['name'])
             if not os.path.exists(local_path):
                 download_spl_file(download['url'], local_path)
 
             archive_info['local_path'] = local_path
-            archive_info['parsed_labels_path'] = local_path.strip('.zip')
             archive_info['downloaded'] = 'yes'
 
         # verify checksum
@@ -99,9 +99,10 @@ def download_and_verify(download, archive_info, max_retries=2):
                 print("ERROR: The checksums do not match, there was an error downloading. Will retry up to 2 times.")
                 archive_info['downloaded'] = 'no'
                 archive_info['local_path'] = ''
-                archive_info['parsed_labels_path'] = ''
                 archive_info['verified'] = 'failed'
                 retry_attemps += 1
+                # remove the file so that it redownloads
+                os.unlink(os.path.join('data', 'spl', spl_subdir, download['name']))
             else:
                 archive_info['verified'] = 'yes'
 
@@ -113,6 +114,7 @@ def parse_label_xml_from_zip(zip_file, zip_dir_path, label_zip_path, process_sta
     parsed_label = {
         'set_id': '',
         'label_id': '',
+        'spl_version': '',
         'sections': dict()
     }
 
@@ -140,6 +142,7 @@ def parse_label_xml_from_zip(zip_file, zip_dir_path, label_zip_path, process_sta
         # parse out set_id and label_id from the xml file
         set_id = xmlsoup.find('setId')['root']
         label_id = xmlsoup.find('id')['root']
+        spl_version = xmlsoup.find('versionNumber')['value']
 
         try:
             title = xmlsoup.title.text.strip()
@@ -149,9 +152,11 @@ def parse_label_xml_from_zip(zip_file, zip_dir_path, label_zip_path, process_sta
         # Store these identifiers in both places for convenience
         process_status['files'][zip_file]['set_id'] = set_id
         process_status['files'][zip_file]['label_id'] = label_id
+        process_status['files'][zip_file]['spl_version'] = spl_version
         process_status['files'][zip_file]['title'] = title
         parsed_label['set_id'] = set_id
         parsed_label['label_id'] = label_id
+        parsed_label['spl_version'] = spl_version
         parsed_label['title'] = title
         #update_process_status(process_status_path, process_status)
 
@@ -242,6 +247,8 @@ def download_and_process_full_release(soup, spl_status):
     # Step 1. Download the files and verify their checksums.
     for download in available_downloads:
         download_and_verify(download, spl_status['full_release']['parts'][download['name']])
+        parsed_labels_path = spl_status['full_release']['parts'][download['name']]['local_path'].strip('.zip')
+        spl_status['full_release']['parts'][download['name']]['parsed_labels_path'] = parsed_labels_path
         update_spl_status(spl_status)
 
     # Step 2. Pre-process files.
@@ -275,8 +282,8 @@ def process_label_archive(archive_info):
 
         # filter out any labels that are not prescription
         zip_files = [f for f in zip_obj.namelist() if f.startswith('prescription') and f.endswith('zip')]
-        print(len(zip_files))
-
+        print(f"  > {archive_info['local_path']} ({len(zip_files)} files.)")
+        
         for zip_i, zip_file in tqdm(enumerate(zip_files), total=len(zip_files)):
 
             if zip_i % int(len(zip_files) / 10) == 0:
@@ -352,6 +359,7 @@ def download_and_process_updates(soup, spl_status):
     # Step 1. Download
     for download in available_downloads:
         download_and_verify(download, spl_status['updates'][download['date']])
+        spl_status['updates'][download['date']]['parsed_labels_path'] = archive_info['local_path'].strip('.zip')
         update_spl_status(spl_status)
 
     # Step 2. Pre-process files.
@@ -361,6 +369,73 @@ def download_and_process_updates(soup, spl_status):
 
         process_label_archive(update)
         update_spl_status(spl_status)
+
+def download_and_verify_mapping_files(soup, spl_status):
+    maps_dir = os.path.join('data', 'spl', 'maps')
+    if not os.path.exists(maps_dir):
+        os.mkdir(maps_dir)
+
+    download_list = soup.find("ul", {"class": "download heading"})
+
+    for li in download_list.findChildren("li", recursive=False):
+
+        li_url = li.find_all("a")[0]["href"]
+        li_name = os.path.split(li_url)[-1]
+
+        # list of meta data for the download
+        li_meta = list()
+        li_ul = li.findChildren("ul", recursive=False)[0]
+        for li_ul_li in li_ul.find_all("li"):
+            li_meta.append( li_ul_li.text.split(': ') )
+        li_meta = dict(li_meta)
+
+        li_date = datetime.strptime(li_meta['Last Modified'], "%b %d, %Y").strftime("%Y%m%d")
+
+        if not os.path.exists(os.path.join(maps_dir, li_date)):
+            os.mkdir(os.path.join(maps_dir, li_date))
+
+        if not li_name in spl_status['mappings']:
+            spl_status['mappings'][li_name] = dict()
+
+        if li_date in spl_status['mappings'][li_name]:
+            if spl_status['mappings'][li_name][li_date]['status'] == 'completed':
+                continue
+        else:
+            spl_status['mappings'][li_name][li_date] = {
+                'status': 'in_progress',
+                'description': '',
+                'url': '',
+                'downloaded': 'no',
+                'verified': 'no',
+                'extracted': 'no'
+            }
+
+        spl_status['mappings'][li_name][li_date].update( dict(li_meta) )
+        spl_status['mappings'][li_name][li_date]['description'] = li.find("h3").text
+        spl_status['mappings'][li_name][li_date]['name'] = li_name
+        spl_status['mappings'][li_name][li_date]['url'] = li_url
+
+        download_and_verify(spl_status['mappings'][li_name][li_date],
+            spl_status['mappings'][li_name][li_date],
+            spl_subdir=os.path.join('maps', li_date))
+
+        # extract the data file out and gzip it
+        with ZipFile(spl_status['mappings'][li_name][li_date]['local_path']) as zip_obj:
+            txt_fn = li_name.replace('.zip', '.txt')
+            if not txt_fn in zip_obj.namelist():
+                raise Exception(f"ERROR: Did not find expected file {txt_fn} in the zip archive: {spl_status['mappings'][li_name][li_date]['local_path']}.")
+
+            zip_dir_path = os.path.dirname(spl_status['mappings'][li_name][li_date]['local_path'])
+            zip_obj.extract(txt_fn, zip_dir_path)
+            spl_status['mappings'][li_name][li_date]['extracted'] = 'yes'
+            spl_status['mappings'][li_name][li_date]['extracted_path'] = spl_status['mappings'][li_name][li_date]['local_path'].replace('.zip', '.txt')
+
+        if spl_status['mappings'][li_name][li_date]['downloaded'] == 'yes' and \
+            spl_status['mappings'][li_name][li_date]['verified'] == 'yes' and \
+            spl_status['mappings'][li_name][li_date]['extracted'] == 'yes':
+            spl_status['mappings'][li_name][li_date]['status'] = 'completed'
+
+    update_spl_status(spl_status)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -380,7 +455,7 @@ def main():
     page = requests.get(dailymed_spl_resources_url)
     soup = BeautifulSoup(page.content, "html.parser")
 
-    spl_status = {"full_release": {"status": "in_progress", "parts": dict()}, "updates": dict()}
+    spl_status = {"full_release": {"status": "in_progress", "parts": dict()}, "updates": dict(), "mappings": dict()}
     if os.path.exists('./spl.json'):
         splfh = open('./spl.json')
         spl_status = json.loads(splfh.read())
@@ -392,6 +467,13 @@ def main():
         download_and_process_full_release(soup, spl_status)
     else:
         raise Exception("Either --full or --update flag must be provided.")
+
+    # Get the latest mapping files
+    page = requests.get(dailymed_spl_mapping_resources_url)
+    soup = BeautifulSoup(page.content, "html.parser")
+
+    download_and_verify_mapping_files(soup, spl_status)
+
 
 if __name__ == '__main__':
     main()

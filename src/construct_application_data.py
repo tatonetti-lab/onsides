@@ -70,7 +70,7 @@ def main():
     writer = csv.writer(outfh)
     #writer.writerow(['section', 'drug', 'llt_id', 'llt', 'string'])
     # drug = SetID
-    writer.writerow(['section', 'drug', 'label_id', 'set_id', 'meddra_id', 'pt_meddra_id', 'source_method', 'pt_meddra_term', 'found_term', 'string'])
+    writer.writerow(['section', 'drug', 'label_id', 'set_id', 'spl_version', 'meddra_id', 'pt_meddra_id', 'source_method', 'pt_meddra_term', 'found_term', 'string'])
 
     for section in sections:
 
@@ -128,7 +128,10 @@ def main():
 
 
             # print(f"\tFound {len(found_terms)} terms using exact string matches. Took {time.time()-start_time}s.")
-            exact_term_list = list(zip(*found_terms))[0]
+            if len(found_terms) > 0:
+                exact_term_list = list(zip(*found_terms))[0]
+            else:
+                exact_term_list = list()
 
             if not deepcadrme is None:
                 # 2) DeepCADRME mentions, normalized to meddra terms (PT only)
@@ -160,7 +163,7 @@ def main():
 
                 example_string = generate_example(label_text, found_term, start_pos, length, args.nwords, sub_event, sub_nonsense, prepend_event, random_sampled_words, args.prop_before, source)
 
-                writer.writerow([section, drug, label_data['label_id'], label_data['set_id'], meddra_id, pt_meddra_id, source_method, pt_meddra_term, found_term, example_string])
+                writer.writerow([section, drug, label_data['label_id'], label_data['set_id'], label_data['spl_version'], meddra_id, pt_meddra_id, source_method, pt_meddra_term, found_term, example_string])
 
             ################################################################################
             # This was the previous method we used to do this that only relied on exact

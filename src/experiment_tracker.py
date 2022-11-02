@@ -72,6 +72,10 @@ def tracker(args_id, args, data, replicate, clean_experiment):
     else:
         raise Exception(f"ERROR: Could not find an experiment or deployment with id={args_id} in experiments.json.")
 
+    if args.skip_models and is_deployment:
+        eprint(f"Deployments must not have the --skip-models flag. Skipping deployment {args_id}.")
+        return
+
     is_complete = True
     remaining_commands = list()
     output_files = list()
@@ -109,8 +113,10 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         ctd_params_outputs.append((method, nwords, section, fn))
 
         file_exists = os.path.exists(fn)
-        eprint(f"  {fn} ...{file_exists}")
-        if not file_exists:
+        if not args.skip_refs:
+            eprint(f"  {fn} ...{file_exists}")
+
+        if not args.skip_refs and not file_exists:
             command = f"python3 src/construct_training_data.py --method {method} --nwords {nwords} --section {section}"
             eprint(f"    NOT FOUND, create with: {command}")
             is_complete = False
@@ -142,6 +148,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
     fcbd_params_outputs = list()
 
     epochperf_files = list()
+    model_files = {'final': list(), 'bestepoch': list()}
 
     for (method, nwords, section, reffn), max_length, batch_size, epochs, lr, ifexists, network, refsource, split_method in fcbd_iterator:
 
@@ -169,6 +176,9 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         file_exists = os.path.exists(finalmodfn)
         bestepoch_file_exists = os.path.exists(bestepochmodfn)
         epochs_file_exists = os.path.exists(epochsfn)
+
+        model_files['final'].append(finalmodfn)
+        model_files['bestepoch'].append(bestepochmodfn)
 
         if not args.skip_models:
             eprint(f"  {finalmodfn} ...{file_exists}")
@@ -297,6 +307,35 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         if is_deployment:
             eprint("DEPLOYMENT IS READY.")
             qprint(" [     Ready    ]")
+
+            if args.skip_models:
+                eprint("Writing release information requires --skip-models to be False.")
+            else:
+                eprint("Writing out releases file...")
+                if os.path.exists('./releases.json'):
+                    expfh = open('./releases.json')
+                    releases = json.loads(expfh.read())
+                    expfh.close()
+                else:
+                    releases = {"releases": dict()}
+
+                if len(model_files[experiment["model"]]) != 1:
+                    raise Exception(f"ERROR: Deployment has more than one model file available for {experiment['model']}. There should be only one.")
+
+                experiment_id = f"{args_id}"
+                releases["releases"][experiment_id] = {
+                    "name": experiment["name"],
+                    "description": experiment["description"],
+                    "threshold": experiment["threshold"],
+                    "model": experiment["model"],
+                    "model_file": model_files[experiment["model"]][0]
+                }
+
+                expfh = open('./releases.json', 'w')
+                expfh.write(json.dumps(releases, indent=4))
+                expfh.close()
+
+                eprint("FINISHED.")
         else:
 
             eprint("EXPERIMENT IS COMPLETE!")
@@ -397,6 +436,8 @@ if __name__ == '__main__':
     parser.add_argument('--id', type=str)
     parser.add_argument('--gpu', type=int, help="if you want to prepend the output commands with the specific gpu, specify a gpu number here.", default=-1)
     parser.add_argument('--skip-models', action='store_true', default=False)
+    parser.add_argument('--skip-refs', action='store_true', default=False)
+    parser.add_argument('--results-only', action='store_true', default=False)
     parser.add_argument('--replicate', type=int, default=0, help="use to run exact replicates of existing experiments, results and models will be saved in a replicates/rep[NUM] directory")
     parser.add_argument('--quiet', action='store_true', default=False)
     parser.add_argument('--all', action='store_true', default=False)
@@ -411,6 +452,10 @@ if __name__ == '__main__':
         raise Exception(f"ERROR: Cannot clean all experiments. An experiment must be chosen with the --id argument.")
 
     QUIET_MODE = args.quiet
+
+    if args.results_only:
+        args.skip_models = True
+        args.skip_refs = True
 
     expfh = open('./experiments.json')
     data = json.loads(expfh.read())

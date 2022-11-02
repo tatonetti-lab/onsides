@@ -52,8 +52,18 @@ if __name__ == '__main__':
     max_length = fnnoext.split('_')[7]
     batch_size = fnnoext.split('_')[7]
 
-    out_filename = f'compiled_{prefix}_{appset}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
-    out_filepath = os.path.join(os.path.dirname(args.results), out_filename)
+    # confirm compiled subdirectory exists
+    compiled_path = os.path.join(os.path.dirname(args.results), 'compiled')
+    if not os.path.exists(compiled_path):
+        os.mkdir(compiled_path)
+    # confirm release version path exists
+    version, section = args.release.split('-')
+    version_path = os.path.join(compiled_path, version)
+    if not os.path.exists(version_path):
+        os.mkdir(version_path)
+
+    out_filename = f'{section}.csv.gz'
+    out_filepath = os.path.join(version_path, out_filename)
 
     print(f" prefix: {prefix}")
     print(f" appset: {appset}")

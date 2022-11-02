@@ -1,126 +1,149 @@
 CREATE TABLE `adverse_reactions_bylabel` (
-`col0` int(11) DEFAULT NULL,
-`xml_id` varchar(37) DEFAULT NULL,
-`concept_name` varchar(53) DEFAULT NULL,
-`concept_code` double DEFAULT NULL,
+`section` varchar(2) DEFAULT NULL,
+`zip_id` varchar(45) DEFAULT NULL,
+`label_id` varchar(36) DEFAULT NULL,
+`set_id` varchar(36) DEFAULT NULL,
+`spl_version` int(11) DEFAULT NULL,
+`pt_meddra_id` int(11) DEFAULT NULL,
+`pt_meddra_term` varchar(53) DEFAULT NULL,
+`meddra_id` double DEFAULT NULL,
 `pred0` double DEFAULT NULL,
 `pred1` double DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-# Prescription Drug Labels
-{LOAD_AR_DATA_COMMANDS}
--- load data local infile './bestepoch-bydrug-CB-output-part1_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
--- load data local infile './bestepoch-bydrug-CB-output-part2_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
--- load data local infile './bestepoch-bydrug-CB-output-part3_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
--- load data local infile './bestepoch-bydrug-CB-output-part4_app8-AR_ref8-AR_222_24_10_1e-06_256_256.csv' into table adverse_reactions_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
-
-alter table adverse_reactions_bylabel add index (`concept_code`);
-alter table adverse_reactions_bylabel add index (`xml_id`);
+alter table adverse_reactions_bylabel add index (`zip_id`);
+alter table adverse_reactions_bylabel add index (`label_id`);
+alter table adverse_reactions_bylabel add index (`set_id`);
+alter table adverse_reactions_bylabel add index (`spl_version`);
+alter table adverse_reactions_bylabel add index (`pt_meddra_id`);
 
 CREATE TABLE `boxed_warnings_bylabel` (
-`col0` int(11) DEFAULT NULL,
-`xml_id` varchar(37) DEFAULT NULL,
-`concept_name` varchar(53) DEFAULT NULL,
-`concept_code` double DEFAULT NULL,
+`section` varchar(2) DEFAULT NULL,
+`zip_id` varchar(45) DEFAULT NULL,
+`label_id` varchar(36) DEFAULT NULL,
+`set_id` varchar(36) DEFAULT NULL,
+`spl_version` int(11) DEFAULT NULL,
+`pt_meddra_id` int(11) DEFAULT NULL,
+`pt_meddra_term` varchar(53) DEFAULT NULL,
+`meddra_id` double DEFAULT NULL,
 `pred0` double DEFAULT NULL,
 `pred1` double DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-# Prescription Drug Labels
-{LOAD_BW_DATA_COMMANDS}
--- load data local infile './bestepoch-bydrug-CB-output-part1-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
--- load data local infile './bestepoch-bydrug-CB-output-part2-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
--- load data local infile './bestepoch-bydrug-CB-output-part3-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
--- load data local infile './bestepoch-bydrug-CB-output-part4-rx_app8-BW_ref8-BW_222_24_10_1e-06_256_256.csv' into table boxed_warnings_bylabel fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' ignore 1 lines;
+alter table boxed_warnings_bylabel add index (`zip_id`);
+alter table boxed_warnings_bylabel add index (`label_id`);
+alter table boxed_warnings_bylabel add index (`set_id`);
+alter table boxed_warnings_bylabel add index (`spl_version`);
+alter table boxed_warnings_bylabel add index (`pt_meddra_id`);
 
-alter table boxed_warnings_bylabel add index (`concept_code`);
-alter table boxed_warnings_bylabel add index (`xml_id`);
-
--- Removed in V02
--- CREATE TABLE `label_map` (
--- `xml_id` varchar(37) DEFAULT NULL,
--- `zip_id` varchar(46) DEFAULT NULL,
--- `set_id` varchar(37) DEFAULT NULL
--- ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
---
--- load data local infile './labels_to_xmlfiles_to_drugs.txt' into table label_map fields terminated by '|' lines terminated by '\n';
---
--- alter table label_map add index (`xml_id`);
--- alter table label_map add index (`set_id`);
-
-CREATE TABLE `rxnorm_map` (
-`set_id` varchar(37) DEFAULT NULL,
+CREATE TABLE `adverse_reactions_bylabel_active` (
+`section` varchar(2) DEFAULT NULL,
+`zip_id` varchar(45) DEFAULT NULL,
+`label_id` varchar(36) DEFAULT NULL,
+`set_id` varchar(36) DEFAULT NULL,
 `spl_version` int(11) DEFAULT NULL,
-`rx_cui` int(11) DEFAULT NULL,
-`rx_string` varchar(2300) DEFAULT NULL,
-`rx_tty` varchar(4) DEFAULT NULL
+`pt_meddra_id` int(11) DEFAULT NULL,
+`pt_meddra_term` varchar(53) DEFAULT NULL,
+`meddra_id` double DEFAULT NULL,
+`pred0` double DEFAULT NULL,
+`pred1` double DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-load data local infile './rxnorm_mappings.txt' into table rxnorm_map fields terminated by '|' lines terminated by '\n' ignore 1 lines;
+alter table adverse_reactions_bylabel_active add index (`zip_id`);
+alter table adverse_reactions_bylabel_active add index (`label_id`);
+alter table adverse_reactions_bylabel_active add index (`set_id`);
+alter table adverse_reactions_bylabel_active add index (`spl_version`);
+alter table adverse_reactions_bylabel_active add index (`pt_meddra_id`);
 
-alter table rxnorm_map add index (`set_id`);
-alter table rxnorm_map add index (`rx_cui`);
-alter table rxnorm_map add index (`rx_tty`);
+CREATE TABLE `boxed_warnings_bylabel_active` (
+`section` varchar(2) DEFAULT NULL,
+`zip_id` varchar(45) DEFAULT NULL,
+`label_id` varchar(36) DEFAULT NULL,
+`set_id` varchar(36) DEFAULT NULL,
+`spl_version` int(11) DEFAULT NULL,
+`pt_meddra_id` int(11) DEFAULT NULL,
+`pt_meddra_term` varchar(53) DEFAULT NULL,
+`meddra_id` double DEFAULT NULL,
+`pred0` double DEFAULT NULL,
+`pred1` double DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-create table `rxnorm_to_setid`
-select distinct set_id, rx_cui
-from rxnorm_map;
+alter table boxed_warnings_bylabel_active add index (`zip_id`);
+alter table boxed_warnings_bylabel_active add index (`label_id`);
+alter table boxed_warnings_bylabel_active add index (`set_id`);
+alter table boxed_warnings_bylabel_active add index (`spl_version`);
+alter table boxed_warnings_bylabel_active add index (`pt_meddra_id`);
 
-alter table rxnorm_to_setid add index (`set_id`);
-alter table rxnorm_to_setid add index (`rx_cui`);
+CREATE TABLE `rxnorm_mappings` (
+`setid` varchar(36) DEFAULT NULL,
+`spl_version` int(11) DEFAULT NULL,
+`rxcui` int(11) DEFAULT NULL,
+`rxstring` varchar(611) DEFAULT NULL,
+`rxtty` varchar(4) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-create table rxnorm_product_to_ingredient
-select a.concept_code product_concept_code, a.concept_name product_concept_name, a.concept_id product_concept_id,
-	   b.concept_code ingredient_concept_code, b.concept_name ingredient_concept_name, b.concept_id ingredient_concept_id
-from {OMOP_V5_SCHEMA}.concept a
-join {OMOP_V5_SCHEMA}.concept_ancestor on (a.concept_id = descendant_concept_id)
-join {OMOP_V5_SCHEMA}.concept b on (b.concept_id = ancestor_concept_id)
-where a.vocabulary_id = 'RxNorm'
-and b.vocabulary_id = 'RxNorm'
-and b.concept_class_id = 'Ingredient';
+alter table rxnorm_mappings add index (`setid`);
+alter table rxnorm_mappings add index (`rxcui`);
+alter table rxnorm_mappings add index (`rxtty`);
 
-alter table rxnorm_product_to_ingredient add index (`product_concept_code`);
-alter table rxnorm_product_to_ingredient add index (`product_concept_id`);
-alter table rxnorm_product_to_ingredient add index (`ingredient_concept_code`);
-alter table rxnorm_product_to_ingredient add index (`ingredient_concept_id`);
+CREATE TABLE `dm_spl_zip_files_meta_data` (
+`setid` varchar(37) DEFAULT NULL,
+`zip_file_name` varchar(50) DEFAULT NULL,
+`upload_date` varchar(10) DEFAULT NULL,
+`spl_version` int(11) DEFAULT NULL,
+`title` varchar(423) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-create table ingredients
-select xml_id, ingredient_concept_code, ingredient_concept_name, ingredient_concept_id, 'RxNorm' as vocabulary_id, 'Ingredient' as concept_class_id
-from label_map
-join rxnorm_to_setid using (set_id)
-join rxnorm_product_to_ingredient on (product_concept_code = rx_cui)
-group by xml_id, ingredient_concept_code, ingredient_concept_name, ingredient_concept_id;
+alter table dm_spl_zip_files_meta_data add index (`setid`);
 
-alter table ingredients add index (`xml_id`);
-alter table ingredients add index (`ingredient_concept_id`);
-alter table ingredients add index (`ingredient_concept_code`);
-alter table ingredients add index (`vocabulary_id`);
-alter table ingredients add index (`concept_class_id`);
+CREATE TABLE `pharmacologic_class_mappings` (
+`spl_setid` varchar(36) DEFAULT NULL,
+`spl_version` int(11) DEFAULT NULL,
+`pharma_setid` varchar(36) DEFAULT NULL,
+`pharma_version` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-create table latest_labels_bydrug
+alter table dm_spl_zip_files_meta_data add index (`spl_setid`);
+alter table dm_spl_zip_files_meta_data add index (`pharma_setid`);
+
+CREATE TABLE `rxcui_setid_map` (
+`setid` varchar(36) DEFAULT NULL,
+`rxcui` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+alter table rxnorm_to_setid add index (`setid`);
+alter table rxnorm_to_setid add index (`rxcui`);
+
+CREATE TABLE `rxnorm_product_to_ingredient` (
+`product_rx_cui` int(11) DEFAULT NULL,
+`product_name` varchar(255) DEFAULT NULL,
+`product_omop_concept_id` int(11) DEFAULT NULL,
+`ingredient_rx_cui` int(11) DEFAULT NULL,
+`ingredient_name` varchar(94) DEFAULT NULL,
+`ingredient_omop_concept_id` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+alter table rxnorm_product_to_ingredient add index (`product_rx_cui`);
+alter table rxnorm_product_to_ingredient add index (`product_omop_concept_id`);
+alter table rxnorm_product_to_ingredient add index (`ingredient_rx_cui`);
+alter table rxnorm_product_to_ingredient add index (`ingredient_omop_concept_id`);
+
+CREATE TABLE `ingredients` (
+`set_id` varchar(36) DEFAULT NULL,
+`ingredient_rx_cui` int(11) DEFAULT NULL,
+`ingredient_name` varchar(98) DEFAULT NULL,
+`ingredient_omop_concept_id` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+alter table ingredients add index (`set_id`);
+alter table ingredients add index (`ingredient_rx_cui`);
+alter table ingredients add index (`ingredient_omop_concept_id`);
+
+create table latest_labels_byingredient
 select ingredient_concept_id, substring_index(group_concat(xml_id order by zip_id desc), ',', 1) latest_xml_id, substring_index(group_concat(zip_id order by zip_id desc), ',', 1) latest_zip_id
-from ingredientspart
+from ingredients
 join label_map using (xml_id)
 group by ingredient_concept_id;
-
-SET session group_concat_max_len=15000;
-
-create table latest_labels_bydrug
-select ingredients, concept_codes, concept_ids, substring_index(group_concat(xml_id order by zip_id desc), ',', 1) latest_xml_id, substring_index(group_concat(zip_id order by zip_id desc), ',', 1) latest_zip_id
-from
-(
-	select xml_id, group_concat(ingredient_concept_code order by ingredient_concept_code separator ', ') concept_codes,
-			   group_concat(ingredient_concept_name order by ingredient_concept_code separator ', ') ingredients,
-			   group_concat(ingredient_concept_id order by ingredient_concept_code separator ', ') concept_ids
-	from ingredients
-	group by xml_id
-) ing
-join label_map using (xml_id)
-group by ingredients, concept_codes, concept_ids;
-
-alter table latest_labels_bydrug modify latest_xml_id varchar(37);
-alter table latest_labels_bydrug modify latest_zip_id varchar(46);
-alter table latest_labels_bydrug add index (`latest_xml_id`);
 
 create table adverse_reactions
 select xml_id, c.concept_name, vocabulary_id, domain_id, concept_class_id, concept_code as meddra_id, concept_id as omop_concept_id, ingredients, concept_codes as rxnorm_ids, concept_ids as drug_concept_ids

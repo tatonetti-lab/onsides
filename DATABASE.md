@@ -6,15 +6,15 @@ Generating the database is done in five steps:
 2. identify adverse reaction terms and construct feature sentence fragments (`construct_application_data.py`)
 3. apply the model to score feature sentence fragments (`predict.py`)
 4. compile the results into csv datafiles for each label section (`create_onsides_datafiles.py`)
-5. create the SQL schema, load the raw data, and generate derivative tables (`load_onsides_db.py`)
+5. integrate the results with standard vocabularies and build the csv files (`build_onsides.py`)
 
-## Generate semi-automatically using Experiment Tracker
+## Generate semi-automatically using Deployment Tracker
 
 The steps above are detailed below. However, note that as with the experiments,
-this process is assisted by the Experiment Tracker (`experiment_tracker.py`).
+this process is assisted by the Deployment Tracker (`demployment_tracker.py`).
 
 ```
-python3 src/experiment_tracker.py --deploy V02-AR
+python3 src/deployment_tracker.py --id V02-AR
 ```
 
 ## Generate by running each step manually
@@ -56,7 +56,7 @@ label medicine type (`--medtype`), and the directory of the parsed label json fi
 all required parameters. For example:
 
 ```
-python3 src/construct_application_data.py --method 14 --nwords 60 --section AR --medtype rx --dir data/spl/rx/dm_spl_release_human_rx_part5
+python3 src/construct_application_data.py --method 14 --nwords 125 --section AR --medtype rx --dir data/spl/rx/dm_spl_release_human_rx_part5
 ```
 
 This will need to be run for each subdirectory of labels and for each section (Adverse Reactions,
@@ -64,7 +64,7 @@ Boxed Warnings, etc.). This script will create a sentences file at the directory
 For example, the above command creates a file named:
 
 ```
-data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt.gz
+data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
 ```
 
 ### Step 3. Apply the model to score ADR sentences
@@ -74,14 +74,14 @@ the `predict.py` script. The required parameters are the trained model path (`--
 the path to the feature file generated in Step 2 (`--examples`). For example:
 
 ```
-python3 src/predict.py --model models/bestepoch-bydrug-PMB_14-AR-60-all_222_24_25_1e-06_128_128.pth --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt.gz
+python3 src/predict.py --model ./models/final-bydrug-PMB_14-AR-125-all_222_24_25_1e-05_256_32.pth --examples data/spl/rx/dm_spl_release_human_rx_part1/sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
 ```
 
 The resulting gzipped csv file of model outputs will be saved in the same directory
 as the examples. For example, the above creates a file named:
 
 ```
-data/spl/rx/dm_spl_release_human_rx_part5/bestepoch-bydrug-PMB-sentences-rx_app14-AR_ref14-AR_222_24_25_1e-06_128_128.csv.gz
+data/spl/rx/dm_spl_release_human_rx_part1/final-bydrug-PMB-sentences-rx_app14-AR_ref14-AR-125-all_222_24_25_1e-05_256_32.csv.gz
 ```
 
 #### Really Large Files
@@ -91,35 +91,40 @@ of the parts of the full release download tend to cause issues. To avoid these e
 speed up the process overall the sentence files can be split, processed individually, and
 then recombined.
 
-The following bash code snippet will split the file into 100 MB chunks, each with their
+The following bash code snippet shows how this can be done using the full release part5
+as of Oct 2022. The part5 file will split the file into 100 MB chunks, each with their
 own header.
 
 ```
-cd data/spl/rx/dm_spl_release_human_rx_part5/
+cd data/spl/rx/dm_spl_release_human_rx_part1/
 mkdir -p splits
-gunzip sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt.gz
-tail -n +2 sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt | split -d -C 100m - --filter='sh -c "{ head -n1 sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt; cat; } > $FILE"' splits/sentences-rx_method14_nwords60_clinical_bert_application_set_AR_split
-gzip sentences-rx_method14_nwords60_clinical_bert_application_set_AR.txt
+gunzip sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
+tail -n +2 sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt | split -d -C 100m - --filter='sh -c "{ head -n1 sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt; cat; } > $FILE"' splits/sentences-rx_method14_nwords125_clinical_bert_application_set_AR_split
+gzip sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt
 cd -
 ```
 
 Then run `predict.py` on each split:
 
 ```
-for f in data/spl/rx/dm_spl_release_human_rx_part5/splits/*
+for f in data/spl/rx/dm_spl_release_human_rx_part1/splits/*
 do
-  echo python3 src/predict.py --model models/bestepoch-bydrug-PMB_14-AR-60-all_222_24_25_1e-06_128_128.pth --examples $f
+  echo python3 src/predict.py --model ./models/final-bydrug-PMB_14-AR-125-all_222_24_25_1e-05_256_32.pth --examples $f
 done | bash
 ```
 
 Finally, recombine the results and archive them:
 
 ```
-cd data/spl/rx/dm_spl_release_human_rx_part5/
-zcat splits/*.csv.gz | gzip > bestepoch-bydrug-PMB-sentences-rx_app14-AR-60-all_ref14-AR_222_24_25_1e-06_128_128.csv.gz
+cd data/spl/rx/dm_spl_release_human_rx_part1/
+zcat splits/*.csv.gz | gzip > final-bydrug-PMB-sentences-rx_app14-AR-125-all_ref14-AR_222_24_25_1e-05_256_32.csv.gz
 rm -rf splits
 cd -
 ```
+
+This process will have to be done for each part of a full release and for each
+update available. Reminder note that the Deployment Tracker (`deployment_tracker.py`)
+script will automate this process for you (See above for how to run).
 
 ### Step 4. Compile results into CSV files
 
@@ -141,7 +146,33 @@ python3 src/create_onsides_datafiles.py --release V02-AR --results data/spl/rx/d
 Which will create a "compiled" file in the labels directory:
 
 ```
-data/spl/rx/dm_spl_release_human_rx_part5/compiled_bestepoch-bydrug-PMB-sentences-rx_app14-AR_ref14-AR-60-all_222_24_25_1e-06_128_128.csv.gz
+data/spl/rx/dm_spl_release_human_rx_part5/compiled/V02/AR.csv.gz
 ```
 
-### Step 5. Load into SQL and create derivative databases
+### Step 5. Collate and integrate with standard vocabularies and build database files
+
+To build the final version of the OnSIDES database files we leverage the standard
+vocabularies in the OMOP Common Data Model (CDM). These can be downloaded using the
+ATHENA tool made available from OHDSI.org. See https://www.ohdsi.org/data-standardization/
+for more information. In this implementation we use OMOP CDM v5.4. Download the vocabularies
+through ATHENA (including MedDRA, which will require a EULA) and save them into a
+subdirectory of `./data`.
+
+The files are built by running the `build_onsides.py` script with the path to the download
+vocabularies (`--vocab`) and the version number (`--version`). All sections which have a trained
+model specified in the `experiments.json` file for the provided version will be collated.
+
+```
+python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --version V02
+```
+
+The `build_onsides.py` script will iterate through each of the SPL subdirectories looking
+for available compiled results files (results of Step 4). If any subdirectories are missing
+the compiled results, the script throw an error and halt execution.
+
+Once completed, the results will be saved to the `releases` subdirectory by the version
+number and the date in `YYYYMMDD` format.
+
+```
+./releases/V02/20221029/
+```

@@ -12,6 +12,8 @@ analysis.json
 spl.json
 replicates/
 replicates
+releases/
+releases
 
 # ignore emacs temporary files
 *~
