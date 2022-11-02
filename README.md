@@ -4,6 +4,8 @@ A resource of adverse drug effects extracted from FDA structured product labels.
 
 ## V02
 
+*V02 update is currently in progress, this page will be frequently updated -NPT 2022-11-02*
+
 Second release of the OnSIDES database of adverse reactions and boxed warnings extracted from the FDA structured product labels (SPLs). This version contains significant model improvements as well as updated labels. All labels available to download from DailyMed (https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 2, 2022 were processed in this analysis. In total XXX million adverse reactions were extracted from XX,000 labels for just under X,000 drug ingredients or combination of ingredients.
 
 OnSIDES was created using the PubMedBERT language model and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.94 at extracting effects from the ADVERSE REACTIONS section of the label. This constitutes an absolute increase of 4% in each of the performance metrics over V01. For the BOXED WARNINGS section, the model achieves a F1 score of 0.76, AUROC of 0.83, and AUPR of 0.77. This constitutes an absolute increase of 10-17% in the performance metrics over V01.
