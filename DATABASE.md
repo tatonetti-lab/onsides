@@ -10,12 +10,14 @@ Generating the database is done in five steps:
 
 ## Generate semi-automatically using Deployment Tracker
 
-The steps above are detailed below. However, note that as with the experiments,
+The steps above are detailed below. However,
 this process is assisted by the Deployment Tracker (`demployment_tracker.py`). The
-Deployment Tracker will walk through the process checking for the necessary files. If
+Deployment Tracker will walk through the process by checking for the necessary files. If
 any are missing it will print the command used to generate them to the standard output.
 Some steps (SPL Processing) need to be performed before running the tracker. In this case
 the tracker confirms a recent run and prompts the user to re-run if potentially out of date.
+The final step is the generate the database files using `build_onsides.py`. The Deployment
+Tracker will provide instructions once the rest of the steps are complete.
 
 To run the Deployment Tracker:
 
