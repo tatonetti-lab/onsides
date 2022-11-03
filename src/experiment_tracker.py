@@ -43,7 +43,8 @@ def qprint(*args, **kwargs):
 
 def tracker(args_id, args, data, replicate, clean_experiment):
 
-    DATA_DIR = './data'
+    #DATA_DIR = './data'
+    REFS_DIR = './data/refs'
     RESULTS_DIR = './results'
     MODELS_DIR = './models'
     BASE_DIR = '.'
@@ -109,7 +110,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
     ctd_params_outputs = list()
 
     for method, nwords, section in ctd_iterator:
-        fn = f"{DATA_DIR}/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
+        fn = f"{REFS_DIR}/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
         ctd_params_outputs.append((method, nwords, section, fn))
 
         file_exists = os.path.exists(fn)
@@ -256,7 +257,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         eprint(f"  {grpresfn} ...{file_exists}")
 
         if not file_exists:
-            command = f"python3 src/compile_results.py --base-dir {BASE_DIR} --group-function {grpfun} --results {testmodresfn} {validmodresfn} --examples ./data/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
+            command = f"python3 src/compile_results.py --base-dir {BASE_DIR} --group-function {grpfun} --results {testmodresfn} {validmodresfn} --examples {REFS_DIR}/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
             eprint(f"    NOT FOUND, create with: {command}")
             is_complete = False
             remaining_commands.append(command)
