@@ -27,7 +27,7 @@ mkdir -p splits
 echo "  Unzipping the features file"
 gunzip sentences-rx_method$method\_nwords$nwords\_clinical_bert_application_set_$section.txt.gz
 echo "  Splitting files into 100MB chunks"
-tail -n +2 sentences-rx_method$method\_nwords$nwords\_clinical_bert_application_set_$section.txt | gsplit -d -C 100m - --filter='sh -c "{ head -n1 sentences-rx_method'$method'_nwords'$nwords'_clinical_bert_application_set_'$section'.txt; cat; } > $FILE"' splits/sentences-rx_method$method\_nwords$nwords\_clinical_bert_application_set_$section\_split
+tail -n +2 sentences-rx_method$method\_nwords$nwords\_clinical_bert_application_set_$section.txt | split -d -C 100m - --filter='sh -c "{ head -n1 sentences-rx_method'$method'_nwords'$nwords'_clinical_bert_application_set_'$section'.txt; cat; } > $FILE"' splits/sentences-rx_method$method\_nwords$nwords\_clinical_bert_application_set_$section\_split
 echo "  Rezipping the features file"
 gzip sentences-rx_method$method\_nwords$nwords\_clinical_bert_application_set_$section.txt
 cd -
