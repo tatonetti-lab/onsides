@@ -353,11 +353,11 @@ if __name__ == '__main__':
     print(len(df))
 
     print("Splitting data into training, validation, and testing...")
-    refset = int(args.ref.split('ref')[1].split('_')[0])
-    refsection = args.ref.split('_')[-1].split('.')[0]
-    refnwords = int(args.ref.split('nwords')[1].split('_')[0])
+    refset = int(os.path.basename(args.ref).split('ref')[1].split('_')[0])
+    refsection = os.path.basename(args.ref).split('_')[-1].split('.')[0]
+    refnwords = int(os.path.basename(args.ref).split('nwords')[1].split('_')[0])
     refsource = args.refsource
-
+    
     print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}\n\tnwords: {refnwords}\n\trefsource: {refsource}")
 
     np_random_seed = 222
