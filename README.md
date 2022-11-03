@@ -12,9 +12,9 @@ OnSIDES was created using the [PubMedBERT language model](https://huggingface.co
 
 | Metric      | TAC (Best Model) | SIDER | OnSIDES V01 | OnSIDES V02 |
 | ----------- | ---------------- | ----- | ----------- | ----------- |
-| F1 Score    | 82.19            | 74.36 | 82.01       | 87.67       |
-| Precision   | 80.69            | 43.49 | 88.76       | 93.65       |
-| Recall      | 85.05            | 52.89 | 77.12       | 82.40       |
+| F1 Score    | 82.19            | 74.36 | 82.01       | **87.67**   |
+| Precision   | 80.69            | 43.49 | 88.76       | **93.65**   |
+| Recall      | **85.05**        | 52.89 | 77.12       | 82.40       |
 
 *Performance metrics in table are evaluated on the TAC gold standard test set.*
 
