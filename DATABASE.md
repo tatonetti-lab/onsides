@@ -155,7 +155,7 @@ Finally, recombine the results and archive them:
 
 ```
 cd data/spl/rx/dm_spl_release_human_rx_part5/
-zcat splits/*.csv.gz | gzip > final-bydrug-PMB-sentences-rx_app14-AR-125-all_ref14-AR_222_24_25_1e-05_256_32.csv.gz
+zcat splits/*.csv.gz | gzip > final-bydrug-PMB-sentences-rx_ref14-AR_222_24_25_1e-05_256_32.csv.gz
 rm -rf splits
 cd -
 ```

@@ -27,6 +27,17 @@ def qprint(*args, **kwargs):
     if QUIET_MODE:
         print(*args, file=sys.stderr, **kwargs)
 
+def load_json(filename):
+    fh = open(filename)
+    data = json.loads(fh.read())
+    fh.close()
+    return data
+
+def save_json(filename, data):
+    fh = open(filename, 'w')
+    fh.write(json.dumps(data, indent=4))
+    fh.close()
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--release', help='ID for the release to deploy.', type=str, required=True)
@@ -44,9 +55,7 @@ def main():
 
     eprint("Validating release settings and parameters are present... ", end='')
 
-    fh = open('./releases.json')
-    releases = json.loads(fh.read())
-    fh.close()
+    releases = load_json('./releases.json')
 
     if not args.release in releases["releases"]:
         raise Exception(f"ERROR: Selected release ({args.release}) is not available in releases.json, use \n\npython3 src/experiment_tracker.py --id {args.release}\n\nto check it's status.")
@@ -55,9 +64,7 @@ def main():
     if not os.path.exists(release_info['model_file']):
         raise Exception(f"PREREQUISITE ERROR: Model file is not present where expected. Rerun the experiment tracker\n\npython3 src/experiment_tracker.py --id {args.release}\n\nto check it's status and try again once complete.")
 
-    fh = open('./experiments.json')
-    experiments = json.loads(fh.read())
-    fh.close()
+    experiments = load_json('./experiments.json')
 
     if not args.release in experiments["deployments"]:
         raise Exception(f"ERROR: Selected releases is not available in experiments.json, this is necessary to pull some parameter settings.")
@@ -88,9 +95,7 @@ def main():
     if not os.path.exists('./spl.json'):
         raise Exception("PREREQUISITE ERROR: the spl labels must be downloaded and processed using the spl_process.py script before the deployment tracker is run. Initiate a full download of labels with \n\npython3 src/spl_processor.py --full\n\nOnce complete, rerun the deployment tracker.")
 
-    fh = open('./spl.json')
-    spl_status = json.loads(fh.read())
-    fh.close()
+    spl_status = load_json('./spl.json')
 
     if not spl_status['last_updated'] == datetime.now().strftime("%Y%d%m"):
         raise Exception("PREREQUISITE ERROR: The SPLs must be checked for updates immediately before the deployment tracker. Run with\n\npython3 src/spl_processor.py --update\n\nOnce complete re-run the deployment tracker.")
@@ -105,6 +110,25 @@ def main():
     spl_dir = os.path.join('data', 'spl', 'rx')
 
     labels_dirs = [os.path.join(spl_dir, labels_dir) for labels_dir in os.listdir(spl_dir) if os.path.isdir(os.path.join(spl_dir, labels_dir))]
+
+    # TODO: Implement a tracking strategy so that we can tell when
+    # TODO: files may be incomplete and require rerunning. For example,
+    # TODO: if a process is terminated partway through, we would want to
+    # TODO: be able to identify that and prompt for rerunning.
+    # eprint("Checking for existing deployment process status files.")
+    #
+    # deploy_status = dict()
+    # for labels_dir in labels_dirs:
+    #     deploy_path = os.path.join(labels_dir, 'deployment_status.json')
+    #     if not os.path.exists(deploy_path):
+    #         deploy_status[labels_dir] = {
+    #             'feature_construction_status', 'in_progress',
+    #             'apply_model_status': 'in_progress',
+    #             'compile_status': 'in_progress'
+    #         }
+    #         save_json(deploy_path, deploy_status[labels_dir])
+    #     else:
+    #         deploy_status[labels_dir] = load_json(deploy_path)
 
     eprint("Checking for sentence example files.")
 
