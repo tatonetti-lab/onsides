@@ -50,7 +50,7 @@ if __name__ == '__main__':
     LR = fnnoext.split('_')[5]
     max_length = fnnoext.split('_')[6]
     batch_size = fnnoext.split('_')[7]
-    
+
     # confirm compiled subdirectory exists
     compiled_path = os.path.join(os.path.dirname(args.results), 'compiled')
     if not os.path.exists(compiled_path):
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     out_filepath = os.path.join(version_path, out_filename)
 
     print(f" prefix: {prefix}")
-    print(f" appset: {appset}")
+    # print(f" appset: {appset}")
     print(f" refset: {refset}")
     print(f" np_random_seed: {np_random_seed}")
     print(f" split_method: {split_method}")
