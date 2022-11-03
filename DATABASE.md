@@ -131,7 +131,7 @@ then recombined.
 
 The following bash code snippet shows how this can be done using the full release part5
 as of Oct 2022. The part5 file will split the file into 100 MB chunks, each with their
-own header.
+own header. A parameterized bash script is also available (`split_and_predict.sh`).
 
 ```
 cd data/spl/rx/dm_spl_release_human_rx_part5/
@@ -162,7 +162,7 @@ cd -
 
 This process will have to be done for each part of a full release and for each
 update available. Reminder note that the Deployment Tracker (`deployment_tracker.py`)
-script will automate this process for you (See above for how to run).
+script will automate this process for you (see above for how to run).
 
 ### Step 4. Compile results into CSV files
 
