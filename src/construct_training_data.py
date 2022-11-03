@@ -393,7 +393,10 @@ def main():
     llts = load_meddra()
     deepcadrme = load_deepcadrme()
 
-    outfn = f'./data/ref{args.method}_nwords{args.nwords}_clinical_bert_reference_set_{args.section}.txt'
+    if not os.path.exists('./data/refs'):
+        os.mkdir('./data/refs')
+    
+    outfn = f'./data/refs/ref{args.method}_nwords{args.nwords}_clinical_bert_reference_set_{args.section}.txt'
     outfh = open(outfn, 'w')
     writer = csv.writer(outfh)
 
@@ -440,7 +443,7 @@ def main():
                 deepcadrme_ar_text = ' '.join(xml_sections[0].text.split()).lower()
 
             # TODO: Replace the use of these provided files with our method of parsing into
-            # TODO: json files using the spl_processor.py script. 
+            # TODO: json files using the spl_processor.py script.
             ar_file_path = f'./data/200_training_set/{drug}_{suffix}'
             if os.path.exists(ar_file_path):
                 ar_fh = open(ar_file_path)
@@ -481,7 +484,9 @@ def main():
                 start_pos = 0
                 for i in range(len(li)-1):
                     # the occurrence of the word is at the end of the previous string
-                    start_pos = start_pos + len(li[i])
+                    start_pos = sum([len(li[j]) for j in range(i+1)]) + i*len(llt_meddra_term)
+                    if not llt_meddra_term == ar_text[start_pos:(start_pos+len(llt_meddra_term))]:
+                        raise Exception(f" llt_meddra_term: '{llt_meddra_term}', term_in_text: '{ar_text[start_pos:(start_pos+len(llt_meddra_term))]}'")
                     found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_id, pt_meddra_term, 'exact'))
 
 

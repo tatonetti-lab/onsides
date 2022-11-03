@@ -14,6 +14,7 @@ replicates/
 replicates
 releases/
 releases
+notebooks/notebooks.bu.20221103
 
 # ignore emacs temporary files
 *~

@@ -123,7 +123,10 @@ def main():
                 start_pos = 0
                 for i in range(len(li)-1):
                     # the occurrence of the word is at the end of the previous string
-                    start_pos = start_pos + len(li[i])
+                    start_pos = sum([len(li[j]) for j in range(i+1)]) + i*len(llt_meddra_term)
+                    if not llt_meddra_term == ar_text[start_pos:(start_pos+len(llt_meddra_term))]:
+                        raise Exception(f" llt_meddra_term: '{llt_meddra_term}', term_in_text: '{ar_text[start_pos:(start_pos+len(llt_meddra_term))]}'")
+                    
                     found_terms.append((llt_meddra_term, meddra_id, start_pos, len(llt_meddra_term), pt_meddra_id, pt_meddra_term, 'exact'))
 
 
