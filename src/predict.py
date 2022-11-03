@@ -1,37 +1,9 @@
 """
 predict.py
 
-# Files to predict on are very large. Will have to split the file first so
-# that it doesn't take forever/use up all the memory on the system.
-# NOTE: this split command cats the header row to each split file:
-part=part2
-section=AR
-epochs=25
-gpu=2
+Apply a trained model to a set of examples.
 
-**TODO: Need to update these instructions to account for new refsource parameter.**
-
-cd data/
-gunzip output-$part-rx_method8_nwords125_clinical_bert_application_set_$section.txt.gz
-tail -n +2 output-$part-rx_method8_nwords125_clinical_bert_application_set_$section.txt | split -d -C 100m - --filter='sh -c "{ head -n1 output-'$part'-rx_method8_nwords125_clinical_bert_application_set_'$section'.txt; cat; } > $FILE"' output-$part-rx_method8_nwords125_clinical_bert_application_set_$section\_split
-gzip output-$part-rx_method8_nwords125_clinical_bert_application_set_$section.txt
-cd ..
-
-# then you can run with:
-for f in data/*$part*_split*
-do
-    echo CUDA_VISIBLE_DEVICES=$gpu python3 src/predict.py --model models/bestepoch-bydrug-CB_8-$section-125_222_24_$epochs\_1e-06_256_32.pth --examples $f
-done | bash
-
-# when that is finished, recombine the results and then archive them
-zcat results/*$part-rx-*.csv.gz | gzip > results/bestepoch-bydrug-CB-output-$part-rx_app8-$section\_ref8-$section\_222_24_10_1e-06_256_32.csv.gz
-zcat results/bestepoch-bydrug-CB-output-$part-rx_app8-$section\_ref8-$section\_222_24_10_1e-06_256_32.csv.gz | wc -l
-zcat data/output-$part-rx_method8_nwords125_clinical_bert_application_set_$section.txt.gz | wc -l
-
-tar -czvf results/bestepoch-bydrug-CB-output-$part-rx-allparts_app8-$section\_ref8-$section\_222_24_10_1e-06_256_32.tar.gz results/*$part-rx-*.csv.gz
-rm results/*$part-rx-*.csv.gz
-
-rm data/*$part*_split*
+@author Nicholas P. Tatonetti, PhD
 
 """
 
