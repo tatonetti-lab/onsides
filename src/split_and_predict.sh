@@ -1,7 +1,8 @@
 # Bash script to split the example sentences files into 100MB chunks
 # and run predict.py on each part individually.
 # E.g.
-# bash src/split_and_predict.sh data/spl/rx/dm_spl_release_human_rx_part5 14 125 AR 0 ./models/final-bydrug-PMB_14-AR-125-all_222_24_25_1e-05_256_32.pth final-bydrug-PMB-sentences-rx_app14-AR-125-all_ref14-AR_222_24_25_1e-05_256_32.csv.gz
+# bash src/split_and_predict.sh data/spl/rx/dm_spl_release_human_rx_part5 14 125 AR 0 ./models/final-bydrug-PMB_14-AR-125-all_222_24_25_1e-05_256_32.pth final-bydrug-PMB-sentences-rx_ref14-AR-125-all_222_24_25_1e-05_256_32.csv.gz
+# bash src/split_and_predict.sh data/spl/rx/dm_spl_release_human_rx_part5 14 125 AR 2 ./models/final-bydrug-PMB_14-AR-125-all_222_24_25_1e-05_256_32.pth final-bydrug-PMB-sentences-rx_ref14-AR-125-all_222_24_25_1e-05_256_32.csv.gz
 
 labels_dir=$1
 method=$2

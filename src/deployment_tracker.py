@@ -165,9 +165,16 @@ def main():
             eprint(f"ok.")
         else:
             eprint(f"missing. Generate with:")
-            gpu_str = f"CUDA_VISIBLE_DEVICES={args.gpu} " if use_gpu else ""
 
-            cmd = f"{gpu_str}python3 src/predict.py --model {release_info['model_file']} --examples {os.path.join(labels_dir, sentences_fn)}"
+            #eprint(os.path.getsize(f"{labels_dir}.zip"))
+            # use the zip file we downloaded as a proxy for number of RX labels to process
+            if os.path.getsize(f"{labels_dir}.zip") > (500*1024*1024):
+                gpu = args.gpu if use_gpu else 0
+                cmd = f"bash src/split_and_predict.sh {labels_dir} {release_info['method']} {release_info['nwords']} {release_info['section']} {gpu} {release_info['model_file']} {output_fn}"
+            else:
+                gpu_str = f"CUDA_VISIBLE_DEVICES={args.gpu} " if use_gpu else ""
+                cmd = f"{gpu_str}python3 src/predict.py --model {release_info['model_file']} --examples {os.path.join(labels_dir, sentences_fn)}"
+
             eprint(f"\n\t{cmd}\n")
             remaining_commands.append(cmd)
 
