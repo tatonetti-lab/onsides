@@ -476,7 +476,7 @@ if __name__ == '__main__':
     else:
         experiment_ids = [(args.id, args.replicate),]
 
-    for exp_id, replicate in sorted(experiment_ids):
+    for exp_id, replicate in experiment_ids:
         tracker(exp_id, args, data, replicate, args.clean)
 
     if args.all:
