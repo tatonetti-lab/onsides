@@ -2,19 +2,19 @@
 
 A resource of adverse drug effects extracted from FDA structured product labels.
 
-## V02
+## Release version 2.0.0
 
-*V02 update is currently in progress, this page will be frequently updated -NPT 2022-11-02*
+*v2.0.0 update is currently in progress, this page will be frequently updated -NPT 2022-11-02*
 
 Second release of the OnSIDES database of adverse reactions and boxed warnings extracted from the FDA structured product labels (SPLs). This version contains significant model improvements as well as updated labels. All labels available to download from DailyMed (https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 2, 2022 were processed in this analysis. In total XXX million adverse reactions were extracted from XX,000 labels for just under X,000 drug ingredients or combination of ingredients.
 
 OnSIDES was created using the [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.94 at extracting effects from the ADVERSE REACTIONS section of the label. This constitutes an absolute increase of 4% in each of the performance metrics over V01. For the BOXED WARNINGS section, the model achieves a F1 score of 0.76, AUROC of 0.83, and AUPR of 0.77. This constitutes an absolute increase of 10-17% in the performance metrics over V01. Compared against the TAC reference standard using the official evaluation script the model achieves a F1 score of 0.85.
 
-| Metric      | TAC (Best Model) | SIDER | OnSIDES V01 | OnSIDES V02 |
-| ----------- | ---------------- | ----- | ----------- | ----------- |
-| F1 Score    | 82.19            | 74.36 | 82.01       | **87.67**   |
-| Precision   | 80.69            | 43.49 | 88.76       | **93.65**   |
-| Recall      | **85.05**        | 52.89 | 77.12       | 82.40       |
+| Metric      | TAC (Best Model) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2.0.0 |
+| ----------- | ---------------- | --------- | -------------- | -------------- |
+| F1 Score    | 82.19            | 74.36     | 82.01          | **87.67**      |
+| Precision   | 80.69            | 43.49     | 88.76          | **93.65**      |
+| Recall      | **85.05**        | 52.89     | 77.12          | 82.40          |
 
 *Performance metrics in table are evaluated on the TAC gold standard test set.*
 
@@ -23,10 +23,10 @@ OnSIDES was created using the [PubMedBERT language model](https://huggingface.co
 The data are available as a set of SQL tables or as flat files in CSV format.
 
 #### CSV Files
-[onsides_v02_20221102.tar.gz]
+[onsides_v2.0.0_20221102.tar.gz]
 
 #### SQL File
-[onsides_v02_20221102.sql.gz]
+[onsides_v2.0.0_20221102.sql.gz]
 
 ### Description of Tables
 
