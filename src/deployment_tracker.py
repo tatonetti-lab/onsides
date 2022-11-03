@@ -191,7 +191,7 @@ def main():
             eprint(f"ok.")
         else:
             eprint(f"missing. Generate with:")
-            cmd = f"python3 src/create_onsides_datafiles.py --release {args.release} --results {output_fn} --examples {sentences_fn}"
+            cmd = f"python3 src/create_onsides_datafiles.py --release {args.release} --results {os.path.join(labels_dir, output_fn)} --examples {os.path.join(labels_dir, sentences_fn)}"
             eprint(f"\n\t{cmd}\n")
             remaining_commands.append(cmd)
 
