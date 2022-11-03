@@ -42,16 +42,15 @@ if __name__ == '__main__':
     threshold = experiments['deployments'][args.release]['threshold']
 
     prefix = fnnoext.split('_')[0]
-    appset = fnnoext.split('_')[1]
-    refset = fnnoext.split('_')[2]
+    refset = fnnoext.split('_')[1]
     # refsection = refset.split('-')[1]
-    np_random_seed = int(fnnoext.split('_')[3])
-    split_method = fnnoext.split('_')[4]
-    EPOCHS = int(fnnoext.split('_')[5])
-    LR = fnnoext.split('_')[6]
-    max_length = fnnoext.split('_')[7]
+    np_random_seed = int(fnnoext.split('_')[2])
+    split_method = fnnoext.split('_')[3]
+    EPOCHS = int(fnnoext.split('_')[4])
+    LR = fnnoext.split('_')[5]
+    max_length = fnnoext.split('_')[6]
     batch_size = fnnoext.split('_')[7]
-
+    
     # confirm compiled subdirectory exists
     compiled_path = os.path.join(os.path.dirname(args.results), 'compiled')
     if not os.path.exists(compiled_path):
