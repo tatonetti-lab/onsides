@@ -109,7 +109,7 @@ if __name__ == '__main__':
     if int(ex_refset) != int(refset):
         raise Exception(f"Examples were generated with different reference method ({ex_refset}) than the model was trained with ({refset})")
 
-    if str(ex_section) != str(section):
+    if str(ex_section) != str(refsection):
         raise Exception(f"Examples were generated for a different label section ({ex_section}) than the model was trained with ({refsection})")
 
     results_fn = f'{prefix}-{ex_prefix}{split_no}_ref{refset}-{refsection}-{refnwords}-{refsource}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz'
