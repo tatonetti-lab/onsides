@@ -8,7 +8,7 @@ A resource of adverse drug effects extracted from FDA structured product labels.
 
 Second release of the OnSIDES database of adverse reactions and boxed warnings extracted from the FDA structured product labels (SPLs). This version contains significant model improvements as well as updated labels. All labels available to download from DailyMed (https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 2, 2022 were processed in this analysis. In total XXX million adverse reactions were extracted from XX,000 labels for just under X,000 drug ingredients or combination of ingredients.
 
-OnSIDES was created using the PubMedBERT language model and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.94 at extracting effects from the ADVERSE REACTIONS section of the label. This constitutes an absolute increase of 4% in each of the performance metrics over V01. For the BOXED WARNINGS section, the model achieves a F1 score of 0.76, AUROC of 0.83, and AUPR of 0.77. This constitutes an absolute increase of 10-17% in the performance metrics over V01.
+OnSIDES was created using the PubMedBERT language model and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.94 at extracting effects from the ADVERSE REACTIONS section of the label. This constitutes an absolute increase of 4% in each of the performance metrics over V01. For the BOXED WARNINGS section, the model achieves a F1 score of 0.76, AUROC of 0.83, and AUPR of 0.77. This constitutes an absolute increase of 10-17% in the performance metrics over V01. Compared against the TAC reference standard using the official evaluation script the model achieves a F1 score of 0.85.
 
 ### Download
 
@@ -103,8 +103,7 @@ See [DATABASE.md](DATABASE.md) for a step-by-step walkthrough.
 
 The Onsides database is intended for research purposes only. The extraction process is far from perfect, side effects will be missed and some identified will be incorrect. Patients seeking health information should not trust these data and instead refer to the FDA's website (fda.gov) and consult their doctor.
 
-The project is under active development. Validation of extracted information is yet to be independently verified and the data, methods, and statistics are subject to change at any time. Check back to this page for updates. If you would like to to contribute to the project or have ideas on how the methods, data, or evaluation can be improved please reach out to Dr. Tatonetti via [email]
-(https://tatonettilab.org/people/) or [Twitter](http://twitter.com/nicktatonetti).
+The project is under active development. Validation of extracted information is yet to be independently verified and the data, methods, and statistics are subject to change at any time. Check back to this page for updates. If you would like to to contribute to the project or have ideas on how the methods, data, or evaluation can be improved please reach out to Dr. Tatonetti via [email](https://tatonettilab.org/people/) or [Twitter](http://twitter.com/nicktatonetti).
 
 ### Citation
 
