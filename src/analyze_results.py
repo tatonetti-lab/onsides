@@ -62,7 +62,7 @@ if __name__ == '__main__':
     model.load_state_dict(torch.load(model_filepath))
 
     # loading and re-splitting the data
-    datapath = f'./data/ref{refset}_nwords{refnwords}_clinical_bert_reference_set_{refsection}.txt'
+    datapath = f'./data/refs/ref{refset}_nwords{refnwords}_clinical_bert_reference_set_{refsection}.txt'
     if not os.path.exists(datapath):
         raise Exception(f"ERROR: No reference set file found at {datapath}")
 
