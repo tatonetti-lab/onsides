@@ -22,37 +22,37 @@ Tracker will provide instructions once the rest of the steps are complete.
 To run the Deployment Tracker:
 
 ```
-python3 src/deployment_tracker.py --release V02-AR
+python3 src/deployment_tracker.py --release v2.0.0-AR
 ```
 
 For convenience the remaining commands can be piped to bash as follows:
 
 ```
-python3 src/deployment_tracker.py --release V02-AR | bash
+python3 src/deployment_tracker.py --release v2.0.0-AR | bash
 ```
 
 If on a GPU-enabled machine, the `--gpu` flag can be used to specify which
 gpu to use for the steps that require it.
 
 ```
-python3 src/deployment_tracker.py --release V02-AR --gpu 2
+python3 src/deployment_tracker.py --release v2.0.0-AR --gpu 2
 ```
 
 Run the deployment tracker for each section and release version. A full re-deployment of
-`V02` would require the following set of commands:
+`v2.0.0` would require the following set of commands:
 
 ```bash
 # check for any updates to the SPLs
 python3 src/spl_processor.py --update
 
 # deploy for Adverse Reactions section
-python3 src/deployment_tracker.py --release V02-AR | bash
+python3 src/deployment_tracker.py --release v2.0.0-AR | bash
 
 # deploy for Boxed Warnings section
-python3 src/deployment_tracker.py --release V02-BW | bash
+python3 src/deployment_tracker.py --release v2.0.0-BW | bash
 
 # generate database files
-python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --version V02
+python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --release v2.0.0
 ```
 
 ## Generate by running each step manually
@@ -175,16 +175,16 @@ path to the sentences file (`--examples`), and which deployment release was used
 the scores (`--release`). The releases available can be found in the `experiments.json` file
 under `deployments`.
 
-To compile the results for `AR-V02`, for example:
+To compile the results for `AR-v2.0.0`, for example:
 
 ```
-python3 src/create_onsides_datafiles.py --release V02-AR --results data/spl/rx/dm_spl_release_human_rx_part5/final-bydrug-PMB-sentences-rx_ref14-AR-125-all_222_24_25_1e-05_256_32.csv.gz --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
+python3 src/create_onsides_datafiles.py --release v2.0.0-AR --results data/spl/rx/dm_spl_release_human_rx_part5/final-bydrug-PMB-sentences-rx_ref14-AR-125-all_222_24_25_1e-05_256_32.csv.gz --examples data/spl/rx/dm_spl_release_human_rx_part5/sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
 ```
 
 Which will create a "compiled" file in the labels directory:
 
 ```
-data/spl/rx/dm_spl_release_human_rx_part5/compiled/V02/AR.csv.gz
+data/spl/rx/dm_spl_release_human_rx_part5/compiled/v2.0.0/AR.csv.gz
 ```
 
 ### Step 5. Collate and integrate with standard vocabularies and build database files
@@ -197,11 +197,11 @@ through ATHENA (including MedDRA, which will require a EULA) and save them into 
 subdirectory of `./data`.
 
 The files are built by running the `build_onsides.py` script with the path to the download
-vocabularies (`--vocab`) and the version number (`--version`). All sections which have a trained
+vocabularies (`--vocab`) and the version number (`--release`). All sections which have a trained
 model specified in the `experiments.json` file for the provided version will be collated.
 
 ```
-python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --version V02
+python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --release v2.0.0
 ```
 
 The `build_onsides.py` script will iterate through each of the SPL subdirectories looking
@@ -212,5 +212,5 @@ Once completed, the results will be saved to the `releases` subdirectory by the 
 number and the date in `YYYYMMDD` format.
 
 ```
-./releases/V02/20221029/
+./releases/v2.0.0/20221029/
 ```

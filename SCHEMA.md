@@ -1,4 +1,4 @@
-# OnSIDES v2.0.0 schema/tables description
+# OnSIDES v2.0.0 schema/files description
 
 ## adverse_reactions[.csv]
 

@@ -29,12 +29,12 @@ section_names = {
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--vocab', help='Path to the OMOP Common Data Model Vocabularies', type=str, required=True)
-    parser.add_argument('--version', help="Which release version to build the database files for.", type=str, required=True)
+    parser.add_argument('--release', help="Which release version to build the database files for.", type=str, required=True)
     parser.add_argument('--skip-missing', help="Skip missing ata files instead of halting.", action="store_true", default=False)
-
+    
     args = parser.parse_args()
 
-    release_version_path = os.path.join('releases', args.version)
+    release_version_path = os.path.join('releases', args.release)
     if not os.path.exists(release_version_path):
         os.mkdir(release_version_path)
 
@@ -113,7 +113,7 @@ def main():
 
         if not file in ('rxnorm_mappings.zip', 'dm_spl_zip_files_meta_data.zip'):
             continue
-        
+
         latest = sorted([date for date, info in spl_status['mappings'][file].items() if info['status'] == 'completed'])[-1]
 
         df = pd.read_csv(spl_status['mappings'][file][latest]['extracted_path'], sep='|')
@@ -215,7 +215,7 @@ def main():
     for label_dir in label_dirs:
 
         compiled_path = os.path.join(spl_path, label_dir, 'compiled')
-        version_path = os.path.join(spl_path, label_dir, 'compiled', args.version)
+        version_path = os.path.join(spl_path, label_dir, 'compiled', args.release)
         if not os.path.exists(compiled_path) or not os.path.exists(version_path):
             print(f"WARNING: No compiled subdirectory for {label_dir}. Has create_onsides_datafiles.py been executed?")
             if not args.skip_missing:

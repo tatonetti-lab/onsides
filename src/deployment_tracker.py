@@ -1,9 +1,9 @@
 """
 deployment_tracker.py
-Tool to automate the management of updating the OnSIDES databse.
+Tool to automate the management of updating the OnSIDES database.
 
 USAGE:
-python3 src/deployment_tracker.py --release V02-AR
+python3 src/deployment_tracker.py --release v2.0.0-AR
 
 """
 
