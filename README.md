@@ -67,22 +67,29 @@ Model training and evaluation is handled through the use of a helper script name
 ### Quick Start
 
 ```
+# Setup
 wget https://github.com/tatonetti-lab/onsides/archive/refs/tags/v2.0.0.tar.gz
 tar -xvzf v2.0.0.tar.gz
 cd onsides-2.0.0
 wget https://github.com/tatonetti-lab/onsides/releases/download/v02/data.zip
 unzip data
 python3 -m pip install -r requirements.txt
+
 # Train model for ADVERSE REACTIONS section
 python3 src/experiment_tracker.py --id V02-AR | bash
+
 # Train model for BOXED WARNINGS section
 python3 src/experiment_tracker.py --id V02-BW | bash
+
 # Download all available prescription Structured Product Labels (SPLs)
 python3 src/spl_processor.py --full
+
 # Apply model to downloaded labels to identify ADRs from ADVERSE REACTIONS sections
 python3 src/deployment_tracker.py --release V02-AR | bash
+
 # Apply model to downloaded labels to identify ADRs from BOXED WARNINGS sections
 python3 src/deployment_tracker.py --release V02-BW | bash
+
 # Build database files
 python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --version V02
 ```
