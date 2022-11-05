@@ -66,7 +66,7 @@ Model training and evaluation is handled through the use of a helper script name
 
 ### Quick Start
 
-```
+```bash
 # Setup
 wget https://github.com/tatonetti-lab/onsides/archive/refs/tags/v2.0.0.tar.gz
 tar -xvzf v2.0.0.tar.gz
