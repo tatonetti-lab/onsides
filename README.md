@@ -12,13 +12,13 @@ OnSIDES was created using the [PubMedBERT language model](https://huggingface.co
 
 **Table 1. Performance metrics evaluated against the TAC gold standard**
 
-| Metric      | TAC (Best Model$^†$) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2.0.0 |
+| Metric      | TAC (Best Model<sup>^†</sup>) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2.0.0 |
 | ----------- | -------------------- | --------- | -------------- | -------------- |
 | F1 Score    | 82.19                | 74.36     | 82.01          | **87.67**      |
 | Precision   | 80.69                | 43.49     | 88.76          | **93.65**      |
 | Recall      | **85.05**            | 52.89     | 77.12          | 82.40          |
 
-*$^†$ Roberts, Demner-Fushman, & Tonning, Overview of the TAC 2017*
+*<sup>†</sup> Roberts, Demner-Fushman, & Tonning, Overview of the TAC 2017*
 
 ### Download
 
