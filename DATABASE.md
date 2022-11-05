@@ -41,7 +41,7 @@ python3 src/deployment_tracker.py --release V02-AR --gpu 2
 Run the deployment tracker for each section and release version. A full re-deployment of
 `V02` would require the following set of commands:
 
-```
+```bash
 # check for any updates to the SPLs
 python3 src/spl_processor.py --update
 
@@ -133,7 +133,7 @@ The following bash code snippet shows how this can be done using the full releas
 as of Oct 2022. The part5 file will split the file into 100 MB chunks, each with their
 own header. A parameterized bash script is also available (`split_and_predict.sh`).
 
-```
+```bash
 cd data/spl/rx/dm_spl_release_human_rx_part5/
 mkdir -p splits
 gunzip sentences-rx_method14_nwords125_clinical_bert_application_set_AR.txt.gz
@@ -144,7 +144,7 @@ cd -
 
 Then run `predict.py` on each split:
 
-```
+```bash
 for f in data/spl/rx/dm_spl_release_human_rx_part5/splits/*
 do
   echo python3 src/predict.py --model ./models/final-bydrug-PMB_14-AR-125-all_222_24_25_1e-05_256_32.pth --examples $f
@@ -153,7 +153,7 @@ done | bash
 
 Finally, recombine the results and archive them:
 
-```
+```bash
 cd data/spl/rx/dm_spl_release_human_rx_part5/
 zcat splits/*.csv.gz | gzip > final-bydrug-PMB-sentences-rx_ref14-AR_222_24_25_1e-05_256_32.csv.gz
 rm -rf splits
