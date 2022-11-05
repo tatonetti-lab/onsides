@@ -8,15 +8,17 @@ A resource of adverse drug effects extracted from FDA structured product labels.
 
 Second release of the OnSIDES database of adverse reactions and boxed warnings extracted from the FDA structured product labels (SPLs). This version contains significant model improvements as well as updated labels. All labels available to download from DailyMed (https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 2, 2022 were processed in this analysis. In total XXX million adverse reactions were extracted from XX,000 labels for just under X,000 drug products (single agents or combinations).
 
-OnSIDES was created using the [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.94 at extracting effects from the ADVERSE REACTIONS section of the label. This constitutes an absolute increase of 4% in each of the performance metrics over V01. For the BOXED WARNINGS section, the model achieves a F1 score of 0.76, AUROC of 0.83, and AUPR of 0.77. This constitutes an absolute increase of 10-17% in the performance metrics over V01. Compared against the TAC reference standard using the official evaluation script the model achieves a F1 score of 0.85.
+OnSIDES was created using the [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.94 at extracting effects from the ADVERSE REACTIONS section of the label. This constitutes an absolute increase of 4% in each of the performance metrics over V01. For the BOXED WARNINGS section, the model achieves a F1 score of 0.76, AUROC of 0.83, and AUPR of 0.77. This constitutes an absolute increase of 10-17% in the performance metrics over v1.0.0. Compared against the TAC reference standard using the official evaluation script the model achieves a F1 score of 0.85.
 
-| Metric      | TAC (Best Model) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2.0.0 |
-| ----------- | ---------------- | --------- | -------------- | -------------- |
-| F1 Score    | 82.19            | 74.36     | 82.01          | **87.67**      |
-| Precision   | 80.69            | 43.49     | 88.76          | **93.65**      |
-| Recall      | **85.05**        | 52.89     | 77.12          | 82.40          |
+**Table 1. Performance metrics evaluated against the TAC gold standard**
 
-*Performance metrics in table are evaluated on the TAC gold standard test set.*
+| Metric      | TAC (Best Model$^†$) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2.0.0 |
+| ----------- | -------------------- | --------- | -------------- | -------------- |
+| F1 Score    | 82.19                | 74.36     | 82.01          | **87.67**      |
+| Precision   | 80.69                | 43.49     | 88.76          | **93.65**      |
+| Recall      | **85.05**            | 52.89     | 77.12          | 82.40          |
+
+*$^†$ Roberts, Demner-Fushman, & Tonning, Overview of the TAC 2017*
 
 ### Download
 
@@ -30,11 +32,11 @@ The latest database versions are available as a set of SQL tables or as flat fil
 
 ### Description of Tables
 
-Below is a brief description of the tables. See [`SCHEMA.md`](SCHEMA.md) for column descriptions and [`src/load_onsides_db.sql`](src/load_onsides_db.sql) for more details.
+Below is a brief description of the tables. See [`SCHEMA.md`](SCHEMA.md) for column descriptions and [`src/build_onsides.py`](src/build_onsides.py) for more details.
 
 `adverse_reactions` - Main table of adverse reactions. This table includes adverse reactions extracted from the ADVERSE REACTIONS section of the current active label for each product. XX,XXX rows.
 
-`adverse_reactions_all_labels` - All extracted adverse reactions from the ADVERSE REACTIONS section of all labels. Each drug will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. X,XXX,XXX rows.
+`adverse_reactions_all_labels` - All extracted adverse reactions from the ADVERSE REACTIONS section of every available version of the label. Each ingredient will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. X,XXX,XXX rows.
 
 `boxed_warnings` - Main table of boxed warnings. This table includes adverse reactions extracted from the BOXED WARNINGS section of the current active label for each drug product. X,XXX rows.
 
@@ -42,15 +44,9 @@ Below is a brief description of the tables. See [`SCHEMA.md`](SCHEMA.md) for col
 
 `ingredients` - Active ingredients for each of the parsed labels. If the label is for a drug with a single active compound then there will be only a single row for that label.  If the label is for a combination of compounds then there will be multiple rows for that label. XX,XXX rows.
 
-`dm_spl_zip_files_meta_data` - Meta data provided by DailyMed that indicates which SPL version is the current for each Set ID.
+`dm_spl_zip_files_meta_data` - Meta data provided by DailyMed that indicates which SPL version is the current for each drug product (`set_id`).
 
-`pharmacologic_class_mappings` -
-
-`rxcui_setid_map` - Map between Set IDs and RxNorm product identifiers. XX,XXX rows.
-
-`rxnorm_mappings` -
-
-`rxnorm_to_setid` - Map between the RxNorm product to the active ingredients in that product. XXX,XXX rows.
+`rxnorm_mappings` - Mapping drug product `set_id`s to their RxNorm CUIs.
 
 ### Replication, Retraining, and Improving the Model
 

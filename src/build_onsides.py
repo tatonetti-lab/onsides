@@ -111,6 +111,9 @@ def main():
 
     for file in spl_status['mappings'].keys():
 
+        if not file in ('rxnorm_mappings.zip', 'dm_spl_zip_files_meta_data.zip'):
+            continue
+        
         latest = sorted([date for date, info in spl_status['mappings'][file].items() if info['status'] == 'completed'])[-1]
 
         df = pd.read_csv(spl_status['mappings'][file][latest]['extracted_path'], sep='|')
@@ -245,7 +248,7 @@ def main():
         ofn = os.path.join(release_version_date_path, section_names[section] + "_all_labels.csv.gz")
         ofh = gzip.open(ofn, 'wt')
         writer = csv.writer(ofh)
-        header = ['section','zip_id','label_id','set_id','spl_version','pt_meddra_id','pt_meddra_term','Pred0','Pred1']
+        header = ['section','zip_id','label_id','set_id','spl_version','pt_meddra_id','pt_meddra_term','pred0','pred1']
         writer.writerow(header)
 
         ofn2 = os.path.join(release_version_date_path, section_names[section] + ".csv.gz")
@@ -292,17 +295,6 @@ def main():
 
         print(f"  Wrote collated {section} to {ofn}.")
         print(f"  Wrote active labels only collated {section} to {ofn2}.")
-
-
-
-
-
-
-
-
-
-
-
 
 if __name__ == '__main__':
     main()

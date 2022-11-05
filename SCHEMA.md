@@ -1,106 +1,82 @@
-# OnSIDES schema/tables description
+# OnSIDES v2.0.0 schema/tables description
 
 ## adverse_reactions[.csv]
 
-The `adverse_reactions` table/file is derived from the source OnSIDES data and created to be a convenient table to use for downstream analysis. This is the primary table that users of OnSIDES should use first as it should satisfy most of the use cases. For this reason we have included links out to outside vocabularies within the table. Each drug product (a drug product may be a single drug or a combination of drugs) is included in this table only once using the drug product's most recent label. See the `src/load_onsides_db.sql` script for specifics on how this table is created.
+The `adverse_reactions` table/file is derived from the source OnSIDES data and created to be a convenient table to use for downstream analysis. This is the primary table that users of OnSIDES should use first as it should satisfy most of the use cases. Each drug product (a drug product may be a single drug or a combination of drugs) is included in this table only once using the drug product's current active label (as determined by the meta data provided my DailyMed). See the [DATABASE.md](DATABASE.md) script for specifics on how this table is created.
 
-- `xml_id`, identifier for the structured product label xml file
-- `concept_name`, string description of the MedDRA concept
-- `vocabulary_id`, OMOP vocabulary identifier (in this case they are all currently MedDRA terms)
-- `domain_id`, OMOP domain identifier (currently this is only Condition)
-- `concept_class_id`, MedDRA class, either PT (preferred term) or LLT (lower level term)
-- `meddra_id`, MedDRA identifier for the side effect term
-- `omop_concept_id`, OMOP identifier for the side effect term
-- `ingredients`, string list of comma separated ingredients in the drug product (most are single but many combination medications as well)
-- `rxnorm_ids`, string list of comma separated RxNORM identifiers for the ingredients
-- `drug_concept_ids`, string list of comma separeated OMOP concept identiers for the ingredients
+- `set_id`, unique identifier for a group of SPLs, the `set_id` and `spl_version` uniquely identify a label
+- `spl_version`, the version number of the SPL
+- `pt_meddra_id`, the MedDRA preferred term code for the adverse reaction term identified
+- `pt_meddra_term`, the MedDRA preferred term for the adverse reaction term identified
+- `num_ingredients`, number of ingredients in this drug product
+- `ingredient_rxcuis`, string list of comma separated RxNORM identifiers for the ingredients
+- `ingredient_names`, string list of comma separated ingredients in the drug product (most are single but many combination medications as well)
 
+## adverse_reactions_all_labels[.csv]
 
-## adverse_reactions_bylabel[.csv]
+Filtered output from the model joined with the example file. Rows are filtered for those with scores (pred1) above the decision threshold (see the `release.json` file for threshold values).
 
-Filtered output from the model. Rows are filtered for those with scores (pred1) above the decision threshold.
-
-- `row_id`, internal identifier resulting from the analysis
-- `xml_id`, identifier for the structured product label xml file
-- `concept_name`, string description of the MedDRA concept
-- `concept_code`, MedDRA concept identifier
+- `section`, the code for the section of the structured product label (SPL), AR for adverse reactions
+- `zip_id`, identifier for the structured product label zip download file
+- `label_id`, unique identifier for this version of the SPL
+- `set_id`, unique identifier for a group of SPLs, the `set_id` and `spl_version` uniquely identify a label
+- `spl_version`, the version number of the SPL
+- `pt_meddra_id`, the MedDRA preferred term code for the adverse reaction term identified
+- `pt_meddra_term`, the MedDRA preferred term for the adverse reaction term identified
 - `pred0`, score from the model that the MedDRA term is not a reported drug side effect
-- `pred1', score from the model that the MedDRA term is a reported drug side effect
+- `pred1`, score from the model that the MedDRA term is a reported drug side effect
 
 ## boxed_warnings[.csv]
 
-Same as the `adverse_reactions` table above except for the BOXED WARNINGS section of the structured product label. Note that the performance for this section is significantly lower than that found for the ADVERSE REACTIONS section. See the `src/load_onsides_db.sql` script for specifics on how this table is created.
+Same as the `adverse_reactions` table above except for the BOXED WARNINGS section of the structured product label. Note that the performance for this section is significantly lower than that found for the ADVERSE REACTIONS section. See the [README.md](README.md) file for the latest performance metrics.
 
-- `xml_id`, identifier for the structured product label xml file
-- `concept_name`, string description of the MedDRA concept
-- `vocabulary_id`, OMOP vocabulary identifier (in this case they are all currently MedDRA terms)
-- `domain_id`, OMOP domain identifier (currently this is only Condition)
-- `concept_class_id`, MedDRA class, either PT (preferred term) or LLT (lower level term)
-- `meddra_id`, MedDRA identifier for the side effect term
-- `omop_concept_id`, OMOP identifier for the side effect term
-- `ingredients`, string list of comma separated ingredients in the drug product (most are single but many combination medications as well)
-- `rxnorm_ids`, string list of comma separated RxNORM identifiers for the ingredients
-- `drug_concept_ids`, string list of comma separeated OMOP concept identiers for the ingredients
+- `set_id`, unique identifier for a group of SPLs, the `set_id` and `spl_version` uniquely identify a label
+- `spl_version`, the version number of the SPL
+- `pt_meddra_id`, the MedDRA preferred term code for the adverse reaction term identified
+- `pt_meddra_term`, the MedDRA preferred term for the adverse reaction term identified
+- `num_ingredients`, number of ingredients in this drug product
+- `ingredient_rxcuis`, string list of comma separated RxNORM identifiers for the ingredients
+- `ingredient_names`, string list of comma separated ingredients in the drug product (most are single but many combination medications as well)
 
-## boxed_warnings_bylabel[.csv]
+## boxed_warnings_all_labels[.csv]
 
-Same as the `adverse_reactions_by_label` above except for the BOXED WARNINGS section of the structured product label.
+Filtered output from the model joined with the example file. Rows are filtered for those with scores (pred1) above the decision threshold (see the `release.json` file for threshold values).
 
-- `row_id`, internal identifier resulting from the analysis
-- `xml_id`, identifier for the structured product label xml file
-- `concept_name`, string description of the MedDRA concept
-- `concept_code`, MedDRA concept identifier
+- `section`, the code for the section of the structured product label (SPL), AR for adverse reactions
+- `zip_id`, identifier for the structured product label zip download file
+- `label_id`, unique identifier for this version of the SPL
+- `set_id`, unique identifier for a group of SPLs, the `set_id` and `spl_version` uniquely identify a label
+- `spl_version`, the version number of the SPL
+- `pt_meddra_id`, the MedDRA preferred term code for the adverse reaction term identified
+- `pt_meddra_term`, the MedDRA preferred term for the adverse reaction term identified
 - `pred0`, score from the model that the MedDRA term is not a reported drug side effect
-- `pred1', score from the model that the MedDRA term is a reported drug side effect
+- `pred1`, score from the model that the MedDRA term is a reported drug side effect
 
 ## ingredients[.csv]
 
-Map of ingredients, identified in RxNorm, to the structured product labels, identified by xml_id.
+Ingredients for each drug product (`set_id`) as an RxNorm ingredient.
 
-- `xml_id`, identifier for the structured product label xml file
-- `ingredient_concept_code`, RxNorm identifier for the ingredient
-- `ingredient_concept_name`, string description of the ingredient
-- `ingredient_concept_id`, OMOP concept identifier for the RxNorm term
-- `vocabulary_id`, OMOP vocabulary identifier (currently all RxNorm)
-- `concept_class_id`, RxNorm term class (currently all Ingredient)
+- `set_id`, identifier for a group of structured product label versions
+- `ingredient_rx_cui`, RxNorm identifier for the ingredient
+- `ingredient_name`, string description of the ingredient
+- `ingredient_omop_concept_id`, OMOP concept identifier for the RxNorm term
 
-## label_map[.csv]
+## rxnorm_mappings[.csv]
 
-- `xml_id`, identifier for the structured product label xml file
-- `zip_id`, identifier for the zip file which contains the xml file and some supporting images
-- `set_id`, the drug product id
+File provided by DailyMed that maps drug products to their RxNorm identifiers. Included here to preserve the version of the file used to create the database.
 
-## latest_labels_bydrug[.csv]
-
-- `ingredients`, string list of comma separated ingredient names
-- `concept_codes`, string list of comma separated RxNorm identifiers
-- `concept_ids`, string list of comma separated OMOP ingredient identifiers
-- `latest_xml_id`, xml_id for the most recently released structured product label for this combination of ingredients
-- `latest_zip_id`, zip_id for the most recently released structured product label for this combination of ingredients
-
-## rxnorm_map[.csv]
-
-- `set_id`, FDA drug product identifier
+- `set_id`, identifier for a group of structured product label (SPL) versions
 - `spl_version`, structured product label version
 - `rx_cui`, RxNorm identifier for the drug product (note this isn't the ingredient level identifier as is used in other tables)
 - `rx_string`, RxNorm drug product description
 - `rx_tty`, RxNorm term type (https://www.nlm.nih.gov/research/umls/rxnorm/docs/appendix5.html)
 
-## rxnorm_product_to_ingredients[.csv]
+## dm_spl_zip_files_meta_data[.csv]
 
-- `product_concept_code`, RxNorm drug product identifier
-- `product_concept_name`, RxNorm drug product description string
-- `product_concept_id`, OMOP drug product identifier
-- `ingredient_concept_code`, RxNorm ingredient identifier
-- `ingredient_concept_name`, RxNorm ingredient description string
-- `ingredient_concept_id`, OMOP ingredient identifier
+File provided by DailyMed that identifies which version of the label is the current version. Used to create `adverse_reactions` from `adverse_reactions_all_labels`. Included here to preserve the version of the file used to create the database.
 
-## rxnorm_to_setid[.csv]
-
-- `set_id`, FDA drug product set identifier
-- `rx_cui`, RxNorm drug product identifier
-
-
-
-
-
+- `set_id`, identifier for a group of structured product label (SPL) versions
+- `zip_file_name`, file name of the SPL zip archive
+- `upload_date`, date label version was uploaded (MM/DD/YYYY)
+- `spl_version`, the current version of the label for the `set_id`
+- `title`, the product title
