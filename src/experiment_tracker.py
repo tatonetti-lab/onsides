@@ -97,7 +97,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
     repexpstr = 'Experiment' if replicate == 0 else 'Replicate'
     repexpidstr = args_id if replicate == 0 else f'{args_id}R{replicate}'
 
-    qprint(f"Loaded {repexpstr:10} {repexpidstr:6s} ({experiment['name'][:50]:50s}), checking status...", end='')
+    qprint(f"Loaded {repexpstr:10} {repexpidstr:11s} ({experiment['name'][:50]:50s}), checking status...", end='')
 
     construct_training_data = experiment.get("construct_training_data", defaults["construct_training_data"])
 
