@@ -6,17 +6,17 @@ A resource of adverse drug effects extracted from FDA structured product labels.
 
 *v2.0.0 update is currently in progress, this page will be frequently updated -NPT 2022-11-02*
 
-Second release of the OnSIDES database of adverse reactions and boxed warnings extracted from the FDA structured product labels (SPLs). This version contains significant model improvements as well as updated labels. All labels available to download from DailyMed (https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 2, 2022 were processed in this analysis. In total XXX million adverse reactions were extracted from XX,000 labels for just under X,000 drug products (single agents or combinations).
+Second release of the OnSIDES database of adverse reactions and boxed warnings extracted from the FDA structured product labels (SPLs). This version contains significant model improvements as well as updated labels. All labels available to download from DailyMed (https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 10, 2022 were processed in this analysis. In total XXX million adverse reactions were extracted from XX,000 labels for just under X,000 drug products (single agents or combinations).
 
-OnSIDES was created using the [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.94 at extracting effects from the ADVERSE REACTIONS section of the label. This constitutes an absolute increase of 4% in each of the performance metrics over V01. For the BOXED WARNINGS section, the model achieves a F1 score of 0.76, AUROC of 0.83, and AUPR of 0.77. This constitutes an absolute increase of 10-17% in the performance metrics over v1.0.0. Compared against the TAC reference standard using the official evaluation script the model achieves a F1 score of 0.85.
+OnSIDES was created using the [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.95 at extracting effects from the ADVERSE REACTIONS section of the label. This constitutes an absolute increase of 4% in each of the performance metrics over V01. For the BOXED WARNINGS section, the model achieves a F1 score of 0.78, AUROC of 0.83, and AUPR of 0.79. This constitutes an absolute increase of 10-17% in the performance metrics over v1.0.0. Compared against the TAC reference standard using the official evaluation script the model achieves a Micro-F1 score of 0.87 and a Macro-F1 of 0.85.
 
 **Table 1. Performance metrics evaluated against the TAC gold standard**
 
 | Metric      | TAC (Best Model<sup>†</sup>) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2.0.0 |
 | ----------- | ---------------------------- | --------- | -------------- | -------------- |
-| F1 Score    | 82.19                        | 74.36     | 82.01          | **87.67**      |
-| Precision   | 80.69                        | 43.49     | 88.76          | **93.65**      |
-| Recall      | **85.05**                    | 52.89     | 77.12          | 82.40          |
+| F1 Score    | 82.19                        | 74.36     | 82.01          | **87.54**      |
+| Precision   | 80.69                        | 43.49     | 88.76          | **91.29**      |
+| Recall      | **85.05**                    | 52.89     | 77.12          | 84.08          |
 
 *<sup>†</sup> Roberts, Demner-Fushman, & Tonning, Overview of the TAC 2017*
 
@@ -96,7 +96,7 @@ python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --release v2.0.0
 
 ### Replication of hyperparameter optimization experiments
 
-Model Training consists of four steps: i) constructing the training data (`construct_training_data.py`), ii) fitting the BERT model (`fit_clinicalbert.py`), iii) generating probabilities for the example sentence fragments (`analyze_results.py`), and iv) aggregating the probabilities across sentence fragments at the adverse event term level (`compile_results.py`). The Experiment Tracker (`experiment_tracker.py`) will keep track of this entire process. It will track where each experiment is in this process and what commands need to be run to complete the experiment. Experiments are managed by editing the experiments entries in the `experiments.json` file. In each experiments entry, the parameters that are to be explored can be specified. Any parameters not specified are assumed to be the default values.
+Model Training consists of four steps: i) constructing the training data (`construct_training_data.py`), ii) fitting the BERT model (`fit_clinicalbert.py`), iii) generating probabilities for the example sentence fragments (`analyze_results.py`), and iv) aggregating the probabilities across sentence fragments at the adverse event term level (`compile_results.py`). The Experiment Tracker (`experiment_tracker.py`) will keep track of this entire process and what commands need to be run to complete the experiment. Experiments are managed by editing the experiments entries in the `experiments.json` file. In each experiments entry, the parameters that are to be explored can be specified. Any parameters not specified are assumed to be the default values.
 
 To track the status of the experiment run the script with the experiment identifier. For example:
 ```

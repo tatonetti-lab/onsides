@@ -30,7 +30,7 @@ if __name__ == '__main__':
     model_file = os.path.split(model_filepath)[-1]
 
     print(f"Loading model from {model_file}")
-    model_file_noext = os.path.split(model_file)[-1].split('.')[0]
+    model_file_noext = os.path.splitext(model_file)[0]
 
     if len(model_file_noext.split('_')) != 8:
         raise Exception("Model filename not in format expected: {prefix}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.pth")
