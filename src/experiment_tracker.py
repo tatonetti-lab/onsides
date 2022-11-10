@@ -73,7 +73,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
     else:
         raise Exception(f"ERROR: Could not find an experiment or deployment with id={args_id} in experiments.json.")
 
-    if args.skip_models and is_deployment:
+    if (args.skip_models or args.skip_deployments) and is_deployment:
         eprint(f"Deployments must not have the --skip-models flag. Skipping deployment {args_id}.")
         return
 
@@ -441,6 +441,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', type=int, help="if you want to prepend the output commands with the specific gpu, specify a gpu number here.", default=-1)
     parser.add_argument('--skip-models', action='store_true', default=False)
     parser.add_argument('--skip-refs', action='store_true', default=False)
+    parser.add_argument('--skip-deployments', action='store_true', default=False)
     parser.add_argument('--results-only', action='store_true', default=False)
     parser.add_argument('--replicate', type=int, default=0, help="use to run exact replicates of existing experiments, results and models will be saved in a replicates/rep[NUM] directory")
     parser.add_argument('--quiet', action='store_true', default=False)

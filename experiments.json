@@ -207,7 +207,7 @@
         "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
     },
-    
+
     "5": {
       "name": "Investigate pretraining with AR for Boxed Warning performance",
       "description": "Boxed warnings do not have as many training examples and suffer in performance. We want to investigate using the pretrained model from the Adverse Reactions sections with no additional training and with additional training to see how it performs.",
@@ -658,8 +658,8 @@
     },
     "v2.0.0-AR": {
       "name": "OnSIDES Version 2.0.0 - Adverse Reactions",
-      "description": "Second major release of the model to extract side effect terms from the Adverse Reactions section of the labels, created on October 31, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 1.649) was 0.906 on the validation set and 0.897 on the test set. AUROC was 0.934 on the validation set and 0.921 on the test set. AUPR was 0.957 on the validation set and 0.939 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.877, AUROC=0.917, and AUPR=0.936. Using the official eval script from TAC, the Macro-F1 is 84.98. See notebook for Experiment 10E.",
-      "threshold": 1.649,
+      "description": "Second major release of the model to extract side effect terms from the Adverse Reactions section of the labels, created on November 10, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 0.4633) was 0.913 on the validation set and 0.898 on the test set. AUROC was 0.934 on the validation set and 0.922 on the test set. AUPR was 0.960 on the validation set and 0.948 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.875, AUROC=0.912, and AUPR=0.937. Using the official eval script from TAC, the Macro-F1 is 85.40 and the Micro-F1 is 87.05. See notebook for Experiment 10E.",
+      "threshold": 0.4633,
       "model": "final",
       "construct_training_data": {
         "method": [14],
@@ -689,8 +689,8 @@
     },
     "v2.0.0-BW": {
       "name": "OnSIDES Version 2.0.0 - Boxed Warnings",
-      "description": "Second major release of the model to extract side effect terms from the Boxed Warnings section of the labels, created on October 31, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 6.12) was 0.788 on the validation set and 0.764 on the test set. AUROC was 0.849 on the validation set and 0.829 on the test set. AUPR was 0.810 on the validation set and 0.767 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.683, AUROC=0.804, AUPR=0.712. See Experiment 10F.",
-      "threshold": 6.12,
+      "description": "Second major release of the model to extract side effect terms from the Boxed Warnings section of the labels, created on October 31, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 3.594) was 0.833 on the validation set and 0.778 on the test set. AUROC was 0.872 on the validation set and 0.830 on the test set. AUPR was 0.813 on the validation set and 0.793 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.615, AUROC=0.808, AUPR=0.599. See notebook for Experiment 10F.",
+      "threshold": 3.594,
       "model": "bestepoch",
       "construct_training_data": {
         "method": [14],
