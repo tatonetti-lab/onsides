@@ -656,22 +656,6 @@
         "refsource": ["exact"]
       }
     },
-    "v2.0.0-AR": {
-      "name": "OnSIDES Version 2.0.0 - Adverse Reactions",
-      "description": "Second major release of the model to extract side effect terms from the Adverse Reactions section of the labels, created on November 10, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 0.4633) was 0.913 on the validation set and 0.898 on the test set. AUROC was 0.934 on the validation set and 0.922 on the test set. AUPR was 0.960 on the validation set and 0.948 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.875, AUROC=0.912, and AUPR=0.937. Using the official eval script from TAC, the Macro-F1 is 85.40 and the Micro-F1 is 87.05. See notebook for Experiment 10E.",
-      "threshold": 0.4633,
-      "model": "final",
-      "construct_training_data": {
-        "method": [14],
-        "nwords": [125],
-        "section": ["AR"]
-      },
-      "fit_clinicalbert": {
-        "epochs": [25],
-        "learning-rate": [2.5e-5],
-        "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
-      }
-    },
     "v1.0.0-BW": {
       "name": "OnSIDES Version 1.0.0 - Boxed Warnings",
       "description": "First major release of the model to extract side effect terms from the Boxed Warnings section of the labels, created on April 29, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 7. Max F1 was 0.70 on the validation set and 0.66 on the test set. AUROC was 0.74 on the validation set and 0.71 on the test set. AUPR was 0.72 on the validation set and 0.60 on the test set.",
@@ -685,6 +669,22 @@
       "fit_clinicalbert": {
         "epochs": [25],
         "refsource": ["exact"]
+      }
+    },
+    "v2.0.0-AR": {
+      "name": "OnSIDES Version 2.0.0 - Adverse Reactions",
+      "description": "Second major release of the model to extract side effect terms from the Adverse Reactions section of the labels, created on November 10, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 0.4633) was 0.913 on the validation set and 0.898 on the test set. AUROC was 0.934 on the validation set and 0.922 on the test set. AUPR was 0.960 on the validation set and 0.948 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.875, AUROC=0.912, and AUPR=0.937. Using the official eval script from TAC, the Macro-F1 is 85.40 and the Micro-F1 is 87.05. See notebook for Experiment 10E.",
+      "threshold": 0.4633,
+      "model": "bestepoch",
+      "construct_training_data": {
+        "method": [14],
+        "nwords": [125],
+        "section": ["AR"]
+      },
+      "fit_clinicalbert": {
+        "epochs": [25],
+        "learning-rate": [2.5e-5],
+        "network": ["microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"]
       }
     },
     "v2.0.0-BW": {

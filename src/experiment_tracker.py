@@ -77,6 +77,9 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         eprint(f"Deployments must not have the --skip-models flag. Skipping deployment {args_id}.")
         return
 
+    if args.deployments_only and not is_deployment:
+        return
+
     is_complete = True
     remaining_commands = list()
     output_files = list()
@@ -442,6 +445,7 @@ if __name__ == '__main__':
     parser.add_argument('--skip-models', action='store_true', default=False)
     parser.add_argument('--skip-refs', action='store_true', default=False)
     parser.add_argument('--skip-deployments', action='store_true', default=False)
+    parser.add_argument('--deployments-only', action='store_true', default=False)
     parser.add_argument('--results-only', action='store_true', default=False)
     parser.add_argument('--replicate', type=int, default=0, help="use to run exact replicates of existing experiments, results and models will be saved in a replicates/rep[NUM] directory")
     parser.add_argument('--quiet', action='store_true', default=False)
