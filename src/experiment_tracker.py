@@ -143,7 +143,10 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         'microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract': 'PMB',
         'bestepoch-bydrug-CB_0-AR-125-all_222_24_25_1e-06_256_32.pth': 'CB0',
         'bestepoch-bydrug-CB_0-BW-125-all_222_24_25_1e-06_256_32.pth': 'CB1',
-        'bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth': 'CB2'
+        'bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth': 'CB2',
+        'bestepoch-bydrug-PMB_0-AR-125-all_222_24_25_1e-06_256_32.pth': 'PMB0',
+        'bestepoch-bydrug-PMB_0-BW-125-all_222_24_25_1e-06_256_32.pth': 'PMB1',
+        'bestepoch-bydrug-PMB_0-ALL-125-all_222_24_25_1e-06_256_32.pth': 'PMB2'
     }
 
     fcbd_params_outputs = list()

@@ -24,7 +24,10 @@ labels = {'not_event': 0, 'is_event': 1}
 pretrained_state_ids = {
     'bestepoch-bydrug-CB_0-AR-125-all_222_24_25_1e-06_256_32.pth': '0',
     'bestepoch-bydrug-CB_0-BW-125-all_222_24_25_1e-06_256_32.pth': '1',
-    'bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth': '2'
+    'bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth': '2',
+    'bestepoch-bydrug-PMB_0-AR-125-all_222_24_25_1e-06_256_32.pth': '0',
+    'bestepoch-bydrug-PMB_0-BW-125-all_222_24_25_1e-06_256_32.pth': '1',
+    'bestepoch-bydrug-PMB_0-ALL-125-all_222_24_25_1e-06_256_32.pth': '2'
 }
 
 class Dataset(torch.utils.data.Dataset):
@@ -33,7 +36,7 @@ class Dataset(torch.utils.data.Dataset):
 
     @staticmethod
     def set_tokenizer(pretrained_model_path):
-        print(f"Loading ClinicalBERT tokenizer from {pretrained_model_path}...")
+        print(f"Loading tokenizer from {pretrained_model_path}...")
         Dataset.tokenizer = AutoTokenizer.from_pretrained(pretrained_model_path)
 
     def __init__(self, df, examples_only=False, _max_length=128):
@@ -333,7 +336,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--ref', help="relative or full path to the reference set", type=str, required=True)
-    parser.add_argument('--max-length', help="maximum number of tokens to use as input for ClinicalBERT, default is smallest power of two that is greater than 2*nwords used in the construction of the reference set", type=int, default=-1)
+    parser.add_argument('--max-length', help="maximum number of tokens to use as input for the BERT model, default is smallest power of two that is greater than 2*nwords used in the construction of the reference set", type=int, default=-1)
     parser.add_argument('--batch-size', help="batch size to feed into the model each epoch, will need to balance with max_length to avoid memory errors, default is estimated from a set of runs we've previously run and should work alright", type=int, default=-1)
     parser.add_argument('--epochs', help="number of epochs to train, default is 25", type=int, default=25)
     parser.add_argument('--learning-rate', help="the learning rate to use, default is 1e-6", type=float, default=1e-6)
@@ -357,7 +360,7 @@ if __name__ == '__main__':
     refsection = os.path.basename(args.ref).split('_')[-1].split('.')[0]
     refnwords = int(os.path.basename(args.ref).split('nwords')[1].split('_')[0])
     refsource = args.refsource
-    
+
     print(f"Reference set loaded from {args.ref}\n\tmethod: {refset}\n\tsection: {refsection}\n\tnwords: {refnwords}\n\trefsource: {refsource}")
 
     np_random_seed = 222

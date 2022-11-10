@@ -219,6 +219,34 @@
       }
     },
 
+    "5A": {
+      "name": "Investigate pretraining with AR for Boxed Warning performance, PMB",
+      "description": "Boxed warnings do not have as many training examples and suffer in performance. We want to investigate using the pretrained model from the Adverse Reactions sections with no additional training and with additional training to see how it performs. Same as Experiment 5 except using PubMedBERT as the pre-trained model.",
+      "factor": {
+        "script": "fit_clinicalbert",
+        "parameter": ["network", "epochs"],
+        "labels": [
+          "PreTrain:AR, Fit 0 Epochs",
+          "PreTrain:BW, Fit 0 Epochs",
+          "PreTrain:ALL, Fit 0 Epochs",
+          "PreTrain:AR, Fit 10 Epochs",
+          "PreTrain:BW, Fit 10 Epochs",
+          "PreTrain:ALL, Fit 10 Epochs"
+        ]
+      },
+      "construct_training_data": {
+        "section": ["BW"]
+      },
+      "fit_clinicalbert": {
+        "network": [
+          "bestepoch-bydrug-PMB_0-AR-125-all_222_24_25_1e-06_256_32.pth",
+          "bestepoch-bydrug-PMB_0-BW-125-all_222_24_25_1e-06_256_32.pth",
+          "bestepoch-bydrug-PMB_0-ALL-125-all_222_24_25_1e-06_256_32.pth"
+        ],
+        "epochs": [0, 10]
+      }
+    },
+
     "6": {
       "name": "Compare string before to string after",
       "description": "REPLACED BY 6A. When constructing the training data we have the choice to take words preceding the event term, following the event term, or an event split of both (default). This experiment compares the performance of those three options. This could be part of experiment 0, but that seems to be getting crowded.",
