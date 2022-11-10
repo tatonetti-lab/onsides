@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     resultspath = args.results
 
-    fnnoext = os.path.split(resultspath)[-1].split('.')[0]
+    fnnoext = os.path.splitext(os.path.split(resultspath)[-1])[0]
     if len(fnnoext.split('_')) != 8:
         raise Exception("Results filename not in format expected: {prefix}_{refset}_{np_random_seed}_{split_method}_{EPOCHS}_{LR}_{max_length}_{batch_size}.csv.gz")
 
