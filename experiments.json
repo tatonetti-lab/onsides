@@ -634,7 +634,7 @@
       "fit_clinicalbert": {
         "split-method": ["24", "TAC"],
         "learning-rate": [2.5e-5],
-        "network": ["bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth"]
+        "network": ["bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth"]
       }
     }
 
