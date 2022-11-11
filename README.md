@@ -77,6 +77,9 @@ python3 -m pip install -r requirements.txt
 python3 src/experiment_tracker.py --id v2.0.0-AR | bash
 
 # Train model for BOXED WARNINGS section
+# BW section uses a model pre-trained on ALL sections which is built in Experiment 4B
+python3 src/experiment_tracker.py --id 4B | bash
+# Fine-tune the pre-trained model for BOXED WARNINGS
 python3 src/experiment_tracker.py --id v2.0.0-BW | bash
 
 # Download all available prescription Structured Product Labels (SPLs)
