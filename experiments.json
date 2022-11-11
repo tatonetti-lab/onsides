@@ -255,7 +255,7 @@
       },
       "construct_training_data": {
         "section": ["BW"],
-        "method": [14],
+        "method": [14]
       },
       "fit_clinicalbert": {
         "network": [
