@@ -211,6 +211,7 @@
     "5": {
       "name": "Investigate pretraining with AR for Boxed Warning performance",
       "description": "Boxed warnings do not have as many training examples and suffer in performance. We want to investigate using the pretrained model from the Adverse Reactions sections with no additional training and with additional training to see how it performs.",
+      "dependencies": ["4"],
       "factor": {
         "script": "fit_clinicalbert",
         "parameter": ["network", "epochs"],
@@ -239,6 +240,7 @@
     "5A": {
       "name": "Investigate pretraining with AR for Boxed Warning performance, PMB",
       "description": "Boxed warnings do not have as many training examples and suffer in performance. We want to investigate using the pretrained model from the Adverse Reactions sections with no additional training and with additional training to see how it performs. Same as Experiment 5 except using PubMedBERT as the pre-trained model.",
+      "dependencies": ["4B"],
       "factor": {
         "script": "fit_clinicalbert",
         "parameter": ["network", "epochs"],
