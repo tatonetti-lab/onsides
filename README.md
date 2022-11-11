@@ -48,7 +48,7 @@ Below is a brief description of the tables. See [`SCHEMA.md`](SCHEMA.md) for col
 
 ## Replication, Retraining, and Improving the Model
 
-In this section we explain the steps and tools used to choose hyperparameters, train the model, and generate the database. If you'd like to skip the details you can check out the [Quick Start](#quick-start) subsection below which explains the minimal steps necessary to recreate OnSIDES.
+In this section we explain the steps and tools used to choose hyperparameters, train the model, and generate the database. If you'd like to skip the details you can check out the [Quick Start](#quick-start) subsection below which explains the minimal steps necessary to recreate OnSIDES from scratch.
 
 *Prerequisites*
 
