@@ -23,7 +23,7 @@ OnSIDES was created using the [PubMedBERT language model](https://huggingface.co
 ### Download
 
 The latest database versions are available as a flat files in CSV format. Previous database versions can be
-accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A [DDL](src/load_onsides_db.sql) is provided to load the CSV files into a database schema.
+accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A [DDL](src/load_onsides_db.sql) is provided to load the CSV files into a SQL schema.
 
 #### CSV Files
 [onsides_v2.0.0_20221110.tar.gz]
