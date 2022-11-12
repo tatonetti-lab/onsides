@@ -242,7 +242,7 @@ def main():
             print(f"\t{section}")
             section_compiled_files[section].append(os.path.join(version_path, compiled_file))
 
-    print("Building active labels dictioanry.")
+    print("Building active labels dictionary.")
     active_spl_versions = dict()
     for index, row in latest_dfs['dm_spl_zip_files_meta_data'].iterrows():
         active_spl_versions[row['SETID']] = row['SPL_VERSION']
