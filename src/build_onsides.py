@@ -263,13 +263,14 @@ def main():
         header2 = ['set_id','spl_version','pt_meddra_id','pt_meddra_term','num_ingredients','ingredients_rxcuis','ingredients_names']
         writer2.writerow(header2)
 
-        for compiled_file in tqdm(compiled_files):
+        for compiled_file in compiled_files:
 
             rfh = gzip.open(compiled_file, 'rt')
             reader = csv.reader(rfh)
             _ = next(reader)
 
-            for row in reader:
+            print(f"  Processing {compiled_file}...")
+            for row in tqdm(reader):
                 writer.writerow(row)
                 data = dict(zip(header, row[1:]))
 
