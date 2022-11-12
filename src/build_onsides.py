@@ -322,7 +322,7 @@ def main():
         writer.writerow(header)
 
         for ingredients_rxcuis_str, pt_meddra_id in tqdm(section_by_ingredient.keys()):
-            num_labels = section_by_ingredient[(ingredients_rxcuis_str, pt_meddra_id)]
+            num_labels = section_by_ingredient_labels[ingredients_rxcuis_str]
             ingredients_names_str = section_by_ingredient_drug_names[ingredients_rxcuis_str]
             num_ingredients = len(ingredients_rxcuis_str.split(', '))
             pt_meddra_term = section_by_ingredient_meddra_terms[pt_meddra_id]
