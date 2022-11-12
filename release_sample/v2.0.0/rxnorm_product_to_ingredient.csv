@@ -1,0 +1,101 @@
+product_rx_cui,product_name,product_omop_concept_id,ingredient_rx_cui,ingredient_name,ingredient_omop_concept_id
+1000000,amlodipine 5 MG / hydrochlorothiazide 12.5 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224176,17767,amlodipine,1332418
+1000000,amlodipine 5 MG / hydrochlorothiazide 12.5 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224176,5487,hydrochlorothiazide,974166
+1000000,amlodipine 5 MG / hydrochlorothiazide 12.5 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224176,321064,olmesartan,40226742
+1000001,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet,40224178,17767,amlodipine,1332418
+1000001,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet,40224178,5487,hydrochlorothiazide,974166
+1000001,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet,40224178,321064,olmesartan,40226742
+1000003,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG [Tribenzor],40224180,17767,amlodipine,1332418
+1000003,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG [Tribenzor],40224180,5487,hydrochlorothiazide,974166
+1000003,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG [Tribenzor],40224180,321064,olmesartan,40226742
+1000005,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224179,17767,amlodipine,1332418
+1000005,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224179,5487,hydrochlorothiazide,974166
+1000005,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224179,321064,olmesartan,40226742
+1000009,dimethicone 100 MG/ML / miconazole nitrate 20 MG/ML / zinc oxide 100 MG/ML Topical Spray,40224720,11423,zinc oxide,911064
+1000009,dimethicone 100 MG/ML / miconazole nitrate 20 MG/ML / zinc oxide 100 MG/ML Topical Spray,40224720,324072,dimethicone,916662
+1000009,dimethicone 100 MG/ML / miconazole nitrate 20 MG/ML / zinc oxide 100 MG/ML Topical Spray,40224720,6932,miconazole,907879
+1000012,whole wheat allergenic extract 50 MG/ML,40225699,901299,whole wheat allergenic extract,40172900
+1000013,whole wheat allergenic extract 50 MG/ML Injectable Solution,40225700,901299,whole wheat allergenic extract,40172900
+1000014,western wheatgrass pollen extract 10000 UNT/ML,40225689,852659,western wheatgrass pollen extract,40162104
+1000015,western wheatgrass pollen extract 10000 UNT/ML Injectable Solution,40225690,852659,western wheatgrass pollen extract,40162104
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,1223,atropine,914335
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,6832,methenamine,904356
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,153970,hyoscyamine,923672
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,70589,benzoate,711452
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,36122,phenyl salicylate,937712
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,6878,methylene blue,905518
+1000023,methenamine mandelate 100 MG/ML,40224844,6832,methenamine,904356
+1000024,methenamine mandelate 100 MG/ML Oral Suspension,40224845,6832,methenamine,904356
+1000025,methenamine hippurate 1000 MG Oral Capsule,40224843,6832,methenamine,904356
+1000026,methenamine mandelate 250 MG Oral Tablet,40224846,6832,methenamine,904356
+1000027,methenamine mandelate 300 MG / sodium phosphate 500 MG Oral Tablet,40224847,6832,methenamine,904356
+1000027,methenamine mandelate 300 MG / sodium phosphate 500 MG Oral Tablet,40224847,36709,sodium phosphate,939871
+1000028,methenamine mandelate 350 MG / sodium phosphate 200 MG Oral Tablet,40224848,6832,methenamine,904356
+1000028,methenamine mandelate 350 MG / sodium phosphate 200 MG Oral Tablet,40224848,36709,sodium phosphate,939871
+1000030,"methenamine mandelate 500 MG / sodium phosphate, monobasic 250 MG Oral Tablet",40224850,6832,methenamine,904356
+1000030,"methenamine mandelate 500 MG / sodium phosphate, monobasic 250 MG Oral Tablet",40224850,235496,"sodium phosphate, monobasic",990499
+1000044,chlorhexidine diacetate 0.5 MG/ML [Septi-Soothe],40224288,2358,chlorhexidine,1790812
+1000045,chlorhexidine Topical Spray [Septi-Soothe],40224286,2358,chlorhexidine,1790812
+1000046,chlorhexidine diacetate 0.5 MG/ML Topical Spray [Septi-Soothe],40224287,2358,chlorhexidine,1790812
+1000048,doxepin 10 MG Oral Capsule,40224875,3638,doxepin,738156
+1000050,doxepin 10 MG Oral Capsule [Adapin],40224876,3638,doxepin,738156
+1000052,doxepin 10 MG Oral Capsule [Sinequan],40224877,3638,doxepin,738156
+1000054,doxepin 10 MG/ML Oral Solution,40224881,3638,doxepin,738156
+1000056,doxepin 10 MG/ML Oral Solution [Sinequan],40224882,3638,doxepin,738156
+1000058,doxepin 100 MG Oral Capsule,40224885,3638,doxepin,738156
+1000060,doxepin 100 MG Oral Capsule [Adapin],40224886,3638,doxepin,738156
+1000062,doxepin 100 MG Oral Capsule [Sinequan],40224887,3638,doxepin,738156
+1000064,doxepin 150 MG Oral Capsule,40224891,3638,doxepin,738156
+1000066,doxepin 150 MG Oral Capsule [Adapin],40224892,3638,doxepin,738156
+1000068,doxepin 150 MG Oral Capsule [Sinequan],40224893,3638,doxepin,738156
+1000070,doxepin 25 MG Oral Capsule,40224897,3638,doxepin,738156
+1000072,doxepin 25 MG Oral Capsule [Adapin],40224898,3638,doxepin,738156
+1000074,doxepin 25 MG Oral Capsule [Sinequan],40224899,3638,doxepin,738156
+1000076,doxepin 50 MG Oral Capsule,40224903,3638,doxepin,738156
+1000078,doxepin 50 MG Oral Capsule [Adapin],40224904,3638,doxepin,738156
+1000081,doxepin 50 MG Oral Capsule [Sinequan],40224905,3638,doxepin,738156
+1000083,alcaftadine 2.5 MG/ML,40224160,1000082,alcaftadine,40224159
+1000084,alcaftadine Ophthalmic Solution,40224164,1000082,alcaftadine,40224159
+1000085,alcaftadine 2.5 MG/ML Ophthalmic Solution,40224161,1000082,alcaftadine,40224159
+1000087,alcaftadine 2.5 MG/ML [Lastacaft],40224163,1000082,alcaftadine,40224159
+1000088,alcaftadine Ophthalmic Solution [Lastacaft],40224165,1000082,alcaftadine,40224159
+1000089,alcaftadine 2.5 MG/ML Ophthalmic Solution [Lastacaft],40224162,1000082,alcaftadine,40224159
+1000090,doxepin hydrochloride 50 MG/ML,40224908,3638,doxepin,738156
+1000091,doxepin hydrochloride 50 MG/ML Topical Cream,40224909,3638,doxepin,738156
+1000092,doxepin hydrochloride 50 MG/ML [Prudoxin],40224912,3638,doxepin,738156
+1000093,doxepin hydrochloride 50 MG/ML Topical Cream [Prudoxin],40224910,3638,doxepin,738156
+1000094,doxepin hydrochloride 50 MG/ML [Zonalon],40224913,3638,doxepin,738156
+1000095,doxepin hydrochloride 50 MG/ML Topical Cream [Zonalon],40224911,3638,doxepin,738156
+1000097,doxepin 75 MG Oral Capsule,40224915,3638,doxepin,738156
+1000099,doxepin 75 MG Oral Capsule [Adapin],40224916,3638,doxepin,738156
+1000101,doxepin 75 MG Oral Capsule [Sinequan],40224917,3638,doxepin,738156
+1000107,incobotulinumtoxinA 200 UNT Injection,40224765,1712,botulinum toxin type A,729855
+1000113,medroxyprogesterone acetate 10 MG,40224788,6691,medroxyprogesterone,1500211
+1000114,medroxyprogesterone acetate 10 MG Oral Tablet,40224789,6691,medroxyprogesterone,1500211
+1000115,medroxyprogesterone acetate 10 MG [Prodroxy],40224798,6691,medroxyprogesterone,1500211
+1000116,medroxyprogesterone acetate 10 MG Oral Tablet [Prodroxy],40224793,6691,medroxyprogesterone,1500211
+1000117,medroxyprogesterone acetate 10 MG [Amen],40224795,6691,medroxyprogesterone,1500211
+1000118,medroxyprogesterone acetate 10 MG Oral Tablet [Amen],40224790,6691,medroxyprogesterone,1500211
+1000119,medroxyprogesterone acetate 10 MG [Curretab],40224796,6691,medroxyprogesterone,1500211
+1000120,medroxyprogesterone acetate 10 MG Oral Tablet [Curretab],40224791,6691,medroxyprogesterone,1500211
+1000121,medroxyprogesterone acetate 10 MG [Cycrin],40224797,6691,medroxyprogesterone,1500211
+1000122,medroxyprogesterone acetate 10 MG Oral Tablet [Cycrin],40224792,6691,medroxyprogesterone,1500211
+1000123,medroxyprogesterone acetate 10 MG [Provera],40224799,6691,medroxyprogesterone,1500211
+1000124,medroxyprogesterone acetate 10 MG Oral Tablet [Provera],40224794,6691,medroxyprogesterone,1500211
+1000125,medroxyprogesterone acetate 150 MG/ML,40224804,6691,medroxyprogesterone,1500211
+1000126,1 ML medroxyprogesterone acetate 150 MG/ML Injection,40224805,6691,medroxyprogesterone,1500211
+1000127,medroxyprogesterone acetate 150 MG/ML [Depo-Provera],40224807,6691,medroxyprogesterone,1500211
+1000128,1 ML medroxyprogesterone acetate 150 MG/ML Injection [Depo-Provera],40224806,6691,medroxyprogesterone,1500211
+1000130,medroxyprogesterone acetate 400 MG/ML,40224830,6691,medroxyprogesterone,1500211
+1000131,medroxyprogesterone acetate 400 MG/ML Injectable Suspension,40224831,6691,medroxyprogesterone,1500211
+1000132,medroxyprogesterone acetate 400 MG/ML [Depo-Provera],40224833,6691,medroxyprogesterone,1500211
+1000133,medroxyprogesterone acetate 400 MG/ML Injectable Suspension [Depo-Provera],40224832,6691,medroxyprogesterone,1500211
+1000134,medroxyprogesterone acetate 2.5 MG,40224811,6691,medroxyprogesterone,1500211
+1000135,medroxyprogesterone acetate 2.5 MG Oral Tablet,40224812,6691,medroxyprogesterone,1500211
+1000136,medroxyprogesterone acetate 2.5 MG [Cycrin],40224815,6691,medroxyprogesterone,1500211
+1000137,medroxyprogesterone acetate 2.5 MG Oral Tablet [Cycrin],40224813,6691,medroxyprogesterone,1500211
+1000138,medroxyprogesterone acetate 2.5 MG [Provera],40224816,6691,medroxyprogesterone,1500211
+1000139,medroxyprogesterone acetate 2.5 MG Oral Tablet [Provera],40224814,6691,medroxyprogesterone,1500211
+1000140,medroxyprogesterone acetate 5 MG,40224834,6691,medroxyprogesterone,1500211
+1000141,medroxyprogesterone acetate 5 MG Oral Tablet,40224835,6691,medroxyprogesterone,1500211
+1000142,medroxyprogesterone acetate 5 MG [Cycrin],40224838,6691,medroxyprogesterone,1500211
