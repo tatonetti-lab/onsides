@@ -250,18 +250,23 @@ def main():
     for section, compiled_files in section_compiled_files.items():
 
         print(f"Collating each of the compiled files for section: {section}")
-        
+
         ofn = os.path.join(release_version_date_path, section_names[section] + "_all_labels.csv.gz")
         ofh = gzip.open(ofn, 'wt')
         writer = csv.writer(ofh)
         header = ['section','zip_id','label_id','set_id','spl_version','pt_meddra_id','pt_meddra_term','pred0','pred1']
         writer.writerow(header)
 
-        ofn2 = os.path.join(release_version_date_path, section_names[section] + ".csv.gz")
+        ofn2 = os.path.join(release_version_date_path, section_names[section] + "_active_labels.csv.gz")
         ofh2 = gzip.open(ofn2, 'wt')
         writer2 = csv.writer(ofh2)
         header2 = ['set_id','spl_version','pt_meddra_id','pt_meddra_term','num_ingredients','ingredients_rxcuis','ingredients_names']
         writer2.writerow(header2)
+
+        section_by_ingredient = defaultdict(int)
+        section_by_ingredient_labels = defaultdict(set)
+        section_by_ingredient_meddra_terms = dict()
+        section_by_ingredient_drug_names = dict()
 
         for compiled_file in compiled_files:
 
@@ -271,8 +276,13 @@ def main():
 
             print(f"  Processing {compiled_file}...")
             for row in tqdm(reader):
-                writer.writerow(row[1:])
                 data = dict(zip(header, row[1:]))
+
+                # add to all labels file
+                writer.writerow(row[1:])
+
+
+                # add to active labels if it is the current version
 
                 if not data['set_id'] in active_spl_versions:
                     log_fh.write(f"{datetime.now()} WARNING: SetID = {data['set_id']} does not have an active_spl_version available.\n")
@@ -290,18 +300,37 @@ def main():
                         ingredients_rxcuis = list()
                         ingredients_names = list()
 
-                    writer2.writerow([data['set_id'], data['spl_version'], data['pt_meddra_id'], data['pt_meddra_term'], len(ingredients_rxcuis), ', '.join(ingredients_rxcuis), ', '.join(ingredients_names)])
+                    ingredients_rxcuis_str = ', '.join(ingredients_rxcuis)
+                    ingredients_names_str = ', '.join(ingredients_names)
+
+                    writer2.writerow([data['set_id'], data['spl_version'], data['pt_meddra_id'], data['pt_meddra_term'], len(ingredients_rxcuis), ingredients_rxcuis_str, ingredients_names_str])
+
+                    # save for writing the grouped by ingredients file
+                    section_by_ingredient[(ingredients_rxcuis_str, data['pt_meddraa_id'])] += 1
+                    section_by_ingredient_labels[ingredients_rxcuis_str].add(data['set_id'])
+                    section_by_ingredient_meddra_terms[data['pt_meddra_id']] = data['pt_meddra_term']
+                    section_by_ingredient_drug_names[ingredients_rxcuis_str] = ingredients_names_str
 
         ofh.close()
         ofh2.close()
 
-        # # NOTE: This might have performance issues.
-        # df = pd.concat([pd.read_csv(compiled_file) for compiled_file in compiled_files]).reset_index()
-        # df = df[['section','drug','label_id','set_id','pt_meddra_id','pt_meddra_term','meddra_id','Pred0','Pred1']]
-        # df.rename(columns={'drug': 'zip_id'}, inplace=True)
-        #
-        # rfn = os.path.join(release_version_date_path, section_names[section] + "_bylabel.csv.gz")
-        # df.to_csv(rfn, index=False)
+        print(f"  Writing out {section} grouped by ingredients.")
+        ofn = os.path.join(release_version_date_path, section_names[section] + ".csv.gz")
+        ofh = gzip.open(ofn, 'wt')
+        writer = csv.writer(ofh)
+        header = ['ingredients_rxcuis', 'ingredients_names', 'num_ingredients', 'pt_meddra_id', 'pt_meddra_term', 'percent_labels', 'num_labels']
+        writer.writerow(header)
+
+        for ingredients_rxcuis_str, pt_meddra_id in tqdm(section_by_ingredient.keys()):
+            num_labels = len(section_by_ingredient[ingredients_rxcuis_str])
+            ingredients_names_str = section_by_ingredient_drug_names[ingredients_rxcuis_str]
+            num_ingredients = len(ingredients_rxcuis_str.split(', '))
+            pt_meddra_term = section_by_ingredient_meddra_terms[pt_meddra_id]
+            percent_labels = float(section_by_ingredient[(ingredients_rxcuis_str, pt_meddra_id)])/float(num_labels)
+
+            writer.writerow([ingredients_rxcuis_str, ingredients_names_str, num_ingredients, pt_meddra_id, pt_meddra_term, percent_labels, num_labels])
+
+        ofh.close()
 
         print(f"  Wrote collated {section} to {ofn}.")
         print(f"  Wrote active labels only collated {section} to {ofn2}.")
