@@ -191,9 +191,8 @@ data/spl/rx/dm_spl_release_human_rx_part5/compiled/v2.0.0/AR.csv.gz
 
 To build the final version of the OnSIDES database files we leverage the standard
 vocabularies in the OMOP Common Data Model (CDM). These can be downloaded using the
-ATHENA tool made available from OHDSI.org. See https://www.ohdsi.org/data-standardization/
-for more information. In this implementation we use OMOP CDM v5.4. Download the vocabularies
-through ATHENA (including MedDRA, which will require a EULA) and save them into a
+[ATHENA](https://athena.ohdsi.org) tool made available from OHDSI.org. In this implementation we use OMOP CDM v5.4. 
+Download the vocabularies through ATHENA (including MedDRA, which will require a EULA) and save them into a
 subdirectory of `./data`.
 
 The files are built by running the `build_onsides.py` script with the path to the download
