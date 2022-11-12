@@ -1,101 +1,101 @@
-set_id,spl_version,pt_meddra_id,pt_meddra_term,num_ingredients,ingredients_rxcuis,ingredients_names
-8c1edb39-1ae9-44f1-b23b-387b715a3df6,13,10005382,Blood caffeine,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8c1edb39-1ae9-44f1-b23b-387b715a3df6,13,10010071,Coma,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8c1edb39-1ae9-44f1-b23b-387b715a3df6,13,10011906,Death,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8c1edb39-1ae9-44f1-b23b-387b715a3df6,13,10012335,Dependence,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8c1edb39-1ae9-44f1-b23b-387b715a3df6,13,10038678,Respiratory depression,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8c1edb39-1ae9-44f1-b23b-387b715a3df6,13,10039897,Sedation,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8c1edb39-1ae9-44f1-b23b-387b715a3df6,13,10067125,Liver injury,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8f8c5c01-5859-4843-adf4-8116ddaedc90,11,10005382,Blood caffeine,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8f8c5c01-5859-4843-adf4-8116ddaedc90,11,10010071,Coma,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8f8c5c01-5859-4843-adf4-8116ddaedc90,11,10011906,Death,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8f8c5c01-5859-4843-adf4-8116ddaedc90,11,10012335,Dependence,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8f8c5c01-5859-4843-adf4-8116ddaedc90,11,10038678,Respiratory depression,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8f8c5c01-5859-4843-adf4-8116ddaedc90,11,10039897,Sedation,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-8f8c5c01-5859-4843-adf4-8116ddaedc90,11,10067125,Liver injury,4,"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine"
-96128b54-24d6-88a3-e053-2a95a90a1c9c,3,10038678,Respiratory depression,1,7238,nalbuphine
-96139914-0708-7b58-e053-2995a90a7308,2,10038678,Respiratory depression,1,7238,nalbuphine
-070375be-3b67-4299-ae8f-4a7b157ac16f,14,10043248,Tendon rupture,1,82122,levofloxacin
-070375be-3b67-4299-ae8f-4a7b157ac16f,14,10043255,Tendonitis,1,82122,levofloxacin
-0e6b0a2d-b79c-44d8-b785-5267df9e8f72,9,10070863,Toxicity to various agents,1,42351,lithium carbonate
-ea0e79ce-74a1-436c-bac8-f2b80201b587,1,10010071,Coma,1,2598,clonazepam
-ea0e79ce-74a1-436c-bac8-f2b80201b587,1,10011906,Death,1,2598,clonazepam
-ea0e79ce-74a1-436c-bac8-f2b80201b587,1,10038678,Respiratory depression,1,2598,clonazepam
-ea0e79ce-74a1-436c-bac8-f2b80201b587,1,10039897,Sedation,1,2598,clonazepam
-2d2c5317-4072-477b-a4e2-f6765fc71657,5,10001507,Agranulocytosis,1,2002,carbamazepine
-2d2c5317-4072-477b-a4e2-f6765fc71657,5,10002967,Aplastic anaemia,1,2002,carbamazepine
-2d2c5317-4072-477b-a4e2-f6765fc71657,5,10042033,Stevens-Johnson syndrome,1,2002,carbamazepine
-81412f5a-493a-276d-e053-2a91aa0a21df,3,10007515,Cardiac arrest,1,10154,succinylcholine
-81412f5a-493a-276d-e053-2a91aa0a21df,3,10011906,Death,1,10154,succinylcholine
-81412f5a-493a-276d-e053-2a91aa0a21df,3,10023891,Laryngospasm,1,10154,succinylcholine
-81412f5a-493a-276d-e053-2a91aa0a21df,3,10039020,Rhabdomyolysis,1,10154,succinylcholine
-9f68c61a-c207-cdbe-e053-2a95a90af5a0,1,10039906,Seizure,1,4457,flumazenil
-7aaa97f9-a9d1-c815-e053-2991aa0afb9e,4,10007649,Cardiovascular disorder,1,4083,estradiol
-7aaa97f9-a9d1-c815-e053-2991aa0afb9e,4,10008190,Cerebrovascular accident,1,4083,estradiol
-7aaa97f9-a9d1-c815-e053-2991aa0afb9e,4,10012267,Dementia,1,4083,estradiol
-7aaa97f9-a9d1-c815-e053-2991aa0afb9e,4,10014733,Endometrial cancer,1,4083,estradiol
-7aaa97f9-a9d1-c815-e053-2991aa0afb9e,4,10028596,Myocardial infarction,1,4083,estradiol
-7aaa97f9-a9d1-c815-e053-2991aa0afb9e,4,10037377,Pulmonary embolism,1,4083,estradiol
-7aaa97f9-a9d1-c815-e053-2991aa0afb9e,4,10051055,Deep vein thrombosis,1,4083,estradiol
-7f272100-e02f-4a16-bb39-a2bf844db4f9,29,10011906,Death,1,89013,aripiprazole
-fbca2152-0022-47a5-a1ea-58950b45bcbf,7,10001507,Agranulocytosis,1,2002,carbamazepine
-fbca2152-0022-47a5-a1ea-58950b45bcbf,7,10002967,Aplastic anaemia,1,2002,carbamazepine
-fbca2152-0022-47a5-a1ea-58950b45bcbf,7,10042033,Stevens-Johnson syndrome,1,2002,carbamazepine
-184db12c-0642-4741-a997-cd0b2a5ce337,2,10011078,Coronary artery disease,1,6918,metoprolol
-184db12c-0642-4741-a997-cd0b2a5ce337,2,10028596,Myocardial infarction,1,6918,metoprolol
-184db12c-0642-4741-a997-cd0b2a5ce337,2,10028600,Myocardial ischaemia,1,6918,metoprolol
-86aad85d-5460-4c38-9761-a225e6bce190,7,10019731,Hepatitis B,3,"195085, 300195, 68244","efavirenz, tenofovir disoproxil, lamivudine"
-e782283e-2608-4fd6-a8b2-6c30b9d5d3b0,9,10018932,Haemolytic uraemic syndrome,1,9071,quinine
-e782283e-2608-4fd6-a8b2-6c30b9d5d3b0,9,10043554,Thrombocytopenia,1,9071,quinine
-e782283e-2608-4fd6-a8b2-6c30b9d5d3b0,9,10043648,Thrombotic thrombocytopenic purpura,1,9071,quinine
-189ad040-07e9-42a5-854c-67633367da74,4,10020646,Hyperkalaemia,2,"10763, 5487","triamterene, hydrochlorothiazide"
-189ad040-07e9-42a5-854c-67633367da74,4,10062237,Renal impairment,2,"10763, 5487","triamterene, hydrochlorothiazide"
-4af3894a-8945-4b2d-bdf6-a83bbd415b89,4,10043248,Tendon rupture,1,2551,ciprofloxacin
-4af3894a-8945-4b2d-bdf6-a83bbd415b89,4,10043255,Tendonitis,1,2551,ciprofloxacin
-90290910-11c8-4b33-b601-90d83b556cca,4,10047895,Weight decreased,1,10582,levothyroxine
-b0f9e649-6651-406f-a9fe-157fe04d9d27,4,10008190,Cerebrovascular accident,1,3355,diclofenac
-b0f9e649-6651-406f-a9fe-157fe04d9d27,4,10017955,Gastrointestinal haemorrhage,1,3355,diclofenac
-b0f9e649-6651-406f-a9fe-157fe04d9d27,4,10028596,Myocardial infarction,1,3355,diclofenac
-b0f9e649-6651-406f-a9fe-157fe04d9d27,4,10055798,Haemorrhage,1,3355,diclofenac
-bd324779-57cb-4161-97d0-b0ff9b558adb,4,10047895,Weight decreased,1,10582,levothyroxine
-ded77a84-e6d1-4471-ac6e-a05a0955daa5,4,10012378,Depression,1,39786,venlafaxine
-79b9db39-7cdc-5607-f0ce-ac2a2cfd59d5,8,10042434,Sudden death,1,725,amphetamine
-96f4357c-720c-4651-b638-7b1181531dc5,1,10002967,Aplastic anaemia,1,24812,felbamate
-96f4357c-720c-4651-b638-7b1181531dc5,1,10011906,Death,1,24812,felbamate
-96f4357c-720c-4651-b638-7b1181531dc5,1,10019663,Hepatic failure,1,24812,felbamate
-96f4357c-720c-4651-b638-7b1181531dc5,1,10019837,Hepatocellular injury,1,24812,felbamate
-96f4357c-720c-4651-b638-7b1181531dc5,1,10021789,Infection,1,24812,felbamate
-96f4357c-720c-4651-b638-7b1181531dc5,1,10055798,Haemorrhage,1,24812,felbamate
-ac0b0590-e280-4d20-8238-61e7d4b0d2f3,1,10010071,Coma,1,10689,tramadol
-ac0b0590-e280-4d20-8238-61e7d4b0d2f3,1,10011906,Death,1,10689,tramadol
-ac0b0590-e280-4d20-8238-61e7d4b0d2f3,1,10012335,Dependence,1,10689,tramadol
-ac0b0590-e280-4d20-8238-61e7d4b0d2f3,1,10019851,Hepatotoxicity,1,10689,tramadol
-ac0b0590-e280-4d20-8238-61e7d4b0d2f3,1,10038678,Respiratory depression,1,10689,tramadol
-ac0b0590-e280-4d20-8238-61e7d4b0d2f3,1,10039897,Sedation,1,10689,tramadol
-2984bce2-89bf-4768-a1ca-ccf03b1197be,1,10007649,Cardiovascular disorder,1,4083,estradiol
-2984bce2-89bf-4768-a1ca-ccf03b1197be,1,10008190,Cerebrovascular accident,1,4083,estradiol
-2984bce2-89bf-4768-a1ca-ccf03b1197be,1,10012267,Dementia,1,4083,estradiol
-2984bce2-89bf-4768-a1ca-ccf03b1197be,1,10014733,Endometrial cancer,1,4083,estradiol
-2984bce2-89bf-4768-a1ca-ccf03b1197be,1,10051055,Deep vein thrombosis,1,4083,estradiol
-5127517f-b8d0-4af1-8a2f-5225719600bc,3,10012378,Depression,1,15996,mirtazapine
-5e615ee5-db85-4c21-b9d6-ba5eb9ce823a,1,10002199,Anaphylactic shock,1,35827,ketorolac
-5e615ee5-db85-4c21-b9d6-ba5eb9ce823a,1,10006482,Bronchospasm,1,35827,ketorolac
-5e615ee5-db85-4c21-b9d6-ba5eb9ce823a,1,10028596,Myocardial infarction,1,35827,ketorolac
-943e2739-3f35-46d9-af79-1b417927d866,4,10015769,Extradural haematoma,1,67108,enoxaparin
-943e2739-3f35-46d9-af79-1b417927d866,4,10018852,Haematoma,1,67108,enoxaparin
-943e2739-3f35-46d9-af79-1b417927d866,4,10033799,Paralysis,1,67108,enoxaparin
-9ff5086a-9f88-91ec-e053-2995a90a31b4,1,10008190,Cerebrovascular accident,1,32613,oxaprozin
-9ff5086a-9f88-91ec-e053-2995a90a31b4,1,10017955,Gastrointestinal haemorrhage,1,32613,oxaprozin
-9ff5086a-9f88-91ec-e053-2995a90a31b4,1,10028596,Myocardial infarction,1,32613,oxaprozin
-9ff5086a-9f88-91ec-e053-2995a90a31b4,1,10055798,Haemorrhage,1,32613,oxaprozin
-4c32971e-feb3-4388-9cd6-d1f99f258b0d,10,10012378,Depression,1,2597,clomipramine
-57bd50e6-c948-0037-4a4b-c8951f70d04a,3,10001507,Agranulocytosis,1,11645,deferiprone
-57bd50e6-c948-0037-4a4b-c8951f70d04a,3,10011906,Death,1,11645,deferiprone
-57bd50e6-c948-0037-4a4b-c8951f70d04a,3,10021789,Infection,1,11645,deferiprone
-57bd50e6-c948-0037-4a4b-c8951f70d04a,3,10029354,Neutropenia,1,11645,deferiprone
-5af7ec26-5666-41a9-a0a9-1c3b09f6638e,8,10012378,Depression,1,2597,clomipramine
-99c79ee8-a8f8-cffb-e053-2995a90a7863,1,10010071,Coma,1,6470,lorazepam
-99c79ee8-a8f8-cffb-e053-2995a90a7863,1,10011906,Death,1,6470,lorazepam
-99c79ee8-a8f8-cffb-e053-2995a90a7863,1,10038678,Respiratory depression,1,6470,lorazepam
-99c79ee8-a8f8-cffb-e053-2995a90a7863,1,10039897,Sedation,1,6470,lorazepam
-a00dd797-364f-2d2c-e053-2a95a90a9055,1,10010071,Coma,1,2356,chlordiazepoxide
+ingredients_rxcuis,ingredients_names,num_ingredients,pt_meddra_id,pt_meddra_term,percent_labels,num_labels
+"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine",4,10005382,Blood caffeine,0.9166666666666666,12
+"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine",4,10010071,Coma,1.0,12
+"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine",4,10011906,Death,1.0,12
+"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine",4,10012335,Dependence,1.0,12
+"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine",4,10038678,Respiratory depression,1.0,12
+"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine",4,10039897,Sedation,1.0,12
+"161, 1886, 19860, 2670","acetaminophen, caffeine, butalbital, codeine",4,10067125,Liver injury,1.0,12
+7238,nalbuphine,1,10038678,Respiratory depression,1.0,11
+82122,levofloxacin,1,10043248,Tendon rupture,1.0,152
+82122,levofloxacin,1,10043255,Tendonitis,1.0,152
+42351,lithium carbonate,1,10070863,Toxicity to various agents,1.0,79
+2598,clonazepam,1,10010071,Coma,0.9836065573770492,61
+2598,clonazepam,1,10011906,Death,1.0,61
+2598,clonazepam,1,10038678,Respiratory depression,1.0,61
+2598,clonazepam,1,10039897,Sedation,1.0,61
+2002,carbamazepine,1,10001507,Agranulocytosis,1.0,103
+2002,carbamazepine,1,10002967,Aplastic anaemia,1.0,103
+2002,carbamazepine,1,10042033,Stevens-Johnson syndrome,0.9805825242718447,103
+10154,succinylcholine,1,10007515,Cardiac arrest,0.9761904761904762,42
+10154,succinylcholine,1,10011906,Death,1.0,42
+10154,succinylcholine,1,10023891,Laryngospasm,0.9523809523809523,42
+10154,succinylcholine,1,10039020,Rhabdomyolysis,1.0,42
+4457,flumazenil,1,10039906,Seizure,1.0,11
+4083,estradiol,1,10007649,Cardiovascular disorder,0.963302752293578,109
+4083,estradiol,1,10008190,Cerebrovascular accident,0.9908256880733946,109
+4083,estradiol,1,10012267,Dementia,0.9908256880733946,109
+4083,estradiol,1,10014733,Endometrial cancer,1.0,109
+4083,estradiol,1,10028596,Myocardial infarction,0.8440366972477065,109
+4083,estradiol,1,10037377,Pulmonary embolism,0.3853211009174312,109
+4083,estradiol,1,10051055,Deep vein thrombosis,0.9908256880733946,109
+89013,aripiprazole,1,10011906,Death,1.0,135
+6918,metoprolol,1,10011078,Coronary artery disease,0.9673202614379085,153
+6918,metoprolol,1,10028596,Myocardial infarction,1.0,153
+6918,metoprolol,1,10028600,Myocardial ischaemia,0.6862745098039216,153
+"195085, 300195, 68244","efavirenz, tenofovir disoproxil, lamivudine",3,10019731,Hepatitis B,1.0,4
+9071,quinine,1,10018932,Haemolytic uraemic syndrome,1.0,9
+9071,quinine,1,10043554,Thrombocytopenia,1.0,9
+9071,quinine,1,10043648,Thrombotic thrombocytopenic purpura,1.0,9
+"10763, 5487","triamterene, hydrochlorothiazide",2,10020646,Hyperkalaemia,0.7297297297297297,37
+"10763, 5487","triamterene, hydrochlorothiazide",2,10062237,Renal impairment,1.0,37
+2551,ciprofloxacin,1,10043248,Tendon rupture,1.0,237
+2551,ciprofloxacin,1,10043255,Tendonitis,0.9831223628691983,237
+10582,levothyroxine,1,10047895,Weight decreased,1.0,219
+3355,diclofenac,1,10008190,Cerebrovascular accident,1.0,342
+3355,diclofenac,1,10017955,Gastrointestinal haemorrhage,0.6578947368421053,342
+3355,diclofenac,1,10028596,Myocardial infarction,1.0,342
+3355,diclofenac,1,10055798,Haemorrhage,0.9210526315789473,342
+39786,venlafaxine,1,10012378,Depression,1.0,98
+725,amphetamine,1,10042434,Sudden death,0.8181818181818182,22
+24812,felbamate,1,10002967,Aplastic anaemia,1.0,16
+24812,felbamate,1,10011906,Death,1.0,16
+24812,felbamate,1,10019663,Hepatic failure,1.0,16
+24812,felbamate,1,10019837,Hepatocellular injury,1.0,16
+24812,felbamate,1,10021789,Infection,1.0,16
+24812,felbamate,1,10055798,Haemorrhage,1.0,16
+10689,tramadol,1,10010071,Coma,1.0,126
+10689,tramadol,1,10011906,Death,1.0,126
+10689,tramadol,1,10012335,Dependence,0.7222222222222222,126
+10689,tramadol,1,10019851,Hepatotoxicity,0.06349206349206349,126
+10689,tramadol,1,10038678,Respiratory depression,1.0,126
+10689,tramadol,1,10039897,Sedation,1.0,126
+15996,mirtazapine,1,10012378,Depression,1.0,57
+35827,ketorolac,1,10002199,Anaphylactic shock,0.5495495495495496,111
+35827,ketorolac,1,10006482,Bronchospasm,0.5495495495495496,111
+35827,ketorolac,1,10028596,Myocardial infarction,0.9819819819819819,111
+67108,enoxaparin,1,10015769,Extradural haematoma,1.0,27
+67108,enoxaparin,1,10018852,Haematoma,1.0,27
+67108,enoxaparin,1,10033799,Paralysis,1.0,27
+32613,oxaprozin,1,10008190,Cerebrovascular accident,1.0,23
+32613,oxaprozin,1,10017955,Gastrointestinal haemorrhage,0.782608695652174,23
+32613,oxaprozin,1,10028596,Myocardial infarction,1.0,23
+32613,oxaprozin,1,10055798,Haemorrhage,1.0,23
+2597,clomipramine,1,10012378,Depression,1.0,29
+11645,deferiprone,1,10001507,Agranulocytosis,1.0,8
+11645,deferiprone,1,10011906,Death,1.0,8
+11645,deferiprone,1,10021789,Infection,1.0,8
+11645,deferiprone,1,10029354,Neutropenia,1.0,8
+6470,lorazepam,1,10010071,Coma,1.0,105
+6470,lorazepam,1,10011906,Death,1.0,105
+6470,lorazepam,1,10038678,Respiratory depression,1.0,105
+6470,lorazepam,1,10039897,Sedation,1.0,105
+2356,chlordiazepoxide,1,10010071,Coma,1.0,23
+2356,chlordiazepoxide,1,10011906,Death,1.0,23
+2356,chlordiazepoxide,1,10038678,Respiratory depression,1.0,23
+2356,chlordiazepoxide,1,10039897,Sedation,1.0,23
+8886,protriptyline,1,10012378,Depression,1.0,6
+6809,metformin,1,10011906,Death,0.7887323943661971,284
+6809,metformin,1,10019670,Hepatic function abnormal,0.7570422535211268,284
+6809,metformin,1,10021097,Hypotension,0.9964788732394366,284
+6809,metformin,1,10021113,Hypothermia,0.897887323943662,284
+6809,metformin,1,10023676,Lactic acidosis,1.0,284
+6809,metformin,1,10038687,Respiratory distress,1.0,284
+6809,metformin,1,10062237,Renal impairment,0.7922535211267606,284
+7238,nalbuphine,1,10010071,Coma,0.8181818181818182,11
+7238,nalbuphine,1,10011906,Death,0.8181818181818182,11
+7238,nalbuphine,1,10039897,Sedation,0.8181818181818182,11
+10473,thiotepa,1,10007269,Carcinogenicity,0.8,5
+10473,thiotepa,1,10021789,Infection,1.0,5
+10473,thiotepa,1,10028584,Myelosuppression,0.8,5
+10473,thiotepa,1,10055798,Haemorrhage,1.0,5

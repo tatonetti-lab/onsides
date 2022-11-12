@@ -32,19 +32,27 @@ accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A 
 
 Below is a brief description of the tables. See [`SCHEMA.md`](SCHEMA.md) for column descriptions and [`src/build_onsides.py`](src/build_onsides.py) for more details.
 
-`adverse_reactions` - Main table of adverse reactions. This table includes adverse reactions extracted from the ADVERSE REACTIONS section of the current active label for each product. XX,XXX rows.
+`adverse_reactions` - Main table of adverse reactions. This table includes adverse reactions extracted from the ADVERSE REACTIONS section of the current active labels for each product and then grouped by ingredient(s). 125,054 rows.
 
-`adverse_reactions_all_labels` - All extracted adverse reactions from the ADVERSE REACTIONS section of every available version of the label. Each ingredient will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. X,XXX,XXX rows.
+`adverse_reactions_all_labels` - All extracted adverse reactions from the ADVERSE REACTIONS section of every available version of the label. As the database is updated in the future, ingredient will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. 2,871,306 rows.
 
-`boxed_warnings` - Main table of boxed warnings. This table includes adverse reactions extracted from the BOXED WARNINGS section of the current active label for each drug product. X,XXX rows.
+`adverse_reactions_active_labels` - All extracted adverse reactions from the ADVERSE REACTIONS section of active versions of the label. 2,782,288 rows.
 
-`boxed_warnings_all_labels` - All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc). XX,XXX rows.
+`boxed_warnings` - Main table of boxed warnings. This table includes adverse reactions extracted from the BOXED WARNINGS section of the current active label for each drug product and then grouped by ingredient(s). 2,681 rows.
 
-`ingredients` - Active ingredients for each of the parsed labels. If the label is for a drug with a single active compound then there will be only a single row for that label.  If the label is for a combination of compounds then there will be multiple rows for that label. XX,XXX rows.
+`boxed_warnings_all_labels` - All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc). 40,587 rows.
 
-`dm_spl_zip_files_meta_data` - Meta data provided by DailyMed that indicates which SPL version is the current for each drug product (`set_id`).
+`boxed_warnings_active_labels` - All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc). 39,334 rows.
 
-`rxnorm_mappings` - Mapping drug product `set_id`s to their RxNorm CUIs.
+`ingredients` - Active ingredients for each of the parsed labels. If the label is for a drug with a single active compound then there will be only a single row for that label.  If the label is for a combination of compounds then there will be multiple rows for that label. 176,431 rows.
+
+`dm_spl_zip_files_meta_data` - Meta data provided by DailyMed that indicates which SPL version is the current for each drug product (`set_id`). 144,110 rows.
+
+`rxnorm_mappings` - Mapping drug product `set_id`s to their RxNorm CUIs. 448,754 rows.
+
+`rxcui_setid_map` - Map from SetID to RxNorm product ids. 143,634 rows.
+
+`rxnorm_product_to_ingredient` - Map from RxNorm product ids to RxNorm ingredient ids. 245,160 rows.
 
 ## Replication, Retraining, and Improving the Model
 

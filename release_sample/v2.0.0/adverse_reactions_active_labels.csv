@@ -1,0 +1,101 @@
+set_id,spl_version,pt_meddra_id,pt_meddra_term,num_ingredients,ingredients_rxcuis,ingredients_names
+76131655-3a87-feac-e053-2991aa0a82a1,3,10020679,Hypernatraemia,1,36676,sodium bicarbonate
+76131655-3a87-feac-e053-2991aa0a82a1,3,10027423,Metabolic alkalosis,1,36676,sodium bicarbonate
+76131655-3a87-feac-e053-2991aa0a82a1,3,10028347,Muscle twitching,1,36676,sodium bicarbonate
+76131655-3a87-feac-e053-2991aa0a82a1,3,10043380,Tetany,1,36676,sodium bicarbonate
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10000804,Acute hepatic failure,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10001507,Agranulocytosis,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10002034,Anaemia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10002065,Anaemia megaloblastic,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10002198,Anaphylactic reaction,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10003547,Asterixis,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10003591,Ataxia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10008027,Cerebellar atrophy,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10008748,Chorea,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10009192,Circulatory collapse,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10010305,Confusional state,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10010774,Constipation,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10012373,Depressed level of consciousness,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10012431,Dermatitis,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10013573,Dizziness,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10013887,Dysarthria,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10013916,Dyskinesia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10013983,Dystonia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10018284,Gingival hypertrophy,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10018687,Granulocytopenia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10019211,Headache,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10019717,Hepatitis,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10020635,Hyperglycaemia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10020751,Hypersensitivity,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10021097,Hypotension,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10021114,Hypothyroidism,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10022437,Insomnia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10024384,Leukopenia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10025197,Lymphadenopathy,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10025310,Lymphoma,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10025382,Macrocytosis,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10028347,Muscle twitching,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10028813,Nausea,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10029216,Nervousness,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10029331,Neuropathy peripheral,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10029864,Nystagmus,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10033661,Pancytopenia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10033775,Paraesthesia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10036024,Polyarteritis nodosa,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10036105,Polyneuropathy,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10036181,Porphyria,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10037127,Pseudolymphoma,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10037660,Pyrexia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10037844,Rash,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10037870,Rash morbilliform,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10039906,Seizure,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10041349,Somnolence,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10041962,Status epilepticus,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10042033,Stevens-Johnson syndrome,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10042945,Systemic lupus erythematosus,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10043275,Teratogenicity,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10043554,Thrombocytopenia,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10044223,Toxic epidermal necrolysis,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10044565,Tremor,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10047290,Ventricular fibrillation,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10047340,Vertigo,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10047700,Vomiting,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10058114,Purple glove syndrome,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10067125,Liver injury,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10073508,Drug reaction with eosinophilia and systemic symptoms,1,8183,phenytoin
+763b549d-9b78-09dd-e053-2a91aa0aec7f,3,10078950,Disease risk factor,1,8183,phenytoin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10003549,Asthenia,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10012455,Dermatitis exfoliative,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10013573,Dizziness,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10013687,Drug eruption,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10016825,Flushing,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10019211,Headache,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10020642,Hyperhidrosis,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10021097,Hypotension,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10028813,Nausea,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10031127,Orthostatic hypotension,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10033546,Pallor,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10033557,Palpitations,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10037844,Rash,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10042772,Syncope,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10047340,Vertigo,1,4917,nitroglycerin
+763ce792-c991-f472-e053-2a91aa0a77dd,3,10047700,Vomiting,1,4917,nitroglycerin
+763ff805-af1a-e8e9-e053-2a91aa0a8253,3,10000269,Abscess,1,9863,sodium chloride
+763ff805-af1a-e8e9-e053-2a91aa0a8253,3,10021789,Infection,1,9863,sodium chloride
+763ff805-af1a-e8e9-e053-2a91aa0a8253,3,10047249,Venous thrombosis,1,9863,sodium chloride
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10001497,Agitation,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10002198,Anaphylactic reaction,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10002855,Anxiety,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10003119,Arrhythmia,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10003549,Asthenia,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10008111,Cerebral haemorrhage,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10013395,Disorientation,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10013573,Dizziness,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10016326,Feeling cold,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10017737,Gas gangrene,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10019211,Headache,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10020642,Hyperhidrosis,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10020772,Hypertension,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10020937,Hypoaesthesia,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10021789,Infection,1,3992,epinephrine
+76462d55-5448-0fd0-e053-2991aa0aa49f,3,10024769,Local reaction,1,3992,epinephrine

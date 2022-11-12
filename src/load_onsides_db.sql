@@ -1,3 +1,29 @@
+CREATE TABLE `adverse_reactions` (
+`ingredients_rxcuis` int(11) DEFAULT NULL,
+`ingredients_names` varchar(18) DEFAULT NULL,
+`num_ingredients` int(11) DEFAULT NULL,
+`pt_meddra_id` int(11) DEFAULT NULL,
+`pt_meddra_term` varchar(53) DEFAULT NULL,
+`percent_labels` double DEFAULT NULL,
+`num_labels` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+alter table adverse_reactions add index (`ingredients_rxcuis`);
+alter table adverse_reactions add index (`pt_meddra_id`);
+
+CREATE TABLE `boxed_warnings` (
+`ingredients_rxcuis` int(11) DEFAULT NULL,
+`ingredients_names` varchar(18) DEFAULT NULL,
+`num_ingredients` int(11) DEFAULT NULL,
+`pt_meddra_id` int(11) DEFAULT NULL,
+`pt_meddra_term` varchar(53) DEFAULT NULL,
+`percent_labels` double DEFAULT NULL,
+`num_labels` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+alter table boxed_warnings add index (`ingredients_rxcuis`);
+alter table boxed_warnings add index (`pt_meddra_id`);
+
 CREATE TABLE `adverse_reactions_all_labels` (
 `section` varchar(2) DEFAULT NULL,
 `zip_id` varchar(45) DEFAULT NULL,
@@ -36,7 +62,7 @@ alter table boxed_warnings_all_labels add index (`set_id`);
 alter table boxed_warnings_all_labels add index (`spl_version`);
 alter table boxed_warnings_all_labels add index (`pt_meddra_id`);
 
-CREATE TABLE `adverse_reactions` (
+CREATE TABLE `adverse_reactions_active_labels` (
 `set_id` varchar(36) DEFAULT NULL,
 `spl_version` int(11) DEFAULT NULL,
 `pt_meddra_id` int(11) DEFAULT NULL,
@@ -50,7 +76,7 @@ alter table adverse_reactions add index (`set_id`);
 alter table adverse_reactions add index (`spl_version`);
 alter table adverse_reactions add index (`pt_meddra_id`);
 
-CREATE TABLE `boxed_warnings` (
+CREATE TABLE `boxed_warnings_active_labels` (
 `set_id` varchar(36) DEFAULT NULL,
 `spl_version` int(11) DEFAULT NULL,
 `pt_meddra_id` int(11) DEFAULT NULL,

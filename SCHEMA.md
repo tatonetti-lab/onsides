@@ -1,8 +1,22 @@
 # OnSIDES v2.0.0 schema/files description
 
+Samples of each of these files is available in [release_sample](release_sample).
+
 ## adverse_reactions[.csv]
 
-The `adverse_reactions` table/file is derived from the source OnSIDES data and created to be a convenient table to use for downstream analysis. This is the primary table that users of OnSIDES should use first as it should satisfy most of the use cases. Each drug product (a drug product may be a single drug or a combination of drugs) is included in this table only once using the drug product's current active label (as determined by the meta data provided my DailyMed). See [DATABASE.md](DATABASE.md) for specifics on how this table is created.
+The `adverse_reactions` table/file is derived from the source OnSIDES data and created to be a convenient table to use for downstream analysis. This is one of the two primary tables that users of OnSIDES should use first as it should satisfy most of the use cases. Each drug ingredient or combination of ingredients is included in this table only once using the See [DATABASE.md](DATABASE.md) for specifics on how this table is created.
+
+- `ingredient_rxcuis`, string list of comma separated RxNORM identifiers for the ingredients
+- `ingredient_names`, string list of comma separated ingredients in the drug product (most are single but many combination medications as well)
+- `num_ingredients`, number of ingredients in this drug product
+- `pt_meddra_id`, the MedDRA preferred term code for the adverse reaction term identified
+- `pt_meddra_term`, the MedDRA preferred term for the adverse reaction term identified
+- `percent_labels`, the proportion of labels for which this adverse reaction was extracted (0-1)
+- `num_labels`, the number of active labels for this ingredient or ingredient combination
+
+## adverse_reactions_active_labels[.csv]
+
+The `adverse_reactions_active_labels` table/file is derived from the source OnSIDES data and created to be a convenient table to use for downstream analysis. This is one of the two primary tables that users of OnSIDES should use first as it should satisfy most of the use cases. Each drug product (a drug product may be a single drug or a combination of drugs) is included in this table only once using the drug product's current active label (as determined by the meta data provided my DailyMed). See [DATABASE.md](DATABASE.md) for specifics on how this table is created.
 
 - `set_id`, unique identifier for a group of SPLs, the `set_id` and `spl_version` uniquely identify a label
 - `spl_version`, the version number of the SPL
@@ -28,7 +42,19 @@ Filtered output from the model joined with the example file. Rows are filtered f
 
 ## boxed_warnings[.csv]
 
-Same as the `adverse_reactions` table above except for the BOXED WARNINGS section of the structured product label. Note that the performance for this section is significantly lower than that found for the ADVERSE REACTIONS section. See the [README.md](README.md) file for the latest performance metrics.
+The `boxed_warnings` table/file is derived from the source OnSIDES data and created to be a convenient table to use for downstream analysis. This is one of the two primary tables that users of OnSIDES should use first as it should satisfy most of the use cases. Each drug ingredient or combination of ingredients is included in this table only once using the See [DATABASE.md](DATABASE.md) for specifics on how this table is created.
+
+- `ingredient_rxcuis`, string list of comma separated RxNORM identifiers for the ingredients
+- `ingredient_names`, string list of comma separated ingredients in the drug product (most are single but many combination medications as well)
+- `num_ingredients`, number of ingredients in this drug product
+- `pt_meddra_id`, the MedDRA preferred term code for the adverse reaction term identified
+- `pt_meddra_term`, the MedDRA preferred term for the adverse reaction term identified
+- `percent_labels`, the proportion of labels for which this adverse reaction was extracted (0-1)
+- `num_labels`, the number of active labels for this ingredient or ingredient combination
+
+## boxed_warnings_active_labels[.csv]
+
+Same as the `adverse_reactions_active_labels` table above except for the BOXED WARNINGS section of the structured product label. Note that the performance for this section is significantly lower than that found for the ADVERSE REACTIONS section. See the [README.md](README.md) file for the latest performance metrics.
 
 - `set_id`, unique identifier for a group of SPLs, the `set_id` and `spl_version` uniquely identify a label
 - `spl_version`, the version number of the SPL
