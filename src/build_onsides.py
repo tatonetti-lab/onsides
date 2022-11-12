@@ -305,11 +305,12 @@ def main():
 
                     writer2.writerow([data['set_id'], data['spl_version'], data['pt_meddra_id'], data['pt_meddra_term'], len(ingredients_rxcuis), ingredients_rxcuis_str, ingredients_names_str])
 
-                    # save for writing the grouped by ingredients file
-                    section_by_ingredient[(ingredients_rxcuis_str, data['pt_meddra_id'])] += 1
-                    section_by_ingredient_labels[ingredients_rxcuis_str].add(data['set_id'])
-                    section_by_ingredient_meddra_terms[data['pt_meddra_id']] = data['pt_meddra_term']
-                    section_by_ingredient_drug_names[ingredients_rxcuis_str] = ingredients_names_str
+                    if len(ingredients_rxcuis) > 0:
+                        # save for writing the grouped by ingredients file
+                        section_by_ingredient[(ingredients_rxcuis_str, data['pt_meddra_id'])] += 1
+                        section_by_ingredient_labels[ingredients_rxcuis_str].add(data['set_id'])
+                        section_by_ingredient_meddra_terms[data['pt_meddra_id']] = data['pt_meddra_term']
+                        section_by_ingredient_drug_names[ingredients_rxcuis_str] = ingredients_names_str
 
         ofh.close()
         ofh2.close()
