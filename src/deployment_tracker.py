@@ -202,7 +202,7 @@ def main():
     if len(remaining_commands) == 0:
         eprint("====================")
         eprint(f"Deployment {args.release} is complete. After all sections have been deployed, the final step is create the database files with:\n\n")
-        eprint(f"python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --version {version}")
+        eprint(f"python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --release {version}")
         eprint(f"\nAssuming you have downloaded and extracted the OMOP vocabularies at ./data/omop/vocab_5.4. See DATABASE.md for details.")
     else:
         eprint("====================")

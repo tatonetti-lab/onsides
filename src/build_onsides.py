@@ -14,6 +14,7 @@ import gzip
 import json
 import pickle
 import argparse
+import datetime
 
 import pandas as pd
 
@@ -31,8 +32,11 @@ def main():
     parser.add_argument('--vocab', help='Path to the OMOP Common Data Model Vocabularies', type=str, required=True)
     parser.add_argument('--release', help="Which release version to build the database files for.", type=str, required=True)
     parser.add_argument('--skip-missing', help="Skip missing ata files instead of halting.", action="store_true", default=False)
-    
+
     args = parser.parse_args()
+
+    if not os.path.exists('releases'):
+        os.mkdir('releases')
 
     release_version_path = os.path.join('releases', args.release)
     if not os.path.exists(release_version_path):
@@ -41,6 +45,8 @@ def main():
     release_version_date_path = os.path.join(release_version_path, datetime.now().strftime('%Y%m%d'))
     if not os.path.exists(release_version_date_path):
         os.mkdir(release_version_date_path)
+
+    log_fh = open('./logs/build_onsides.log', 'w')
 
     ###
     # Step 0. Load the concept and concept_ancestor tables
@@ -266,6 +272,10 @@ def main():
             for row in reader:
                 writer.writerow(row)
                 data = dict(zip(header, row[1:]))
+
+                if not data['set_id'] in active_spl_versions:
+                    log_fh.write(f"{datetime.now()} WARNING: SetID = {data['set_id']} does not have an active_spl_version available.")
+                    continue
 
                 if int(active_spl_versions[data['set_id']]) == int(data['spl_version']):
                     ingredients = set()
