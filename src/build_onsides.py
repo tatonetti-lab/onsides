@@ -276,9 +276,8 @@ def main():
 
                 if not data['set_id'] in active_spl_versions:
                     log_fh.write(f"{datetime.now()} WARNING: SetID = {data['set_id']} does not have an active_spl_version available.\n")
-                    continue
 
-                if int(active_spl_versions[data['set_id']]) == int(data['spl_version']):
+                if data['set_id'] in active_spl_versions and int(active_spl_versions[data['set_id']]) == int(data['spl_version']):
                     ingredients = set()
                     for product_rxcui in setid2rxcui[data['set_id']]:
                         for ingredient_concept_id in rxnorm2ingredients[product_rxcui]:
