@@ -109,9 +109,9 @@ if __name__ == '__main__':
         print(f"  > Results file already exists, will not repeat evaluation. If you want to re-generate the results, delete the file and try again.")
         sys.exit(1)
 
-    if network == 'CB':
+    if network.startswith('CB'):
         network_path = './models/Bio_ClinicalBERT/'
-    elif network == 'PMB':
+    elif network.startswith('PMB'):
         network_path = './models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/'
     else:
         raise Exception(f"ERROR: Unknown network: {network}")
