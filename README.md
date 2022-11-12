@@ -26,7 +26,7 @@ The latest database versions are available as a flat files in CSV format. Previo
 accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A [DDL](src/load_onsides_db.sql) (`load_onsides_db.sql`) is provided to load the CSV files into a SQL schema.
 
 #### CSV Files
-[onsides_v2.0.0_20221110.tar.gz]
+[onsides_v2.0.0_20221110.tar.gz](https://github.com/tatonetti-lab/onsides/releases/download/v2.0.0/onsides_v2.0.0_20221112.tar.gz) 105MB (md5: 3c17ca096008ae12af24d4e5a9e76c01)
 
 ### Description of Tables
 
