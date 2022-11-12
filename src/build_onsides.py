@@ -236,7 +236,7 @@ def main():
                 raise Exception("Missing data error.")
             continue
 
-        print(f"The following sections have files available:")
+        print(f"{label_dir}: the following sections have files available:")
         for compiled_file in compiled_files:
             section = compiled_file.split('.')[0]
             print(f"\t{section}")
@@ -244,13 +244,13 @@ def main():
 
     print("Building active labels dictionary.")
     active_spl_versions = dict()
-    for index, row in latest_dfs['dm_spl_zip_files_meta_data'].iterrows():
+    for index, row in tqdm(latest_dfs['dm_spl_zip_files_meta_data'].iterrows()):
         active_spl_versions[row['SETID']] = row['SPL_VERSION']
-
-    print(f"Collating each of the compiled files.")
 
     for section, compiled_files in section_compiled_files.items():
 
+        print(f"Collating each of the compiled files for section: {section}")
+        
         ofn = os.path.join(release_version_date_path, section_names[section] + "_all_labels.csv.gz")
         ofh = gzip.open(ofn, 'wt')
         writer = csv.writer(ofh)
@@ -271,7 +271,7 @@ def main():
 
             print(f"  Processing {compiled_file}...")
             for row in tqdm(reader):
-                writer.writerow(row)
+                writer.writerow(row[1:])
                 data = dict(zip(header, row[1:]))
 
                 if not data['set_id'] in active_spl_versions:
@@ -305,6 +305,8 @@ def main():
 
         print(f"  Wrote collated {section} to {ofn}.")
         print(f"  Wrote active labels only collated {section} to {ofn2}.")
+
+    log_fh.close()
 
 if __name__ == '__main__':
     main()
