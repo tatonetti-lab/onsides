@@ -26,6 +26,8 @@ accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A 
 #### CSV Files
 [onsides_v2.0.0_20221110.tar.gz](https://github.com/tatonetti-lab/onsides/releases/download/v2.0.0/onsides_v2.0.0_20221112.tar.gz) 105MB (md5: 3c17ca096008ae12af24d4e5a9e76c01)
 
+*Updated versions of the database will be completed the first week of each month.*
+
 ### Description of Tables
 
 Below is a brief description of the tables. See [`SCHEMA.md`](SCHEMA.md) for column descriptions and [`src/build_onsides.py`](src/build_onsides.py) for more details.
