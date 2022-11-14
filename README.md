@@ -63,10 +63,10 @@ In this section we explain the steps and tools used to choose hyperparameters, t
 In addition to the cloned repository, a `data` subdirectory is required that contains three pieces of data.
 
 1. A file that maps MedDRA preferred terms to lower level terms.
-2. You will also need the manual annotations from Denmer-Fushman, et al paper and TAC.
-3. The TAC labels in XML format with the Adverse Reactions, Boxed Warnings, and Warnings and Precautions sections parsed.
+2. The manual annotations from Denmer-Fushman, et al paper and TAC.
+3. The TAC SPL labels in XML format with the Adverse Reactions, Boxed Warnings, and Warnings and Precautions sections parsed.
 
-For your convenience, there is an example data directory download available with the minimum requirements available for [download](https://github.com/tatonetti-lab/onsides/releases/download/v01/data.zip).
+For your convenience, there is an example data directory download available with the minimum requirements available for [download](https://github.com/tatonetti-lab/onsides/releases/download/v2.0.0/data.zip).
 
 Model training and evaluation is handled through the use of a helper script named `experiment_tracker.py`. There are several steps in the model training and evaluation pipeline and each has their own set of parameter options. The Experiment Tracker makes it straightforward to manage this process.
 
