@@ -1,3 +1,5 @@
+# These queries were validated against MySQL 5.7.35
+
 CREATE TABLE `adverse_reactions` (
 `ingredients_rxcuis` int(11) DEFAULT NULL,
 `ingredients_names` varchar(18) DEFAULT NULL,
@@ -72,9 +74,9 @@ CREATE TABLE `adverse_reactions_active_labels` (
 `ingredients_names` varchar(137) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-alter table adverse_reactions add index (`set_id`);
-alter table adverse_reactions add index (`spl_version`);
-alter table adverse_reactions add index (`pt_meddra_id`);
+alter table adverse_reactions_active_labels add index (`set_id`);
+alter table adverse_reactions_active_labels add index (`spl_version`);
+alter table adverse_reactions_active_labels add index (`pt_meddra_id`);
 
 CREATE TABLE `boxed_warnings_active_labels` (
 `set_id` varchar(36) DEFAULT NULL,
@@ -86,9 +88,9 @@ CREATE TABLE `boxed_warnings_active_labels` (
 `ingredients_names` varchar(137) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-alter table boxed_warnings add index (`set_id`);
-alter table boxed_warnings add index (`spl_version`);
-alter table boxed_warnings add index (`pt_meddra_id`);
+alter table boxed_warnings_active_labels add index (`set_id`);
+alter table boxed_warnings_active_labels add index (`spl_version`);
+alter table boxed_warnings_active_labels add index (`pt_meddra_id`);
 
 CREATE TABLE `rxnorm_mappings` (
 `setid` varchar(36) DEFAULT NULL,
@@ -119,16 +121,16 @@ CREATE TABLE `pharmacologic_class_mappings` (
 `pharma_version` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-alter table dm_spl_zip_files_meta_data add index (`spl_setid`);
-alter table dm_spl_zip_files_meta_data add index (`pharma_setid`);
+alter table pharmacologic_class_mappings add index (`spl_setid`);
+alter table pharmacologic_class_mappings add index (`pharma_setid`);
 
 CREATE TABLE `rxcui_setid_map` (
 `setid` varchar(36) DEFAULT NULL,
 `rxcui` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-alter table rxnorm_to_setid add index (`setid`);
-alter table rxnorm_to_setid add index (`rxcui`);
+alter table rxcui_setid_map add index (`setid`);
+alter table rxcui_setid_map add index (`rxcui`);
 
 CREATE TABLE `rxnorm_product_to_ingredient` (
 `product_rx_cui` int(11) DEFAULT NULL,
