@@ -1,8 +1,8 @@
 # These queries were validated against MySQL 5.7.35
 
 CREATE TABLE `adverse_reactions` (
-`ingredients_rxcuis` int(11) DEFAULT NULL,
-`ingredients_names` varchar(18) DEFAULT NULL,
+`ingredients_rxcuis` varchar(255) DEFAULT NULL,
+`ingredients_names` varchar(255) DEFAULT NULL,
 `num_ingredients` int(11) DEFAULT NULL,
 `pt_meddra_id` int(11) DEFAULT NULL,
 `pt_meddra_term` varchar(53) DEFAULT NULL,
@@ -14,8 +14,8 @@ alter table adverse_reactions add index (`ingredients_rxcuis`);
 alter table adverse_reactions add index (`pt_meddra_id`);
 
 CREATE TABLE `boxed_warnings` (
-`ingredients_rxcuis` int(11) DEFAULT NULL,
-`ingredients_names` varchar(18) DEFAULT NULL,
+`ingredients_rxcuis` varchar(255) DEFAULT NULL,
+`ingredients_names` varchar(255) DEFAULT NULL,
 `num_ingredients` int(11) DEFAULT NULL,
 `pt_meddra_id` int(11) DEFAULT NULL,
 `pt_meddra_term` varchar(53) DEFAULT NULL,
@@ -34,7 +34,6 @@ CREATE TABLE `adverse_reactions_all_labels` (
 `spl_version` int(11) DEFAULT NULL,
 `pt_meddra_id` int(11) DEFAULT NULL,
 `pt_meddra_term` varchar(53) DEFAULT NULL,
-`meddra_id` double DEFAULT NULL,
 `pred0` double DEFAULT NULL,
 `pred1` double DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -53,7 +52,6 @@ CREATE TABLE `boxed_warnings_all_labels` (
 `spl_version` int(11) DEFAULT NULL,
 `pt_meddra_id` int(11) DEFAULT NULL,
 `pt_meddra_term` varchar(53) DEFAULT NULL,
-`meddra_id` double DEFAULT NULL,
 `pred0` double DEFAULT NULL,
 `pred1` double DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -70,8 +68,8 @@ CREATE TABLE `adverse_reactions_active_labels` (
 `pt_meddra_id` int(11) DEFAULT NULL,
 `pt_meddra_term` varchar(53) DEFAULT NULL,
 `num_ingredients` int(11) DEFAULT NULL,
-`ingredients_rxcuis` varchar(45) DEFAULT NULL,
-`ingredients_names` varchar(137) DEFAULT NULL
+`ingredients_rxcuis` varchar(255) DEFAULT NULL,
+`ingredients_names` varchar(255) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 alter table adverse_reactions_active_labels add index (`set_id`);
@@ -84,8 +82,8 @@ CREATE TABLE `boxed_warnings_active_labels` (
 `pt_meddra_id` int(11) DEFAULT NULL,
 `pt_meddra_term` varchar(53) DEFAULT NULL,
 `num_ingredients` int(11) DEFAULT NULL,
-`ingredients_rxcuis` varchar(45) DEFAULT NULL,
-`ingredients_names` varchar(137) DEFAULT NULL
+`ingredients_rxcuis` varchar(255) DEFAULT NULL,
+`ingredients_names` varchar(255) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 alter table boxed_warnings_active_labels add index (`set_id`);
@@ -96,7 +94,7 @@ CREATE TABLE `rxnorm_mappings` (
 `setid` varchar(36) DEFAULT NULL,
 `spl_version` int(11) DEFAULT NULL,
 `rxcui` int(11) DEFAULT NULL,
-`rxstring` varchar(611) DEFAULT NULL,
+`rxstring` TEXT DEFAULT NULL,
 `rxtty` varchar(4) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -109,20 +107,10 @@ CREATE TABLE `dm_spl_zip_files_meta_data` (
 `zip_file_name` varchar(50) DEFAULT NULL,
 `upload_date` varchar(10) DEFAULT NULL,
 `spl_version` int(11) DEFAULT NULL,
-`title` varchar(423) DEFAULT NULL
+`title` TEXT DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 alter table dm_spl_zip_files_meta_data add index (`setid`);
-
-CREATE TABLE `pharmacologic_class_mappings` (
-`spl_setid` varchar(36) DEFAULT NULL,
-`spl_version` int(11) DEFAULT NULL,
-`pharma_setid` varchar(36) DEFAULT NULL,
-`pharma_version` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
-alter table pharmacologic_class_mappings add index (`spl_setid`);
-alter table pharmacologic_class_mappings add index (`pharma_setid`);
 
 CREATE TABLE `rxcui_setid_map` (
 `setid` varchar(36) DEFAULT NULL,
