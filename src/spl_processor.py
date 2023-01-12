@@ -457,7 +457,7 @@ def main():
     if not args.http_proxy is None:
         proxies['http_proxy'] = args.http_proxy
         proxies['https_proxy'] = args.http_proxy
-        proxies['ftp_proxy'] = args.ftp_proxy
+        proxies['ftp_proxy'] = args.http_proxy
         print(f"Will use proxy: {args.http_proxy}")
 
     page = requests.get(dailymed_spl_resources_url, proxies=proxies)
