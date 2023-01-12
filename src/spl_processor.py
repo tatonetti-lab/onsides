@@ -448,6 +448,8 @@ def main():
     parser.add_argument('--full', '--full-release', help='Process from the full release files.', action='store_true', default=False)
     parser.add_argument('--update', help="Process any available update files.", action='store_true', default=True)
     parser.add_argument('--http-proxy', help="Define a proxy server to use for the requests library.", default=None)
+    parser.add_argument('--local-resources', help="Can override URL with a local file path to the file. Not recommended.", default=None)
+    parser.add_argument('--local-mappings', help="Can override URL with a local file path to the file. Not recommended.", default=None)
 
     # TODO: Implement for other label types as we have models for them. Currently only available for prescriptions.
     # parser.add_argument('--type', help="Which types of labels to process. Possible values include rx (Prescription)[Default] or otc (Over-the-Counter).", type=str, default="rx")
@@ -466,8 +468,13 @@ def main():
         proxies['ftp_proxy'] = args.http_proxy
         print(f"Will use proxy: {args.http_proxy}")
 
-    page = requests.get(dailymed_spl_resources_url, proxies=proxies)
-    soup = BeautifulSoup(page.content, "html.parser")
+    if not args.local_resources is None:
+        content = open(args.local_resources).read()
+    else:
+        page = requests.get(dailymed_spl_resources_url, proxies=proxies)
+        content = page.content
+
+    soup = BeautifulSoup(content, "html.parser")
 
     spl_status = {"full_release": {"status": "in_progress", "parts": dict()}, "updates": dict(), "mappings": dict(), "last_updated": "20010101"}
     if os.path.exists('./spl.json'):
@@ -483,9 +490,14 @@ def main():
         raise Exception("Either --full or --update flag must be provided.")
 
     # Get the latest mapping files
-    page = requests.get(dailymed_spl_mapping_resources_url, proxies=proxies)
-    soup = BeautifulSoup(page.content, "html.parser")
+    if not args.local_mappings is None:
+        content = open(args.local_mappings).read()
+    else:
+        page = requests.get(dailymed_spl_mapping_resources_url, proxies=proxies)
+        content = page.content
 
+    soup = BeautifulSoup(content, "html.parser")
+    
     download_and_verify_mapping_files(soup, spl_status, proxies=proxies)
 
     spl_status["last_updated"] = datetime.now().strftime("%Y%d%m")
