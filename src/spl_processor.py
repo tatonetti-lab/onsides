@@ -84,7 +84,7 @@ def download_and_verify(download, archive_info, spl_subdir = 'rx', max_retries=2
             print(f"Downloading {download['url']}...")
             local_path = os.path.join('data', 'spl', spl_subdir, download['name'])
             if not os.path.exists(local_path):
-                download_spl_file(download['url'], local_path, proxies)
+                download_spl_file(download['url'], local_path, proxies=proxies)
 
             archive_info['local_path'] = local_path
             archive_info['downloaded'] = 'yes'
@@ -246,7 +246,7 @@ def download_and_process_full_release(soup, spl_status, proxies = {}):
 
     # Step 1. Download the files and verify their checksums.
     for download in available_downloads:
-        download_and_verify(download, spl_status['full_release']['parts'][download['name']], proxies)
+        download_and_verify(download, spl_status['full_release']['parts'][download['name']], proxies=proxies)
         parsed_labels_path = spl_status['full_release']['parts'][download['name']]['local_path'].strip('.zip')
         spl_status['full_release']['parts'][download['name']]['parsed_labels_path'] = parsed_labels_path
         update_spl_status(spl_status)
@@ -358,7 +358,12 @@ def download_and_process_updates(soup, spl_status, proxies={}):
 
     # Step 1. Download
     for download in available_downloads:
-        download_and_verify(download, spl_status['updates'][download['date']], proxies)
+        if not download['date'] in spl_status['updates']:
+            spl_status['updates'][download['date']] = {
+                'downloaded': 'no',
+                'verified': 'no'
+            }
+        download_and_verify(download, spl_status['updates'][download['date']], proxies=proxies)
         spl_status['updates'][download['date']]['parsed_labels_path'] = archive_info['local_path'].strip('.zip')
         update_spl_status(spl_status)
 
@@ -370,7 +375,7 @@ def download_and_process_updates(soup, spl_status, proxies={}):
         process_label_archive(update)
         update_spl_status(spl_status)
 
-def download_and_verify_mapping_files(soup, spl_status, proxies):
+def download_and_verify_mapping_files(soup, spl_status, proxies = {}):
     maps_dir = os.path.join('data', 'spl', 'maps')
     if not os.path.exists(maps_dir):
         os.mkdir(maps_dir)
@@ -471,9 +476,9 @@ def main():
         splfh.close()
 
     if args.update:
-        download_and_process_updates(soup, spl_status, proxies)
+        download_and_process_updates(soup, spl_status, proxies=proxies)
     elif args.full:
-        download_and_process_full_release(soup, spl_status, proxies)
+        download_and_process_full_release(soup, spl_status, proxies=proxies)
     else:
         raise Exception("Either --full or --update flag must be provided.")
 
@@ -481,7 +486,7 @@ def main():
     page = requests.get(dailymed_spl_mapping_resources_url, proxies=proxies)
     soup = BeautifulSoup(page.content, "html.parser")
 
-    download_and_verify_mapping_files(soup, spl_status, proxies)
+    download_and_verify_mapping_files(soup, spl_status, proxies=proxies)
 
     spl_status["last_updated"] = datetime.now().strftime("%Y%d%m")
     update_spl_status(spl_status)
