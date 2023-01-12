@@ -418,7 +418,7 @@ def download_and_verify_mapping_files(soup, spl_status, proxies):
         download_and_verify(spl_status['mappings'][li_name][li_date],
             spl_status['mappings'][li_name][li_date],
             spl_subdir=os.path.join('maps', li_date),
-            proxies)
+            proxies=proxies)
 
         # extract the data file out and gzip it
         with ZipFile(spl_status['mappings'][li_name][li_date]['local_path']) as zip_obj:
