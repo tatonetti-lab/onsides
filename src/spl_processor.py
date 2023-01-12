@@ -65,9 +65,9 @@ def update_process_status(process_status_path, process_status):
     fh.write(json.dumps(process_status, indent=4))
     fh.close()
 
-def download_spl_file(url, local_path):
+def download_spl_file(url, local_path, proxies = {}):
     # make an HTTP request within a context manager
-    with requests.get(url, stream=True) as r:
+    with requests.get(url, stream=True, proxies=proxies) as r:
         # check header to get content length, in bytes
         total_length = int(r.headers.get("Content-Length"))
         # implement progress bar via tqdm
@@ -441,6 +441,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--full', '--full-release', help='Process from the full release files.', action='store_true', default=False)
     parser.add_argument('--update', help="Process any available update files.", action='store_true', default=True)
+    parser.add_argument('--http-proxy', help="Define a proxy server to use for the requests library.", default=None)
 
     # TODO: Implement for other label types as we have models for them. Currently only available for prescriptions.
     # parser.add_argument('--type', help="Which types of labels to process. Possible values include rx (Prescription)[Default] or otc (Over-the-Counter).", type=str, default="rx")
@@ -452,7 +453,14 @@ def main():
     if args.update and not os.path.exists('./spl.json'):
         raise Exception("First run must be to get a full release. Re-run with the --full flag.")
 
-    page = requests.get(dailymed_spl_resources_url)
+    proxies = {}
+    if not args.http_proxy is None:
+        proxies['http_proxy'] = args.http_proxy
+        proxies['https_proxy'] = args.http_proxy
+        proxies['ftp_proxy'] = args.ftp_proxy
+        print(f"Will use proxy: {args.http_proxy}")
+
+    page = requests.get(dailymed_spl_resources_url, proxies=proxies)
     soup = BeautifulSoup(page.content, "html.parser")
 
     spl_status = {"full_release": {"status": "in_progress", "parts": dict()}, "updates": dict(), "mappings": dict(), "last_updated": "20010101"}
@@ -469,7 +477,7 @@ def main():
         raise Exception("Either --full or --update flag must be provided.")
 
     # Get the latest mapping files
-    page = requests.get(dailymed_spl_mapping_resources_url)
+    page = requests.get(dailymed_spl_mapping_resources_url, proxies=proxies)
     soup = BeautifulSoup(page.content, "html.parser")
 
     download_and_verify_mapping_files(soup, spl_status)
