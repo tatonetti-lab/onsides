@@ -361,7 +361,8 @@ def download_and_process_updates(soup, spl_status, proxies={}):
         if not download['date'] in spl_status['updates']:
             spl_status['updates'][download['date']] = {
                 'downloaded': 'no',
-                'verified': 'no'
+                'verified': 'no',
+                'parsed': 'no'
             }
         download_and_verify(download, spl_status['updates'][download['date']], proxies=proxies)
         spl_status['updates'][download['date']]['parsed_labels_path'] = spl_status['updates'][download['date']]['local_path'].strip('.zip')
