@@ -364,7 +364,7 @@ def download_and_process_updates(soup, spl_status, proxies={}):
                 'verified': 'no'
             }
         download_and_verify(download, spl_status['updates'][download['date']], proxies=proxies)
-        spl_status['updates'][download['date']]['parsed_labels_path'] = spl_status['updates'][download['date']].strip('.zip')
+        spl_status['updates'][download['date']]['parsed_labels_path'] = spl_status['updates'][download['date']]['local_path'].strip('.zip')
         update_spl_status(spl_status)
 
     # Step 2. Pre-process files.
