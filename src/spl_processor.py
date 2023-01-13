@@ -463,9 +463,8 @@ def main():
 
     proxies = {}
     if not args.http_proxy is None:
-        proxies['http_proxy'] = args.http_proxy
-        proxies['https_proxy'] = args.http_proxy
-        proxies['ftp_proxy'] = args.http_proxy
+        proxies['http'] = args.http_proxy
+        proxies['https'] = args.http_proxy
         print(f"Will use proxy: {args.http_proxy}")
 
     if not args.local_resources is None:
@@ -497,7 +496,7 @@ def main():
         content = page.content
 
     soup = BeautifulSoup(content, "html.parser")
-    
+
     download_and_verify_mapping_files(soup, spl_status, proxies=proxies)
 
     spl_status["last_updated"] = datetime.now().strftime("%Y%d%m")
