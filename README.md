@@ -25,7 +25,9 @@ accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A 
 
 #### CSV Files
 
-[onsides_v2.0.0_20230113.tar.gz](https://github.com/tatonetti-lab/onsides/releases/download/v2.0.0-20230113/onsides_v2.0.0_20230113.tar.gz) 109MB (md5: cf7ec5edee1fba45af1c72973d775f25)
+#### February 2023 Data Release
+
+[onsides_v2.0.0_20230203.tar.gz](https://github.com/tatonetti-lab/onsides/releases/download/v2.0.0-20230203/onsides_v2.0.0_20230203.tar.gz) 113MB (md5: abdf1f70f8ce2b31da2a192f2b388c8d)
 
 *Previous data releases can be found under the releases link to the right. Updated versions of the database will be completed the first week of each month.*
 
