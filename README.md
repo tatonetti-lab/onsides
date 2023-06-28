@@ -27,7 +27,7 @@ accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A 
 
 [onsides_v2.0.0_20230309.tar.gz](https://github.com/tatonetti-lab/onsides/releases/download/v2.0.0-20230309/onsides_v2.0.0_20230309.tar.gz) 117MB (md5: db4cfb32322edb6e9dcb42f56c572a3e)
 
-*Previous data releases can be found under the releases link to the right. Updated versions of the database will be completed the first week of each month.*
+*Previous data releases can be found under the releases link to the right. Updated versions of the database will be completed quarterly.*
 
 ### Description of Tables
 
