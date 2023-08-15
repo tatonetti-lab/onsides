@@ -391,10 +391,15 @@ def main():
     args, sub_event, sub_nonsense, prepend_event, prepend_source, sections, random_sampled_words = get_args()
 
     llts = load_meddra()
-    deepcadrme = load_deepcadrme()
 
+    #if we cannot find deepcadrme, load an empty dictionary in place of it(temp. solution, make it a variable you can choose)
+    try:
+        deepcadrme = load_deepcadrme()
+    except:
+        deepcadrme = {}    
+    
     if not os.path.exists('./data/refs'):
-        os.mkdir('./data/refs')
+        os.mkdirs('./data/refs')
     
     outfn = f'./data/refs/ref{args.method}_nwords{args.nwords}_clinical_bert_reference_set_{args.section}.txt'
     outfh = open(outfn, 'w')
