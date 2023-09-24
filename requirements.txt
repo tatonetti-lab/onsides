@@ -9,3 +9,9 @@ scikit_learn==1.1.3
 torch==2.0.0
 transformers==4.24.0
 tqdm==4.64.1
+argparse==1.4.0
+tabula==1.0.5
+camelot-py==0.11.0
+pypdf==3.16.2
+PyPDF2==3.0.1
+wget==3.2
