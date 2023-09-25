@@ -26,7 +26,7 @@ def main():
     drug_df['product_id'] = drug_df['product_id'].astype(str)
 
     #free-text data
-    free_text_df = pd.read_csv(data_folder+'ade_text_table_onsides_pred_v0924.csv')
+    free_text_df = pd.read_csv(data_folder+'ade_text_table_onsides_predcsv')
     free_text_df = free_text_df[free_text_df.pt_meddra_id.notna()][['label_id', 'pt_meddra_id', 'pt_meddra_term']]
     free_text_df['pt_meddra_id'] = free_text_df['pt_meddra_id'].apply(lambda x: int(float(x)))
     free_text_df['pt_meddra_term'] = free_text_df['pt_meddra_term'].apply(lambda x: x.lower())

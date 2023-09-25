@@ -10,6 +10,7 @@ Here, we will briefly describe the steps needed to access these databases. (Whil
 - RxNorm (for drug ids, accessed via NLM API)
 
 ### UMLS
+
     - Download the `MRCONSO.RFF` file from [here](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)
     - If you have (or register for) an NIH UMLS API, you can programmatically download the file also. (details to obtain an API key can be obtained [here](https://documentation.uts.nlm.nih.gov/rest/authentication.html))
     - The [build_umls_database](build_umls_database.ipynb) notebook can be used to prepare the UMLS datasets for each vocabulary (and other vocabularies of your choice). 
