@@ -9,10 +9,3 @@ Generating the database is done in six steps:
 5. apply the model to score feature sentence fragments (`text_data_predict.py`)
 6. integrate the results between the terms extracted from the tabular and free-text data, and map to standard vocabularies (`build_onsides_uk.py`)
 
-
-
-In the works...
-- integrate usage of the EMC API instead of scraping the website
-- run by taking the updated files instead of running from scratch each time
-- training a custom OnSIDES model on the OnSIDES-UK data
-- tweaking the model parameters for the OnSIDES model prediction

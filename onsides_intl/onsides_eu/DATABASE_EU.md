@@ -9,4 +9,4 @@ Generating the database is done in seven steps:
 4. then, from the free-text data, we format data to be able to run the onsides model (`text_data_format.py`)
 5. apply the model to score feature sentence fragments (`text_data_predict.py`)
 6. for the drugs we have, map to standard vocabulary (RxNorm) (`map_drugs_to_rxnorm.py`)
-6. integrate the results between the terms extracted from the tabular and free-text data, and map to standard vocabularies (`build_onsides_eu.py`)
+7. integrate the results between the terms extracted from the tabular and free-text data, and map to standard vocabularies (`build_onsides_eu.py`)

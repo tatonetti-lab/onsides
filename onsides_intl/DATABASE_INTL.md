@@ -4,16 +4,27 @@ Here, we generate databases mirroring the OnSIDES database (which extracts ADE d
 
 While we follow a similar ADE extraction/prediction philosophy to OnSIDES, as the raw label are formatted in a slightly different manner for each nation/region, the technical workflow is slightly adjusted to each nation. As such, we will describe the process of generating the databases for each individual database. Please skip to the details for the specific database you are interested in. 
 
-If you are interested in how the OnSIDES database extracted from US FDA drug labels is generated, please refer to [OnSIDES](https://github.com/tatonetti-lab/onsides/blob/main/DATABASE.md)
-
 - [OnSIDES-UK](onsides_uk/DATABASE_UK.md)
 - [OnSIDES-EU](onsides_eu/DATABASE_EU.md)
 - [OnSIDES-JP](onsides_uk/DATABASE_JP.md)
 
+If you are interested in how the OnSIDES database extracted from US FDA drug labels is generated, please refer to [OnSIDES](https://github.com/tatonetti-lab/onsides/blob/main/DATABASE.md)
+
 general notes : 
-- each `data` subfolder in each of the onsides-intl folders (onsides-eu/jp/uk) houses all of the intermediate data generated during the process of database generation.
-- each `notebooks` subfolder contains the code required to construct the databases from scratch, mirroring the src code.
+- each `data` subfolder in each of the onsides-intl folders (onsides-eu/jp/uk) houses all of the intermediate data generated during the process of database generation
+- each `notebooks` subfolder contains the code required to construct the databases from scratch, mirroring the src code
 - each `src` subfolder contains the python code to construct the databases from scratch
+- if database generation is run on default settings, the final database output will be produced in a `final` subfolder for each databases' folder
 
 technical notes : 
-- all of the code should be able to run on a standard laptop locally, with the exception of the OnSIDES prediction model (which utilizes a GPU).
+- all of the code can be run in a standard local environment, with the exception of the OnSIDES prediction model (which we recommend using a GPU for) 
+
+in the works... 
+- [] add boxed warnings 
+- [] tracking changes to labels
+- [] integrate usage of the emc api instead of scraping the website for onsides-uk
+- [] integrate usage of the ema api instead of scraping the website for onsides-eu 
+- [] run by taking the updated files instead of running from scratch each time
+- [] script to enable the training of a custom onsides model on each dataset instead of requiring the built onsides model
+- [] allow the tweaking of the onsides model parameters for prediction
+- [] streamline / integrate usage of scripts that are doing essentially the same function
