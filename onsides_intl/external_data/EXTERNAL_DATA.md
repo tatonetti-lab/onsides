@@ -11,15 +11,15 @@ Here, we will briefly describe the steps needed to access these databases. (Whil
 
 ### UMLS
 
-    - Download the `MRCONSO.RFF` file from [here](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)
-    - If you have (or register for) an NIH UMLS API, you can programmatically download the file also. (details to obtain an API key can be obtained [here](https://documentation.uts.nlm.nih.gov/rest/authentication.html))
-    - The [build_umls_database](build_umls_database.ipynb) notebook can be used to prepare the UMLS datasets for each vocabulary (and other vocabularies of your choice). 
+- Download the `MRCONSO.RFF` file from [here](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)
+- If you have (or register for) an NIH UMLS API, you can programmatically download the file also. (details to obtain an API key can be obtained [here](https://documentation.uts.nlm.nih.gov/rest/authentication.html))
+- The [build_umls_database](build_umls_database.ipynb) notebook can be used to prepare the UMLS datasets for each vocabulary (and other vocabularies of your choice). 
 
-    ###TODO : Make the notebook into a python script - but needs to be highly customised anyway?
+- ###TODO : Make the notebook into a python script - but needs to be highly customised anyway?
 
 ### OHDSI Athena
 
-    - Accessible [here](https://athena.ohdsi.org/search-terms/start)
-    - From downloads tab, download a RxNorm / RxNorm Extension / ATC code table (for drugs), and 
+- Accessible [here](https://athena.ohdsi.org/search-terms/start)
+- From downloads tab, download a RxNorm / RxNorm Extension / ATC code table (for drugs). 
 
-    ###TODO : Further details
+- ###TODO : Add urther details
