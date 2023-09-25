@@ -29,15 +29,15 @@ technical notes :
 - access to the internet is required to download the raw files and access the APIs for external. as such, this code may need to be configured to be able to run this on the cloud/on a server
 
 in the works... 
-:construction: add extraction of boxed warnings 
-:construction: add extraction special warnings for specific populations
+- :construction: add extraction of boxed warnings 
+- :construction: add extraction special warnings for specific populations
+- :construction: integrate usage of the emc api instead of scraping the website for onsides-uk
 
 pre-development, next-steps...
-- [] tracking changes to labels
-- [] integrate usage of the emc api instead of scraping the website for onsides-uk
-- [] integrate usage of the ema api instead of scraping the website for onsides-eu 
-- [] run by taking the updated files instead of running from scratch each time
-- [] script to enable the training of a custom onsides model on each dataset instead of requiring the built onsides model
-- [] allow the tweaking of the onsides model parameters for prediction
-- [] streamline / integrate usage of scripts that are doing essentially the same function
-- [] see if we can circumvent the dependency on the translation done with OpenAI-GPT3.5
+- :white_circle: tracking changes to labels
+- :white_circle: integrate usage of the ema api instead of scraping the website for onsides-eu 
+- :white_circle: run by taking the updated files instead of running from scratch each time
+- :white_circle: script to enable the training of a custom onsides model on each dataset instead of requiring the built onsides model
+- :white_circle: allow the tweaking of the onsides model parameters for prediction
+- :white_circle: streamline / integrate usage of scripts that are doing essentially the same function
+- :white_circle: see if we can circumvent the dependency on the translation done with OpenAI-GPT3.5
