@@ -27,7 +27,7 @@ def main():
     wget.download(url, out = data_f)
 
     #read the table of drugs, and filter for human drugs
-    df = pd.read_excel(data_folder+'data/Medicines_output_european_public_assessment_reports (1).xlsx', skiprows=8)
+    df = pd.read_excel(data_folder+'data/Medicines_output_european_public_assessment_reports.xlsx', skiprows=8)
     df = df[df.Category == 'Human']
     print('Will download the raw files of {} drugs.'.format(str(df.shape[0])))
     
