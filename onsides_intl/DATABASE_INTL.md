@@ -29,8 +29,8 @@ technical notes :
 - access to the internet is required to download the raw files and access the APIs for external. as such, this code may need to be configured to be able to run this on the cloud/on a server
 
 in the works... 
-- [] add boxed warnings 
-- [] add special warnings for specific populations
+:construction: add extraction of boxed warnings 
+:construction: add extraction special warnings for specific populations
 
 pre-development, next-steps...
 - [] tracking changes to labels
