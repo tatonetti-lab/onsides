@@ -15,3 +15,5 @@ camelot-py==0.11.0
 pypdf==3.16.2
 PyPDF2==3.0.1
 wget==3.2
+bs4==0.0.1
+orjson==3.9.7
