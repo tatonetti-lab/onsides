@@ -22,4 +22,4 @@ Here, we will briefly describe the steps needed to access these databases. (Whil
 - Accessible [here](https://athena.ohdsi.org/search-terms/start)
 - From downloads tab, download a RxNorm / RxNorm Extension / ATC code table (for drugs). 
 
-- ###TODO : Add urther details
+- ###TODO : Add further details

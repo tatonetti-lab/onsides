@@ -10,3 +10,18 @@ Generating the database is done in seven steps:
 5. apply the model to score feature sentence fragments (`text_data_predict.py`)
 6. for the drugs we have, map to standard vocabulary (RxNorm) (`map_drugs_to_rxnorm.py`)
 7. integrate the results between the terms extracted from the tabular and free-text data, and map to standard vocabularies (`build_onsides_eu.py`)
+
+## Semi-Automatic OnSIDES-EU Database Generation
+
+As with the OnSIDES database, we provide a semi-automatic script to go through the whole process of generating OnSIDES-EU to aid with the periodic updating of the database.
+Currently, this only supports a default pipeline, with external data and models expected to already be in the local environment - however, we aim to add further customizability as we develop this method further. Additionally, we will add further checks to keep all of the processing stable.
+
+Before running, make sure you are in the onsides_intl folder.
+```bash
+# to download the individual drug label files
+python3 onsides_eu/src/download_files.py --data_folder onsides_eu/data
+# to run the processing of the extraction of the ADE terms
+python3 onsides_eu/src/compute_onsides_uk.py --data_folder onsides_eu/data --external_data external_data --model models --commands onsides_eu/src
+# to build the database itself
+python3 onsides_eu/src/build_onsides_eu.py --data_folder onsides_eu/data --external_data external_data --final_data onsides_eu/final_data
+```

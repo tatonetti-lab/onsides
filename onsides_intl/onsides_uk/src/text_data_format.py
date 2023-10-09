@@ -12,11 +12,12 @@ def main():
     parser = argparse.ArgumentParser(description='let the code know where the data is held')
     parser.add_argument('--data_folder', required=True, help='Path to the data folder.')
     parser.add_argument('--external_data', required=True, help='Path to the where the external data is housed.')
-    parser.add_argument('--map_folder', required=True, help='Path to the where the external data used for OnSIDES model is housed.')
+    #we move the data into the external data folder first, so we can avoid calling other folders
+    #parser.add_argument('--map_folder', required=True, help='Path to the where the external data used for OnSIDES model is housed.')
     args = parser.parse_args()
     data_folder = args.data_folder
     external_data_folder = args.external_data
-    map_folder = args.map_folder
+    #map_folder = args.map_folder
 
     #read in table for drug-ade free-text data
     ade_text_table_df = pd.read_csv(data_folder+'drug_ade_text_parsed.csv')
@@ -92,13 +93,13 @@ def main():
     exact_terms_df['section'] = 'AR'
     exact_terms_df['set_id'] = exact_terms_df['label_id']
     
-    drug_map = pd.read_csv(map_folder+'spl/maps/20230512/rxnorm_mappings.txt', delimiter = '|')
+    drug_map = pd.read_csv(external_data_folder+'rxnorm_mappings.txt', delimiter = '|')
     drug_id_dict = dict(zip(drug_map.SETID, drug_map.RXCUI))
     drug_ver_dict = dict(zip(drug_map.SETID, drug_map.SPL_VERSION))
     exact_terms_df['drug'] = exact_terms_df.set_id.apply(lambda x: drug_id_dict[x] if x in drug_id_dict.keys() else None)
     exact_terms_df['spl_version'] = exact_terms_df.set_id.apply(lambda x: drug_ver_dict[x] if x in drug_ver_dict.keys() else None)
 
-    llt_pt = pd.read_csv(map_folder+'meddra_llt_pt_map.txt', delimiter = '|')
+    llt_pt = pd.read_csv(external_data_folder+'meddra_llt_pt_map.txt', delimiter = '|')
     llt_pt_id_dict = dict(zip(llt_pt.llt_concept_code, llt_pt.pt_concept_code))
     llt_pt_term_dict = dict(zip(llt_pt.llt_concept_code, llt_pt.pt_concept_name))
     exact_terms_df['pt_meddra_id'] = exact_terms_df.meddra_id.apply(lambda x: llt_pt_id_dict[x] if x in llt_pt_id_dict.keys() else None)

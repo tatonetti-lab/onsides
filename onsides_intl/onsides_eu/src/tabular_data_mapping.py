@@ -37,10 +37,10 @@ def main():
             pass
     
     ades_df = pd.DataFrame(ade_tbl, columns = ['drug', 'col', 'txt'])
-    ades_df.to_csv(data_folder+'raw_ade_table_v0924.csv', index=False)
+    ades_df.to_csv(data_folder+'raw_ade_table.csv', index=False)
 
     ##############################################################################################################
-    ades_df = pd.read_csv(data_folder+'data/raw_ade_table_v0924.csv')
+    ades_df = pd.read_csv(data_folder+'data/raw_ade_table.csv')
     ades_df['ade'] = ades_df['txt'].apply(lambda x: str(x).replace('- ', ''))
 
     freqs = ['very common', 'common', 'uncommon', 'rare', 'very rare', 'not known']

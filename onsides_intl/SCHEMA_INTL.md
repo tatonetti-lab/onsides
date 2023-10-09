@@ -1,6 +1,6 @@
 # OnSIDES-INTL v2.0.0 schema/files description
 
-We have tried to keep the schema for the adverse reaction tables for the OnSIDES-INTL databases as consistent as possible with the FDA-derived OnSIDES database. 
+We have tried to keep the schema for the adverse reaction tables for the OnSIDES-INTL databases as consistent as possible with the FDA-derived OnSIDES database. Any neccessary changes will be noted here. 
 
 ### adverse_reactions[.csv]
 

@@ -25,15 +25,15 @@ def main():
     ar_model = model_path + data_folder+'bestepoch-bydrug-PMB_14-AR-125-all_222_24_25_2.5e-05_256_32.pth'
     #bw_model = model_path + data_folder+'bestepoch-bydrug-PMB_14-AR-125-all_222_24_25_2.5e-05_256_32.pth'
 
+    #get absolute path - we want the onsides folder to find and call the predict.py script
+    onsides_intl_dir = os.path.abspath(os.getcwd())
+    onsides_dir = onsides_intl_dir.replace('onsides_intl/', '')
+
     #call the prediction model
-    os.system('python3 src/predict.py --model {model} --examples {f}'.format(model = ar_model, f = exact_terms_df))
+    os.system('python3 {onsides_dir}src/predict.py --model {model} --examples {f}'.format(onsides_dir = onsides_dir, model = ar_model, f = exact_terms_df))
 
     #build files using predicted labels
-    results = data_folder+'bestepoch-bydrug-PMB-sentences-rx_ref14-AR-125-all_222_24_25_2.5e-05_256_32.csv.gz'
-    os.system('python3 src/predict.py --release v2.0.0-AR --results {r} --examples {f}'.format(r = results, f = exact_terms_df))
-
-    #build files using predicted labels
-    #TODO : customize the create_onsides_datafiles script for the EU data
+    #TODO : customize the create_onsides_datafiles script for the UK data
     results = data_folder+'bestepoch-bydrug-PMB-sentences-rx_ref14-AR-125-all_222_24_25_2.5e-05_256_32.csv.gz'
     #os.system('python3 src/create_onsides_datafiles.py --release v2.0.0-AR --results {r} --examples {f}'.format(r = results, f = exact_terms_df))
 
@@ -47,7 +47,7 @@ def main():
     print(df.shape[0])
     df = df[df.Pred0 > threshold]
     print(df.shape[0])
-    df.to_csv(data_folder+'data/ade_text_table_onsides_pred.csv', index=False)
+    df.to_csv(data_folder+'ade_text_table_onsides_pred.csv', index=False)
 
 
 if __name__ == '__main__':

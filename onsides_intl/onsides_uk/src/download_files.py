@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import requests
 from tqdm import tqdm
-import ast, wget
+import ast, wget, os
 from glob import glob
 from time import sleep
 from bs4 import BeautifulSoup
@@ -10,7 +10,7 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser(description='download drug labels from EU EMA website')
-    parser.add_argument('--data_folder', required=True, help='Path to the data folder.')
+    parser.add_argument('--data_folder', required=True, help='Path to the data folder.', default='./data/')
     args = parser.parse_args()
     data_folder = args.data_folder
 
@@ -26,7 +26,7 @@ def main():
             drug_name = d.text
             ingredient_list.append([drug_id, drug_name])
     ingredient_df = pd.DataFrame(ingredient_list, columns = ['ingredient_id', 'ingredient_name'])
-    ingredient_df.to_csv(data_folder+'data/ingredient_data.csv', index=False)
+    ingredient_df.to_csv(data_folder+'ingredient_data.csv', index=False)
     print('scraped {} ingredients'.format(str(ingredient_df.shape[0])))
 
 
@@ -50,9 +50,11 @@ def main():
         if int(item_num) > 200:
             redo.append([ingredient_id, ingredient_name])
     drug_df = pd.DataFrame(product_list, columns = ['ingredient_id', 'ingredient_name', 'product_id', 'product_name', 'active_ingredients', 'company_name'])
-    drug_df.to_csv(data_folder+'data/drug_data.csv', index=False)
+    drug_df.to_csv(data_folder+'drug_data.csv', index=False)
     print('scraped {} products'.format(str(drug_df.shape[0])))
 
+    #check if raw folder exists, if not, make it
+    os.makedirs(data_folder+'raw', exist_ok=True)
 
     #download the text from the product pages.
     drug_df = pd.read_csv(data_folder+'drug_data.csv')
