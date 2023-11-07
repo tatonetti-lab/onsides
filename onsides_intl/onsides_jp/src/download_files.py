@@ -81,9 +81,15 @@ def download_html(data_folder, type = 'rx'):
     #read in drug table csv file
     if type == 'rx':
         kegg_df = pd.read_csv(os.path.join(data_folder, 'kegg_rx_drug_data.csv'))
+        isExist = os.path.exists(data_folder+'raw_rx')
+        if not isExist:
+            os.mkdir(data_folder+'raw_rx')
         raw_file_folder = os.path.join(data_folder, 'raw_rx/')
     elif type == 'otc':
         kegg_df = pd.read_csv(os.path.join(data_folder, 'kegg_otc_drug_data.csv'))
+        isExist = os.path.exists(data_folder+'raw_otc')
+        if not isExist:
+            os.mkdir(data_folder+'raw_otc')
         raw_file_folder = os.path.join(data_folder, 'raw_otc/')
     
     for code in tqdm(kegg_df.kegg_product_id.tolist()):

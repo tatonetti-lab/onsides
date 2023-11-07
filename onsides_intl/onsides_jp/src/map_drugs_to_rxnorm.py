@@ -9,6 +9,7 @@ import warnings
 warnings.filterwarnings('ignore')
 import os
 import collections
+from bs4 import BeautifulSoup
 
 def main():
     parser = argparse.ArgumentParser(description='let the code know where the data is held')
