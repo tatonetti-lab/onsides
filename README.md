@@ -2,10 +2,12 @@
 
 ### About OnSIDES
 
-OnSIDES is a database of adverse drug events extracted from drug labels created by fine-tuning a [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). This comprehensive database will be updated quarterly, and currently contains more than 2.8 million drug-ADE pairs for 1,949 drug ingredients extracted from 48,845 labels, processed from all of the labels available to download from [DailyMed](https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm). Additionally, we provide a number of complementary databases - [OnSIDES-INTL](./onsides_intl/DATABASE_INTL.md), adverse drug events extracted from drug labels of other nations/regions (Japan, UK, EU), and [OnSIDES-PED]('./onsides_sp/DATABASE.md'), adverse drug events specifically noted for pediatric patients in drug labels. 
+'''
+OnSIDES is a database of adverse drug events extracted from drug labels created by fine-tuning a [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) and 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). This comprehensive database will be updated quarterly, and currently contains more than 3 million drug-ADE pairs for 2,805 drug ingredients extracted from 45,269 labels, processed from all of the labels available to download from [DailyMed](https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm). Additionally, we provide a number of complementary databases - OnSIDES-INTL, adverse drug events extracted from drug labels of other nations/regions (Japan, UK, EU), and OnSIDES-PED, adverse drug events specifically noted for pediatric patients in drug labels.
+<!--- Additionally, we provide a number of complementary, consistently formatted databases - [OnSIDES-INTL](./onsides_intl/DATABASE_INTL.md), which currently contains X adverse events extracted from X drug labels encompassing X drug ingredients from 3 other nations/regions (Japan, UK, EU), and [OnSIDES-PED]('./onsides_sp/DATABASE.md'), which currently contains X adverse drug events specifically noted for pediatric patients extracted from X drug labels encompassing X drug ingredients from 4 nations/regions (US, Japan, UK, EU). --->
 
 ### Model Accuracy
-The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.95 at extracting effects from the ADVERSE REACTIONS section of the label. For the BOXED WARNINGS section, the model achieves a F1 score of 0.71, AUROC of 0.85, and AUPR of 0.72. Compared against the TAC reference standard using the official evaluation script the model achieves a Micro-F1 score of 0.87 and a Macro-F1 of 0.85. Further detailed model performance metrics can be found [here](./PERFORMANCE.md).
+The model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.95 at extracting effects from the ADVERSE REACTIONS section of the FDA drug label. For the BOXED WARNINGS sections, the model achieves a F1 score of 0.71, AUROC of 0.85, and AUPR of 0.72. Compared against the TAC reference standard using the official evaluation script for the [TAC 2017 ADE track](https://bionlp.nlm.nih.gov/tac2017adversereactions/) the model achieves a Micro-F1 score of 0.87 and a Macro-F1 of 0.85. Further detailed model performance metrics can be found [here](./PERFORMANCE.md).
 
 ## Release Version 3.0.0
 
@@ -28,7 +30,7 @@ accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A 
 
 ### November 2023 Data Release 
 
-[onsides_v2.0.0_20231113.tar.gz](https://github.com/tatonetti-lab/onsides/releases/tag/v2.0.0-20231113) 112MB (md5: 011056222b04f68fc4b31d7cdba1107d)
+[onsides_v2.0.0_20231113.tar.gz](https://github.com/tatonetti-lab/onsides/releases/tag/v2.0.0-20231113) 112MB (md5: TODO - check)
 
 *Previous data releases can be found under the releases link to the right. Updated versions of the database will be completed quarterly.*
 
@@ -38,17 +40,17 @@ Below is a brief description of the tables. More details can be found in [`SCHEM
 
 | Table  | Description | Rows | 
 | --- | ----------- | --- | 
-| `adverse_reactions` | Main table of adverse reactions. This table includes adverse reactions extracted from the ADVERSE REACTIONS section of the current active labels for each product and then grouped by ingredient(s) | 125,054 |
-| `adverse_reactions_all_labels` | All extracted adverse reactions from the ADVERSE REACTIONS section of every available version of the label. As the database is updated in the future, ingredient will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. | 2,871,306 |
-| `adverse_reactions_active_labels` | All extracted adverse reactions from the ADVERSE REACTIONS section of active versions of the label. | 2,782,288 | 
-| `boxed_warnings` | Main table of boxed warnings. This table includes adverse reactions extracted from the BOXED WARNINGS section of the current active label for each drug product and then grouped by ingredient(s). | 2,681 | 
-| `boxed_warnings_all_labels` | All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc) | 40,587 |
-| `boxed_warnings_active_labels` | All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc) | 39,334 | 
-| `ingredients` | Active ingredients for each of the parsed labels. If the label is for a drug with a single active compound then there will be only a single row for that label.  If the label is for a combination of compounds then there will be multiple rows for that label. | 176,431 | 
-| `dm_spl_zip_files_meta_data` | Meta data provided by DailyMed that indicates which SPL version is the current for each drug product (`set_id`). | 144,110 | 
-| `rxnorm_mappings` | Mapping drug product `set_id`s to their RxNorm CUIs. | 448,754 | 
-| `rxcui_setid_map` | Map from SetID to RxNorm product ids. | 143,634 | 
-| `rxnorm_product_to_ingredient` | Map from RxNorm product ids to RxNorm ingredient ids. | 245,160 | 
+| `adverse_reactions` | Main table of adverse reactions. This table includes adverse reactions extracted from the ADVERSE REACTIONS section of the current active labels for each product and then grouped by ingredient(s) | 127,135 |
+| `adverse_reactions_all_labels` | All extracted adverse reactions from the ADVERSE REACTIONS section of every available version of the label. As the database is updated in the future, ingredient will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. | 3,030,096 |
+| `adverse_reactions_active_labels` | All extracted adverse reactions from the ADVERSE REACTIONS section of active versions of the label. | 2,904,397 | 
+| `boxed_warnings` | Main table of boxed warnings. This table includes adverse reactions extracted from the BOXED WARNINGS section of the current active label for each drug product and then grouped by ingredient(s). | 5,935 | 
+| `boxed_warnings_all_labels` | All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc) | 92,407 |
+| `boxed_warnings_active_labels` | All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc) | 88,363 | 
+| `ingredients` | Active ingredients for each of the parsed labels. If the label is for a drug with a single active compound then there will be only a single row for that label.  If the label is for a combination of compounds then there will be multiple rows for that label. | 179,151 | 
+| `dm_spl_zip_files_meta_data` | Meta data provided by DailyMed that indicates which SPL version is the current for each drug product (`set_id`). | 147,139 | 
+| `rxnorm_mappings` | Mapping drug product `set_id`s to their RxNorm CUIs. | 456,103 | 
+| `rxcui_setid_map` | Map from SetID to RxNorm product ids. | 146,741 | 
+| `rxnorm_product_to_ingredient` | Map from RxNorm product ids to RxNorm ingredient ids. | 247,040 | 
 
 ## Generating the OnSIDES Database
 
