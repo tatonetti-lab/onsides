@@ -1,5 +1,6 @@
 ## Performance Evaluations
 
+To evaluate the performance of the extraction model, we 
 
 **Table 1. Performance metrics evaluated against the TAC gold standard**
 
