@@ -17,7 +17,7 @@ The third major release for OnSIDES contains a number of new datasets complement
 OnSIDES is now international! We have expanded the method to construct ADE databases from UK, EU, and Japanese drug labels. 
 
 **[OnSIDES-PED]('./onsides_sp/DATABASE.md')** (OnSIDES-Pediatrics):\
-OnSIDES now includes patient population-specific ADEs! The OnSIDES method has been applied to the SPECIAL POPULATION section in the drug labels, and we have extracted ADEs specifically noted for pediatric patients into a supplementary database. 
+OnSIDES now includes patient population-specific ADEs! The OnSIDES method has been applied to the SPECIAL POPULATION section in the drug labels, and we have extracted ADEs specifically noted for pediatric patients into a supplementary database. The tables for OnSIDES-PED are in the main OnSIDES database.
 
 Additionally, we have added a number of **[projects](./projects/README.md)** to showcase potential use-cases of OnSIDES - predicting novel drug targets and indications from inter-drug adverse drug event profile similarities, analyzing enrichment of ADEs across drug classes, and predicting adverse events directly from chemical compound structures. 
 
@@ -42,11 +42,11 @@ Below is a brief description of the tables. More details can be found in the [`S
 | Table  | Description | Rows | 
 | --- | ----------- | --- | 
 | `adverse_reactions` | Main table of adverse reactions. This table includes adverse reactions extracted from the ADVERSE REACTIONS section of the current active labels for each product and then grouped by ingredient(s) | 127,135 |
-| `adverse_reactions_all_labels` | All extracted adverse reactions from the ADVERSE REACTIONS section of every available version of the label. As the database is updated in the future, ingredient will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. | 3,030,096 |
 | `adverse_reactions_active_labels` | All extracted adverse reactions from the ADVERSE REACTIONS section of active versions of the label. | 2,904,397 | 
+| `adverse_reactions_all_labels` | All extracted adverse reactions from the ADVERSE REACTIONS section of every available version of the label. As the database is updated in the future, ingredient will have multiple labels over its lifetime (revisions, generic alternatives, etc.). This table contains the results of extracting adverse reactions from every label available for download from DailyMed. | 3,030,096 |
 | `boxed_warnings` | Main table of boxed warnings. This table includes adverse reactions extracted from the BOXED WARNINGS section of the current active label for each drug product and then grouped by ingredient(s). | 5,935 | 
-| `boxed_warnings_all_labels` | All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc) | 92,407 |
 | `boxed_warnings_active_labels` | All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc) | 88,363 | 
+| `boxed_warnings_all_labels` | All extracted adverse reactions from the BOXED WARNINGS section of all labels (including revisions, generics, etc) | 92,407 |
 | `ingredients` | Active ingredients for each of the parsed labels. If the label is for a drug with a single active compound then there will be only a single row for that label.  If the label is for a combination of compounds then there will be multiple rows for that label. | 179,151 | 
 | `dm_spl_zip_files_meta_data` | Meta data provided by DailyMed that indicates which SPL version is the current for each drug product (`set_id`). | 147,139 | 
 | `rxnorm_mappings` | Mapping drug product `set_id`s to their RxNorm CUIs. | 456,103 | 
