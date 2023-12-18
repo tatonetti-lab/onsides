@@ -8,6 +8,7 @@ If you are interested in how the OnSIDES database extracted from US FDA drug lab
 
 ## Step 0 : Preparing External Data Dependencies
 
+<!--- eventually integrate this into the preparation for the main OnSIDES database--->
 To generate any of these databases, we require a number of API / downloaded files for mapping to standard vocabularies. Further details on how to prepare this suitably is provided [here](external_data/EXTERNAL_DATA.md). 
 
 ## OnSIDES-INTL Databases
@@ -42,4 +43,4 @@ pre-development, next-steps...
 - :white_circle: script to enable the training of a custom onsides model on each dataset instead of requiring the built onsides model
 - :white_circle: allow the tweaking of the onsides model parameters for prediction
 - :white_circle: streamline / integrate usage of scripts that are doing essentially the same function
-- :white_circle: see if we can circumvent the dependency on the translation done with OpenAI-GPT3.5
+- :white_circle: see if we can circumvent the dependency on the translation done with GPT3.5, but may be easiest method. 

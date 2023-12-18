@@ -5,19 +5,29 @@
 OnSIDES is a database of adverse drug events extracted from drug labels created by fine-tuning a [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) on 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). This comprehensive database will be updated quarterly, and currently contains more than 3 million drug-ADE pairs for 2,805 drug ingredients extracted from 45,269 labels, processed from all of the labels available to download from [DailyMed](https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 2023. Additionally, we now provide a number of complementary databases constructed using a similar method - OnSIDES-INTL, adverse drug events extracted from drug labels of other nations/regions (Japan, UK, EU), and OnSIDES-PED, adverse drug events specifically noted for pediatric patients in drug labels.
 
 ### Model Accuracy
-Our fine-tuned language model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.95 at extracting effects from the ADVERSE REACTIONS section of the FDA drug label. For the BOXED WARNINGS sections, the model achieves a F1 score of 0.71, AUROC of 0.85, and AUPR of 0.72. Compared against the TAC reference standard using the official evaluation script for the [TAC 2017 ADE track](https://bionlp.nlm.nih.gov/tac2017adversereactions/) the model achieves a Micro-F1 score of 0.87 and a Macro-F1 of 0.85. Further detailed model performance metrics can be found [here](./PERFORMANCE.md).
+Our fine-tuned language model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.95 at extracting effects from the ADVERSE REACTIONS section of the FDA drug label. For the BOXED WARNINGS sections, the model achieves a F1 score of 0.71, AUROC of 0.85, and AUPR of 0.72. Compared against the reference standard using the official evaluation script for [TAC 2017](https://bionlp.nlm.nih.gov/tac2017adversereactions/), the model achieves a Micro-F1 score of 0.87 and a Macro-F1 of 0.85.
 
-Additionally, to evaluate the performance of the model on the OnSIDES-INTL and OnSIDES-PED, we manually annotated the ADE mentions in 200 randomly sampled drug labels for each nation/category. This annotation data can be used to further fine-tune, train, and improve extraction models. It is described in further detail [here](./ANNOTATION.md).
+**Performance metrics evaluated against the TAC gold standard**
+
+| Metric      | TAC (Best Model<sup>†</sup>) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2/3.0.0 |
+| ----------- | ---------------------------- | --------- | -------------- | -------------- |
+| F1 Score    | 82.19                        | 74.36     | 82.01          | **87.54**      |
+| Precision   | 80.69                        | 43.49     | 88.76          | **91.29**      |
+| Recall      | **85.05**                    | 52.89     | 77.12          | 84.08          |
+
+Further detailed model performance metrics can be found [here](./PERFORMANCE.md). 
+
+Additionally, to evaluate the performance of the model when generating the additional OnSIDES-INTL and OnSIDES-PED datasets, we manually annotated the ADE mentions in 200 randomly sampled drug labels for each nation/category. This annotation data can be used to further fine-tune, train, and improve extraction models. It is described in further detail [here](./ANNOTATION.md).
 
 ## Release Version 3.0.0
 
 The third major release for OnSIDES contains a number of new datasets complementing the primary OnSIDES database. Additionally, OnSIDES has also been updated to reflect the latest updates to all drug labels.  
 
 **[OnSIDES-INTL](./onsides_intl/DATABASE_INTL.md)** (OnSIDES-International):\
-OnSIDES is now international! We have expanded the method to construct ADE databases from UK, EU, and Japanese drug labels. 
+OnSIDES is now international! We have expanded the method to construct ADE databases extracted from UK, EU, and Japanese drug labels. Additionally, we provide the formatted text data from drug labels as CSV and XML files (described [here](./onsides_intl/LABELDATA_INTL.md))!
 
 **[OnSIDES-PED]('./onsides_sp/DATABASE.md')** (OnSIDES-Pediatrics):\
-OnSIDES now includes patient population-specific ADEs! The OnSIDES method has been applied to the SPECIAL POPULATION section in the drug labels, and we have extracted ADEs specifically noted for pediatric patients into a supplementary database. The tables for OnSIDES-PED are in the main OnSIDES database.
+OnSIDES now includes patient population-specific ADEs! For the initial data release, we have built a pediatrics-specific ADE database. We applied the OnSIDES method to the SPECIAL POPULATION section in the drug labels, and we have extracted ADEs specifically noted for pediatric patients into a supplementary database. The tables for OnSIDES-PED enclosed in the main OnSIDES database.
 
 Additionally, we have added a number of **[projects](./projects/README.md)** to showcase potential use-cases of OnSIDES - predicting novel drug targets and indications from inter-drug adverse drug event profile similarities, analyzing enrichment of ADEs across drug classes, and predicting adverse events directly from chemical compound structures. 
 
@@ -31,13 +41,13 @@ accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A 
 ### November 2023 Data Release 
 
 The latest release of the database is [onsides_v2.0.0_20231113.tar.gz](https://github.com/tatonetti-lab/onsides/releases/tag/v2.0.0-20231113). (112MB)
-<!--- check and add a MD5 file--->
+<!--- add md5 --->
 
 *Previous data releases can be found under the releases link to the right. Updated versions of the database will be completed quarterly, and will be described on this page.*
 
 ### Table Descriptions
 
-Below is a brief description of the tables. More details can be found in the [`SCHEMA`](SCHEMA.md) for column descriptions.
+Below is a brief description of the tables in the database. More details can be found in the [`SCHEMA`](SCHEMA.md) for column descriptions.
 
 | Table  | Description | Rows | 
 | --- | ----------- | --- | 
