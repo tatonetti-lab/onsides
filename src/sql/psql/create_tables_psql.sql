@@ -1,7 +1,5 @@
 -- # These queries modified for postgres
 
--- # C:\pitt\src\sql\mysql\create_tables.sql
-
 -- Set the schema for all following tables
 SET search_path TO 
 
