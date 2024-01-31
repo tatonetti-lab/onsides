@@ -1,10 +1,6 @@
 # OnSIDES-INTL Database Generation Walkthrough
 
-Here, we generate databases mirroring the OnSIDES database (which extracts ADE data from US FDA SPL drug labels) from UK (EMC), EU (EMA), and Japan (PMDA) drug labels. 
-
-While we follow a similar ADE extraction/prediction philosophy to OnSIDES, as the raw label are formatted in a slightly different manner for each nation/region, the technical workflow is slightly adjusted to each nation. As such, we will describe the process of generating the databases for each individual database. Please skip to the details for the specific database you are interested in. 
-
-If you are interested in how the OnSIDES database extracted from US FDA drug labels is generated, please refer to [OnSIDES](https://github.com/tatonetti-lab/onsides/blob/main/DATABASE.md)
+On this page, we describe how each intl database is generated. 
 
 ## Step 0 : Preparing External Data Dependencies
 

@@ -17,20 +17,25 @@ Our fine-tuned language model achieves an F1 score of 0.90, AUROC of 0.92, and A
 
 Further detailed model performance metrics can be found [here](./PERFORMANCE.md). 
 
-Additionally, to evaluate the performance of the model when generating the additional OnSIDES-INTL and OnSIDES-PED datasets, we manually annotated the ADE mentions in 200 randomly sampled drug labels for each nation/category. This annotation data can be used to further fine-tune, train, and improve extraction models. It is described in further detail [here](./ANNOTATION.md).
+Additionally, to evaluate the performance of the model when generating the additional OnSIDES-INTL and OnSIDES-PED datasets, we manually annotated the ADE mentions in 200 randomly sampled drug labels for each nation/category. This annotation data can be used to further train, fine-tune and improve language models related to large language models. It is described in further detail [here](./onsides_annot/ANNOTATION.md).
 
 ## Release Version 3.0.0
 
 The third major release for OnSIDES contains a number of new datasets complementing the primary OnSIDES database. Additionally, OnSIDES has also been updated to reflect the latest updates to all drug labels.  
 
-**[OnSIDES-INTL](./onsides_intl/DATABASE_INTL.md)** (OnSIDES-International):\
-OnSIDES is now international! We have expanded the method to construct ADE databases extracted from UK, EU, and Japanese drug labels. Additionally, we provide the formatted text data from drug labels as CSV and XML files (described [here](./onsides_intl/LABELDATA_INTL.md))!
+**[OnSIDES-INTL](./onsides_intl/ONSIDES_INTL.md)** (International):\
+OnSIDES is now multi-national/multi-lingual! We have adapted the method to construct ADE databases extracted from UK, EU, and Japanese drug labels. Additionally, we provide the formatted text data from ~25,000 drug labels as CSV and XML files (described [here](./onsides_intl/ONSIDES_INTL.md))!
 
-**[OnSIDES-PED]('./onsides_sp/DATABASE.md')** (OnSIDES-Pediatrics):\
-OnSIDES now includes patient population-specific ADEs! For the initial data release, we have built a pediatrics-specific ADE database. We applied the OnSIDES method to the SPECIAL POPULATION section in the drug labels, and we have extracted ADEs specifically noted for pediatric patients into a supplementary database. The tables for OnSIDES-PED enclosed in the main OnSIDES database.
+**[OnSIDES-PED]('./onsides_ped/ONSIDES_PED.md')** (Pediatrics):\
+OnSIDES now includes patient population-specific ADEs! For the initial data release for this database, we have focused on pediatric-specific ADEs. We applied the OnSIDES method to the SPECIAL POPULATION section described in the drug labels, and we have extracted ADEs specifically noted for pediatric patients into a supplementary database. The tables for OnSIDES-PED are enclosed in the main OnSIDES database.
+
+**[OnSIDES-ANNOT](./onsides_annot/ANNOTATION.md)** (Annotations):\
+To better train and evaluate the model on the OnSIDES-INTL/PED datasets we've generated, we've manually annotated 200 sampled drug labels each for each subsection.
+
 
 Additionally, we have added a number of **[projects](./projects/README.md)** to showcase potential use-cases of OnSIDES - predicting novel drug targets and indications from inter-drug adverse drug event profile similarities, analyzing enrichment of ADEs across drug classes, and predicting adverse events directly from chemical compound structures. 
 
+<!--- UPDATE LINK ---->
 More information about this release can be found [here](https://github.com/tatonetti-lab/onsides/releases/tag/v2.0.0-20231113).
 
 ## Download OnSIDES
@@ -38,6 +43,7 @@ More information about this release can be found [here](https://github.com/taton
 The latest database versions are available as a flat files in CSV format. Previous database versions can be
 accessed under [Releases](https://github.com/tatonetti-lab/onsides/releases). A [DDL](src/sql/mysql/create_tables.sql) (`create_tables.sql`) is available to load the CSV files into a SQL schema.
 
+<!--- UPDATE LINK ---->
 ### November 2023 Data Release 
 
 The latest release of the database is [onsides_v2.0.0_20231113.tar.gz](https://github.com/tatonetti-lab/onsides/releases/tag/v2.0.0-20231113). (112MB)
@@ -99,9 +105,11 @@ See [DATABASE](DATABASE.md) for a step-by-step walkthrough.
 
 ## Limitations
 
-OnSIDES is only intended for research purposes. The adverse drug event term extraction method is far from perfect - some side effects will be missed and some identified will be incorrect. Patients seeking health information should not trust this data and instead refer to the information available from the respective drug regulatory agencies, such as the [FDA](https://www.fda.gov/) (USA), [EMA](https://www.ema.europa.eu/en) (EU), [MHRA](https://www.gov.uk/government/organisations/medicines-and-healthcare-products-regulatory-agency) (UK), [PMDA](https://www.pmda.go.jp/english/) (Japan) and consult their healthcare providers.
+OnSIDES is only intended for research purposes. The adverse drug event term extraction method is far from perfect - some side effects will be missed and some identified will be incorrect. 
 
-Additionally, this project is under active development. We are continuing to further conduct independent validation of the performance of the model, and improve the extraction methodology. As such, the data, methods, and statistics are subject to change at any time. Any updates to the database will be reflected on this page/repository. 
+**Patients/healthcare professionals seeking health information should not trust this data and instead refer to the information available from the respective drug regulatory agencies, such as the [FDA](https://www.fda.gov/) (USA), [EMA](https://www.ema.europa.eu/en) (EU), [MHRA](https://www.gov.uk/government/organisations/medicines-and-healthcare-products-regulatory-agency) (UK), [PMDA](https://www.pmda.go.jp/english/) (Japan) and consult their healthcare providers.**
+
+Additionally, this project is under active development. We are continuing to further conduct independent validation of the performance of the model, and improve the extraction methodology. As such, the data, methods, and statistics are subject to change at any time. Any updates to the database will be reflected on this page/in this repository. 
 
 If you would like to contribute to this project or have any suggestions on how the methods, data, or evaluation can be improved please reach out to Dr. Tatonetti via [email](https://tatonettilab.org/people/) or [Twitter](http://twitter.com/nicktatonetti).
 

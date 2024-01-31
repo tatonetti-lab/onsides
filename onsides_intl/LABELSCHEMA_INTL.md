@@ -1,3 +1,7 @@
+# Label Schema
+
+The standardized format for each nation / region is described below. We utilize this to generate the label data XML/CSV files. 
+
 ## UK/EU drug label sections
 Summary of Product Characteristics (SmPC) - [description](https://www.ema.europa.eu/en/documents/presentation/presentation-summary-product-characteristics_en.pdf)
 

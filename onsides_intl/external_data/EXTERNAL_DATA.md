@@ -5,8 +5,8 @@ In order to map the adverse events and drugs listed in the OnSIDES database, we 
 Here, we will briefly describe the steps needed to access these databases. (While vocabulary access is free, users are expected to register accordingly.)
 
 ### List of Standard Vocabularies
-- UMLS (for drug+event ids, download)
-- OHDSI Athena (for drug+event ids, download)
+- UMLS (for drug+event ids, need to download)
+- OHDSI Athena (for drug+event ids, need to download)
 - RxNorm (for drug ids, accessed via NLM API)
 
 ### UMLS
@@ -15,11 +15,15 @@ Here, we will briefly describe the steps needed to access these databases. (Whil
 - If you have (or register for) an NIH UMLS API, you can programmatically download the file also. (details to obtain an API key can be obtained [here](https://documentation.uts.nlm.nih.gov/rest/authentication.html))
 - The [build_umls_database](build_umls_database.ipynb) notebook can be used to prepare the UMLS datasets for each vocabulary (and other vocabularies of your choice). 
 
-- ###TODO : Make the notebook into a python script - but needs to be highly customised anyway?
+- ###TODO : Make the notebook into a python script, but this is 
 
 ### OHDSI Athena
 
 - Accessible [here](https://athena.ohdsi.org/search-terms/start)
 - From downloads tab, download a RxNorm / RxNorm Extension / ATC code table (for drugs). 
 
-- ###TODO : Add further details
+---
+
+### in construction
+
+We will add additional helper functions as needed, and develop better integration with the OnSIDES files. 

@@ -1,10 +1,10 @@
 ## Performance Evaluations
 
-To evaluate the performance of the extraction model, we 
+To evaluate the performance of the extraction model, we conducted analysis of the 
 
 **Table 1. Performance metrics evaluated against the TAC gold standard**
 
-| Metric      | TAC (Best Model<sup>†</sup>) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2.0.0 |
+| Metric      | TAC (Best Model<sup>†</sup>) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2/3.0.0 |
 | ----------- | ---------------------------- | --------- | -------------- | -------------- |
 | F1 Score    | 82.19                        | 74.36     | 82.01          | **87.54**      |
 | Precision   | 80.69                        | 43.49     | 88.76          | **91.29**      |
