@@ -79,6 +79,10 @@ def download_spl_file(url, local_path, proxies = {}):
 def download_and_verify(download, archive_info, spl_subdir = 'rx', max_retries=2, proxies={}):
     retry_attemps = 0
     while retry_attemps < max_retries:
+        # check if folder to contain the files exists, if not make the folder
+        folder_path = os.path.join('data', 'spl', spl_subdir)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
         # download
         if not archive_info['downloaded'] == 'yes':
             print(f"Downloading {download['url']}...")
