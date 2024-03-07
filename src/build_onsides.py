@@ -45,7 +45,12 @@ def main():
     release_version_date_path = os.path.join(release_version_path, datetime.now().strftime('%Y%m%d'))
     if not os.path.exists(release_version_date_path):
         os.mkdir(release_version_date_path)
+    
+    log_dir = './logs'
 
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+        
     log_fh = open('./logs/build_onsides.log', 'w')
 
     ###
