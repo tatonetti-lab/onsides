@@ -1,6 +1,6 @@
 ## Performance Evaluations
 
-To evaluate the performance of the extraction model, we conducted analysis of the 
+To evaluate the performance of the extraction model, we utilized the TAC evaluation scripts.
 
 **Table 1. Performance metrics evaluated against the TAC gold standard**
 
@@ -11,3 +11,5 @@ To evaluate the performance of the extraction model, we conducted analysis of th
 | Recall      | **85.05**                    | 52.89     | 77.12          | 84.08          |
 
 *<sup>†</sup> Roberts, Demner-Fushman, & Tonning, Overview of the TAC 2017*
+
+　

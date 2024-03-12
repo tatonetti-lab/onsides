@@ -1,6 +1,6 @@
 ## Manually Annotated Adverse Drug Event Label Dataset
 
-Following a similar approach to [Denmer-Fushman et al.](https://www.nature.com/articles/sdata20181), we created a dataset of 200 randomly sampled labels for each of the UK, EU, Japan drug labels, and 200 randomly sampled labels for the pediatric sections in the US/UK/EU/Japan drug labels, and manually reviewed and annotated the adverse drug events mentioned in these drug labels. To the best of our knowledge, this dataset is the first pilot dataset containing standardised, manually verified information about adverse reactions from non-FDA drug labels. Here, we will describe the steps taken to generate this data, and the formatting of the files. We hope that this data can be used as a resource to train further models and text mining tools on a larger variety of international drug labels and from other clinical/pharmaceutical text.
+Following a similar approach to [Denmer-Fushman et al.](https://www.nature.com/articles/sdata20181), we created a dataset of 200 randomly sampled labels for each of the UK, EU, Japan drug labels, and 200 randomly sampled labels for the pediatric sections in the US drug labels, and manually reviewed and annotated the adverse drug events mentioned in these drug labels. To the best of our knowledge, this dataset is the first pilot dataset containing standardised, manually verified information about adverse reactions from non-FDA drug labels. Here, we will describe the steps taken to generate this data, and the formatting of the files. We hope that this data can be used as a resource to train further models and text mining tools on a larger variety of international drug labels and from other clinical/pharmaceutical text.
 
 For convenience, we additionally have reformatted [Denmer-Fushman et al.](https://www.nature.com/articles/sdata20181) annotations in the format described below. When using these annotated labels, please refer and acknowledge this publication. 
 
@@ -15,15 +15,13 @@ For convenience, we additionally have reformatted [Denmer-Fushman et al.](https:
         - (Pediatric) `Use in Specific Populations`
     - UK & EU : 
         - (General) `4.8 Undesirable Effects`
-        - (Pediatric) `4.4 Special warnings and precautions for use`
     - Japan : 
         - (General) `11. 副作用`
-        - (Pediatric) `9. 特定の背景を有する患者に関する注意`
 3. After extracting the section, verify that the specific section contains relevant information. 
     - Many pediatric sections contain a statement similar to "this medication has not been assessed for safety in pediatric patients". We removed these labels, and re-sampled drug labels to construct datasets of 200 labels with relevant information. 
 3. We manually reviewed and annotated each drug label section text for any adverse event mentions using [doccano](https://github.com/doccano/doccano), a open-source text annotation tool. 
 4. Then, to standardize the data, we map all of the adverse event mentions to Medical Dictionary for Regulatory Activities (MedDRA) terms. 
-    - For the Japanese dataset, we mapped the mentions to MedDRA-J, a dictionary mapping MedDRA to Japanese terms.
+    - For the Japanese dataset, we mapped the mentions to MedDRA-J, a dictionary mapping MedDRA to Japanese terms where available, or the corresoponding MedDRA terms.
 
 ---
 
