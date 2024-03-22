@@ -57,6 +57,10 @@ python3 src/build_onsides.py --vocab ./data/omop/vocab_5.4 --release v2.0.0
 
 ## Generate by running each step manually
 
+### Step 0. (Optional) Train Extraction Model
+
+A model is required in the './model/' directory to be able to score and evaluate the extracted ADEs. The deployment_tracker.py script will automatically detect the model and train a new model if no model exists in this directory; however, if you would like to use the original model trained for the public OnSIDES data, it is available to download [here](https://github.com/tatonetti-lab/onsides/releases/tag/v2.0.0). 
+
 ### Step 1. Download and Pre-process the SPLs
 
 The structured product labels (SPLs) are made available for download by DailyMed and updated

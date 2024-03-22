@@ -86,6 +86,10 @@ def download_and_verify(download, archive_info, spl_subdir = 'rx', max_retries=2
         # download
         if not archive_info['downloaded'] == 'yes':
             print(f"Downloading {download['url']}...")
+        
+        # download files
+        if not archive_info['downloaded'] == 'yes':
+            print(f"Downloading {download['url']}...")
             local_path = os.path.join('data', 'spl', spl_subdir, download['name'])
             if not os.path.exists(local_path):
                 download_spl_file(download['url'], local_path, proxies=proxies)

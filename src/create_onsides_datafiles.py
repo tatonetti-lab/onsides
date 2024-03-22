@@ -22,10 +22,12 @@ if __name__ == '__main__':
     parser.add_argument('--results', help='Path to results file to generate the data tables from.', type=str, required=True)
     parser.add_argument('--examples', help='Path to the example file that corresponds to the results file.', type=str, required=True)
     parser.add_argument('--release', help='Specify the deployment identifier. See experiments.json for options.', type=str, required=True)
+    parser.add_argument('--threshold', help='Specify the threshold to use for the predictions.', type=float, default=0.4633)    
 
     args = parser.parse_args()
 
     resultspath = args.results
+    threshold = args.threshold
 
     fnnoext = os.path.splitext(os.path.split(resultspath)[-1])[0]
     if len(fnnoext.split('_')) != 8:
@@ -39,7 +41,7 @@ if __name__ == '__main__':
     if not args.release in experiments['deployments']:
         raise Exception(f"ERROR: Deployment specified {args.release} was not found. Options are: {json.dumps(experiments['deployments'], indent=4)}")
 
-    threshold = experiments['deployments'][args.release]['threshold']
+    #threshold = experiments['deployments'][args.release]['threshold']
 
     prefix = fnnoext.split('_')[0]
     refset = fnnoext.split('_')[1]

@@ -15,6 +15,7 @@ replicates
 releases/
 releases
 logs/
+archive/
 notebooks/notebooks.bu.20221103
 
 # ignore emacs temporary files
