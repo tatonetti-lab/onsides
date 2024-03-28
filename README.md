@@ -105,9 +105,9 @@ See [DATABASE](DATABASE.md) for a step-by-step walkthrough.
 
 ## Limitations
 
-OnSIDES is **strictly** intended for research purposes. The adverse drug event term extraction method is far from perfect - some side effects will be missed and some identified will be incorrect. 
+OnSIDES is **strictly** intended for research purposes. The adverse drug event term extraction method is far from perfect - some side effects will be missed and some predicted as true adverse events will be incorrect. 
 
-**Patients/healthcare professionals seeking health information should not trust or use this data, and instead refer to the information available from the respective drug regulatory agencies, such as the [FDA](https://www.fda.gov/) (USA), [EMA](https://www.ema.europa.eu/en) (EU), [MHRA](https://www.gov.uk/government/organisations/medicines-and-healthcare-products-regulatory-agency) (UK), [PMDA](https://www.pmda.go.jp/english/) (Japan) and consult their healthcare providers for information.**
+**Patients/healthcare professionals seeking health information should not trust or use this data, and instead refer to the information available from their regions' respective drug regulatory agencies, such as the [FDA](https://www.fda.gov/) (USA), [EMA](https://www.ema.europa.eu/en) (EU), [MHRA](https://www.gov.uk/government/organisations/medicines-and-healthcare-products-regulatory-agency) (UK), [PMDA](https://www.pmda.go.jp/english/) (Japan) and consult their healthcare providers for information.**
 
 Additionally, this project is under active development. We are continuing to further conduct independent validation of the performance of the models used, and improve the extraction methodology. As such, the data, methods, and statistics are subject to change at any time. Any updates to the database will be reflected on this page/in this repository. 
 
