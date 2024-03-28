@@ -116,7 +116,4 @@ If you would like to contribute to this project or have any suggestions on how t
 ## Citation
 
 If you use the OnSIDES database, results, or methods in your work, please reference our preprint : 
-```
-Tanaka, Y., Chen, H.Y., Belloni, P., Gisladottir, U., Kefeli, J., Patterson, J., Srinivasan, A., Zietz, M., Sirdeshmukh, G., Berkowitz, J., Larow Brown, K., Tatonetti, N. (2024). \nOnSIDES (ON-label SIDE effectS resource) Database : Extracting Adverse Drug Events from Drug Labels using Natural Language Processing Models.\nmedRxiv. 10.1101/2024.03.22.24304724.
-```
-[![DOI](10.1101/2024.03.22.24304724)](https://www.medrxiv.org/content/10.1101/2024.03.22.24304724v1)
+> Tanaka, Y., Chen, H.Y., Belloni, P., Gisladottir, U., Kefeli, J., Patterson, J., Srinivasan, A., Zietz, M., Sirdeshmukh, G., Berkowitz, J., Larow Brown, K., Tatonetti, N. (2024). OnSIDES (ON-label SIDE effectS resource) Database : Extracting Adverse Drug Events from Drug Labels using Natural Language Processing Models.medRxiv. 10.1101/2024.03.22.24304724.
