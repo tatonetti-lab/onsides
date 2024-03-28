@@ -2,7 +2,7 @@
 
 ### About OnSIDES
 
-OnSIDES is a database of adverse drug events extracted from drug labels created by fine-tuning a [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) on 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). This comprehensive database will be updated quarterly, and currently contains more than 3.6 million drug-ADE pairs for 2,793 drug ingredients extracted from 46,686 labels, processed from all of the labels available to download from [DailyMed](https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 2023. Additionally, we now provide a number of complementary databases constructed using a similar method - OnSIDES-INTL, adverse drug events extracted from drug labels of other nations/regions (Japan, UK, EU), and OnSIDES-PED, adverse drug events specifically noted for pediatric patients in drug labels.
+OnSIDES is a database of adverse drug events extracted from drug labels created by fine-tuning a [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) on 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/). This comprehensive database will be updated quarterly, and currently contains more than 3.6 million drug-ADE pairs for 2,793 drug ingredients extracted from 46,686 labels, processed from all of the labels available to download from [DailyMed](https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm) as of November 2023. Additionally, we now provide a number of complementary databases constructed using a similar method - OnSIDES-INTL, adverse drug events extracted from drug labels of other nations/regions (Japan, UK, EU), and OnSIDES-PED, adverse drug events specifically noted for pediatric patients in drug labels. We have recently released a preprint on [medRxiv](https://www.medrxiv.org/content/10.1101/2024.03.22.24304724v1) with a full description of the data, methods and analyses. 
 
 ### Model Accuracy
 Our fine-tuned language model achieves an F1 score of 0.90, AUROC of 0.92, and AUPR of 0.95 at extracting effects from the ADVERSE REACTIONS section of the FDA drug label. For the BOXED WARNINGS sections, the model achieves a F1 score of 0.71, AUROC of 0.85, and AUPR of 0.72. Compared against the reference standard using the official evaluation script for [TAC 2017](https://bionlp.nlm.nih.gov/tac2017adversereactions/), the model achieves a Micro-F1 score of 0.87 and a Macro-F1 of 0.85.
@@ -105,16 +105,18 @@ See [DATABASE](DATABASE.md) for a step-by-step walkthrough.
 
 ## Limitations
 
-OnSIDES is only intended for research purposes. The adverse drug event term extraction method is far from perfect - some side effects will be missed and some identified will be incorrect. 
+OnSIDES is **strictly** intended for research purposes. The adverse drug event term extraction method is far from perfect - some side effects will be missed and some identified will be incorrect. 
 
-**Patients/healthcare professionals seeking health information should not trust this data and instead refer to the information available from the respective drug regulatory agencies, such as the [FDA](https://www.fda.gov/) (USA), [EMA](https://www.ema.europa.eu/en) (EU), [MHRA](https://www.gov.uk/government/organisations/medicines-and-healthcare-products-regulatory-agency) (UK), [PMDA](https://www.pmda.go.jp/english/) (Japan) and consult their healthcare providers.**
+**Patients/healthcare professionals seeking health information should not trust or use this data, and instead refer to the information available from the respective drug regulatory agencies, such as the [FDA](https://www.fda.gov/) (USA), [EMA](https://www.ema.europa.eu/en) (EU), [MHRA](https://www.gov.uk/government/organisations/medicines-and-healthcare-products-regulatory-agency) (UK), [PMDA](https://www.pmda.go.jp/english/) (Japan) and consult their healthcare providers for information.**
 
-Additionally, this project is under active development. We are continuing to further conduct independent validation of the performance of the model, and improve the extraction methodology. As such, the data, methods, and statistics are subject to change at any time. Any updates to the database will be reflected on this page/in this repository. 
+Additionally, this project is under active development. We are continuing to further conduct independent validation of the performance of the models used, and improve the extraction methodology. As such, the data, methods, and statistics are subject to change at any time. Any updates to the database will be reflected on this page/in this repository. 
 
 If you would like to contribute to this project or have any suggestions on how the methods, data, or evaluation can be improved please reach out to Dr. Tatonetti via [email](https://tatonettilab.org/people/) or [Twitter](http://twitter.com/nicktatonetti).
 
 ## Citation
 
-A manuscript describing the data, methods, and results is in preparation. In the meantime, when you use the database, please reference the github repository. 
-
-[![DOI](https://zenodo.org/badge/479583027.svg)](https://zenodo.org/badge/latestdoi/479583027)
+If you use the OnSIDES database, results, or methods in your work, please reference our preprint : 
+```
+Tanaka, Y., Chen, H.Y., Belloni, P., Gisladottir, U., Kefeli, J., Patterson, J., Srinivasan, A., Zietz, M., Sirdeshmukh, G., Berkowitz, J., Larow Brown, K., Tatonetti, N. (2024). OnSIDES (ON-label SIDE effectS resource) Database : Extracting Adverse Drug Events from Drug Labels using Natural Language Processing Models. medRxiv. 10.1101/2024.03.22.24304724.
+```
+[![DOI](10.1101/2024.03.22.24304724)](https://www.medrxiv.org/content/10.1101/2024.03.22.24304724v1)
