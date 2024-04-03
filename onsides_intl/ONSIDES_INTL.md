@@ -1,6 +1,6 @@
 # OnSIDES-INTL 
 
-Here, we generate databases mirroring the OnSIDES database (which extracts ADE data from US FDA SPL drug labels) from UK (EMC), EU (EMA), and Japan (PMDA) drug labels. We have also generated uniformly processed drug label text data from these drug labels that can be used as raw, structured data to train a myriad of machine learning models. 
+Here, we generate databases mirroring the OnSIDES database (which extracts ADE data from US FDA SPL drug labels) from UK (EMC), EU (EMA), and Japan (PMDA) drug labels.
 
 While we follow a similar ADE extraction/prediction philosophy to OnSIDES, as the raw label are formatted in a slightly different manner for each nation/region, the technical workflow is slightly adjusted to each nation. The detailed methods are described in [DATABASE_INTL](./DATABASE_INTL.md). 
 
