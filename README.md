@@ -32,7 +32,6 @@ OnSIDES now includes patient population-specific ADEs! For the initial data rele
 **[OnSIDES-ANNOT](./onsides_annot/ANNOTATION.md)** (Annotations):\
 To better train and evaluate the model on the OnSIDES-INTL/PED datasets we've generated, we've manually annotated 200 sampled drug labels each for each subsection.
 
-
 Additionally, we have added a number of **[projects](./projects/README.md)** to showcase potential use-cases of OnSIDES - predicting novel drug targets and indications from inter-drug adverse drug event profile similarities, analyzing enrichment of ADEs across drug classes, and predicting adverse events directly from chemical compound structures. 
 
 <!--- UPDATE LINK ---->
