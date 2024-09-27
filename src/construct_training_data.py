@@ -399,7 +399,7 @@ def main():
         deepcadrme = {}    
     
     if not os.path.exists('./data/refs'):
-        os.mkdirs('./data/refs')
+        os.makedirs('./data/refs')
     
     outfn = f'./data/refs/ref{args.method}_nwords{args.nwords}_clinical_bert_reference_set_{args.section}.txt'
     outfh = open(outfn, 'w')

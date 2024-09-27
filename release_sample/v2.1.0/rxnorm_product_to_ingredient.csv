@@ -1,0 +1,50 @@
+product_rx_cui,product_name,product_omop_concept_id,ingredient_rx_cui,ingredient_name,ingredient_omop_concept_id
+1000000,amlodipine 5 MG / hydrochlorothiazide 12.5 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224176,17767,amlodipine,1332418
+1000000,amlodipine 5 MG / hydrochlorothiazide 12.5 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224176,5487,hydrochlorothiazide,974166
+1000000,amlodipine 5 MG / hydrochlorothiazide 12.5 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224176,321064,olmesartan,40226742
+1000001,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet,40224178,17767,amlodipine,1332418
+1000001,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet,40224178,5487,hydrochlorothiazide,974166
+1000001,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet,40224178,321064,olmesartan,40226742
+1000003,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG [Tribenzor],40224180,17767,amlodipine,1332418
+1000003,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG [Tribenzor],40224180,5487,hydrochlorothiazide,974166
+1000003,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG [Tribenzor],40224180,321064,olmesartan,40226742
+1000005,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224179,17767,amlodipine,1332418
+1000005,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224179,5487,hydrochlorothiazide,974166
+1000005,amlodipine 5 MG / hydrochlorothiazide 25 MG / olmesartan medoxomil 40 MG Oral Tablet [Tribenzor],40224179,321064,olmesartan,40226742
+1000009,dimethicone 100 MG/ML / miconazole nitrate 20 MG/ML / zinc oxide 100 MG/ML Topical Spray,40224720,11423,zinc oxide,911064
+1000009,dimethicone 100 MG/ML / miconazole nitrate 20 MG/ML / zinc oxide 100 MG/ML Topical Spray,40224720,324072,dimethicone,916662
+1000009,dimethicone 100 MG/ML / miconazole nitrate 20 MG/ML / zinc oxide 100 MG/ML Topical Spray,40224720,6932,miconazole,907879
+1000012,whole wheat allergenic extract 50 MG/ML,40225699,901299,whole wheat allergenic extract,40172900
+1000013,whole wheat allergenic extract 50 MG/ML Injectable Solution,40225700,901299,whole wheat allergenic extract,40172900
+1000014,western wheatgrass pollen extract 10000 UNT/ML,40225689,852659,western wheatgrass pollen extract,40162104
+1000015,western wheatgrass pollen extract 10000 UNT/ML Injectable Solution,40225690,852659,western wheatgrass pollen extract,40162104
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,1223,atropine,914335
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,6832,methenamine,904356
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,153970,hyoscyamine,923672
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,70589,benzoate,711452
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,36122,phenyl salicylate,937712
+1000021,atropine / benzoate / hyoscyamine / methenamine / methylene blue / phenyl salicylate Oral Tablet [Uritact],40224207,6878,methylene blue,905518
+1000023,methenamine mandelate 100 MG/ML,40224844,6832,methenamine,904356
+1000024,methenamine mandelate 100 MG/ML Oral Suspension,40224845,6832,methenamine,904356
+1000025,methenamine hippurate 1000 MG Oral Capsule,40224843,6832,methenamine,904356
+1000026,methenamine mandelate 250 MG Oral Tablet,40224846,6832,methenamine,904356
+1000027,methenamine mandelate 300 MG / sodium phosphate 500 MG Oral Tablet,40224847,6832,methenamine,904356
+1000027,methenamine mandelate 300 MG / sodium phosphate 500 MG Oral Tablet,40224847,36709,sodium phosphate,939871
+1000028,methenamine mandelate 350 MG / sodium phosphate 200 MG Oral Tablet,40224848,6832,methenamine,904356
+1000028,methenamine mandelate 350 MG / sodium phosphate 200 MG Oral Tablet,40224848,36709,sodium phosphate,939871
+1000030,"methenamine mandelate 500 MG / sodium phosphate, monobasic 250 MG Oral Tablet",40224850,6832,methenamine,904356
+1000030,"methenamine mandelate 500 MG / sodium phosphate, monobasic 250 MG Oral Tablet",40224850,235496,"sodium phosphate, monobasic",990499
+1000044,chlorhexidine diacetate 0.5 MG/ML [Septi-Soothe],40224288,2358,chlorhexidine,1790812
+1000045,chlorhexidine Topical Spray [Septi-Soothe],40224286,2358,chlorhexidine,1790812
+1000046,chlorhexidine diacetate 0.5 MG/ML Topical Spray [Septi-Soothe],40224287,2358,chlorhexidine,1790812
+1000048,doxepin 10 MG Oral Capsule,40224875,3638,doxepin,738156
+1000050,doxepin 10 MG Oral Capsule [Adapin],40224876,3638,doxepin,738156
+1000052,doxepin 10 MG Oral Capsule [Sinequan],40224877,3638,doxepin,738156
+1000054,doxepin 10 MG/ML Oral Solution,40224881,3638,doxepin,738156
+1000056,doxepin 10 MG/ML Oral Solution [Sinequan],40224882,3638,doxepin,738156
+1000058,doxepin 100 MG Oral Capsule,40224885,3638,doxepin,738156
+1000060,doxepin 100 MG Oral Capsule [Adapin],40224886,3638,doxepin,738156
+1000062,doxepin 100 MG Oral Capsule [Sinequan],40224887,3638,doxepin,738156
+1000064,doxepin 150 MG Oral Capsule,40224891,3638,doxepin,738156
+1000066,doxepin 150 MG Oral Capsule [Adapin],40224892,3638,doxepin,738156
+1000068,doxepin 150 MG Oral Capsule [Sinequan],40224893,3638,doxepin,738156

@@ -1,5 +1,5 @@
 # Validated for MySQL 5.7.35
-# Assumes working from directory with onsides release files
+# Assumes working from directory with onsides release files and that these files are uncompressed
 
 load data local infile './adverse_reactions_active_labels.csv'
 into table adverse_reactions_active_labels
@@ -33,6 +33,24 @@ ignore 1 lines;
 
 load data local infile './boxed_warnings.csv'
 into table boxed_warnings
+fields terminated by ',' optionally enclosed by '"'
+lines terminated by '\r\n'
+ignore 1 lines;
+
+load data local infile './warnings_and_precautions_active_labels.csv'
+into table warnings_and_precautions_active_labels
+fields terminated by ',' optionally enclosed by '"'
+lines terminated by '\r\n'
+ignore 1 lines;
+
+load data local infile './warnings_and_precautions_all_labels.csv'
+into table warnings_and_precautions_all_labels
+fields terminated by ',' optionally enclosed by '"'
+lines terminated by '\r\n'
+ignore 1 lines;
+
+load data local infile './warnings_and_precautions.csv'
+into table warnings_and_precautions
 fields terminated by ',' optionally enclosed by '"'
 lines terminated by '\r\n'
 ignore 1 lines;

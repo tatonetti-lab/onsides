@@ -27,6 +27,19 @@ CREATE TABLE boxed_warnings (
 );
 CREATE INDEX boxed_warnings_ingredients_rxcuis_idx ON boxed_warnings USING btree (ingredients_rxcuis);
 CREATE INDEX boxed_warnings_pt_meddra_id_idx ON boxed_warnings USING btree (pt_meddra_id);
+
+CREATE TABLE warnings_and_precautions (
+  ingredients_rxcuis text NULL,
+  ingredients_names text NULL,
+  num_ingredients int4 NULL,
+  pt_meddra_id int4 NULL,
+  pt_meddra_term text NULL,
+  percent_labels float8 NULL,
+  num_labels int4 NULL
+);
+CREATE INDEX warnings_and_precautions_ingredients_rxcuis_idx ON warnings_and_precautions USING btree (ingredients_rxcuis);
+CREATE INDEX warnings_and_precautions_pt_meddra_id_idx ON warnings_and_precautions USING btree (pt_meddra_id);
+
 CREATE TABLE adverse_reactions_all_labels (
   "section" varchar(2) NULL,
   zip_id text NULL,
@@ -62,6 +75,23 @@ CREATE INDEX boxed_warnings_all_labels_set_id_idx ON boxed_warnings_all_labels U
 CREATE INDEX boxed_warnings_all_labels_spl_version_idx ON boxed_warnings_all_labels USING btree (spl_version);
 CREATE INDEX boxed_warnings_all_labels_pt_meddra_id_idx ON boxed_warnings_all_labels USING btree (pt_meddra_id);
 
+CREATE TABLE warnings_and_precautions_all_labels (
+  "section" varchar(2) NULL,
+  zip_id text NULL,
+  label_id varchar(36) NULL,
+  set_id text NULL,
+  spl_version int4 NULL,
+  pt_meddra_id int4 NULL,
+  pt_meddra_term text NULL,
+  pred0 float8 NULL,
+  pred1 float8 NULL
+);
+CREATE INDEX warnings_and_precautions_all_labels_zip_id_idx ON warnings_and_precautions_all_labels USING btree (zip_id);
+CREATE INDEX warnings_and_precautions_all_labels_label_id_idx ON warnings_and_precautions_all_labels USING btree (label_id);
+CREATE INDEX warnings_and_precautions_all_labels_set_id_idx ON warnings_and_precautions_all_labels USING btree (set_id);
+CREATE INDEX warnings_and_precautions_all_labels_spl_version_idx ON warnings_and_precautions_all_labels USING btree (spl_version);
+CREATE INDEX warnings_and_precautions_all_labels_pt_meddra_id_idx ON warnings_and_precautions_all_labels USING btree (pt_meddra_id);
+
 CREATE TABLE adverse_reactions_active_labels (
   set_id varchar(36) NULL,
   spl_version int4 NULL,
@@ -88,6 +118,19 @@ CREATE TABLE boxed_warnings_active_labels (
 CREATE INDEX boxed_warnings_active_labels_set_id_idx ON boxed_warnings_active_labels USING btree (set_id);
 CREATE INDEX boxed_warnings_active_labels_spl_version_idx ON boxed_warnings_active_labels USING btree (spl_version);
 CREATE INDEX boxed_warnings_active_labels_pt_meddra_id_idx ON boxed_warnings_active_labels USING btree (pt_meddra_id);
+
+CREATE TABLE warnings_and_precautions_active_labels (
+  set_id varchar(36) NULL,
+  spl_version int4 NULL,
+  pt_meddra_id int4 NULL,
+  pt_meddra_term text NULL,
+  num_ingredients int4 NULL,
+  ingredients_rxcuis text NULL,
+  ingredients_names text NULL
+);
+CREATE INDEX warnings_and_precautions_active_labels_set_id_idx ON warnings_and_precautions_active_labels USING btree (set_id);
+CREATE INDEX warnings_and_precautions_active_labels_spl_version_idx ON warnings_and_precautions_active_labels USING btree (spl_version);
+CREATE INDEX warnings_and_precautions_active_labels_pt_meddra_id_idx ON warnings_and_precautions_active_labels USING btree (pt_meddra_id);
 
 CREATE TABLE rxnorm_mappings (
   setid text NULL,

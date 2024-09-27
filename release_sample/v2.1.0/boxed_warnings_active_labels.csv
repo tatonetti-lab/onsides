@@ -1,0 +1,50 @@
+set_id,spl_version,pt_meddra_id,pt_meddra_term,num_ingredients,ingredients_rxcuis,ingredients_names
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10011906,Death,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10022116,Injury,1,52175,losartan
+40671852-846e-4bc1-8e15-1f71add24414,5,10001597,Alcohol interaction,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10001612,Alcoholic,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10010071,Coma,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10011906,Death,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10012335,Dependence,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10013710,Drug interaction,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10033295,Overdose,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10038678,Respiratory depression,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10039897,Sedation,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10010071,Coma,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10011906,Death,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10012335,Dependence,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10013710,Drug interaction,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10033295,Overdose,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10038678,Respiratory depression,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10039897,Sedation,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10048010,Withdrawal syndrome,1,787390,tapentadol
+00f01bd8-af64-4dcc-9975-8e433e32187f,7,10010071,Coma,1,2598,clonazepam
+00f01bd8-af64-4dcc-9975-8e433e32187f,7,10011906,Death,1,2598,clonazepam
+00f01bd8-af64-4dcc-9975-8e433e32187f,7,10038678,Respiratory depression,1,2598,clonazepam
+00f01bd8-af64-4dcc-9975-8e433e32187f,7,10039897,Sedation,1,2598,clonazepam
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10002034,Anaemia,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10002967,Aplastic anaemia,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10003445,Ascites,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10004791,Biopsy liver,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10011224,Cough,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10011906,Death,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10012735,Diarrhoea,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10013710,Drug interaction,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10016642,Fibrosis,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10019851,Hepatotoxicity,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10021789,Infection,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10022694,Intestinal perforation,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10024670,Liver disorder,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10024690,Liver function test abnormal,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10025082,Lung disorder,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10025310,Lymphoma,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10028034,Mouth ulceration,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10030901,Opportunistic infection,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10031264,Osteonecrosis,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10035598,Pleural effusion,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10035664,Pneumonia,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10036790,Productive cough,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10037153,Psoriasis,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10037794,Radiotherapy,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10040914,Skin reaction,1,6851,methotrexate
+02862eb3-5508-4ea9-99fb-262551b6beeb,7,10045170,Tumour lysis syndrome,1,6851,methotrexate

@@ -1,0 +1,50 @@
+ingredients_rxcuis,ingredients_names,num_ingredients,pt_meddra_id,pt_meddra_term,percent_labels,num_labels
+52175,losartan,1,10011906,Death,0.9767441860465116,172
+52175,losartan,1,10022116,Injury,0.8895348837209303,172
+787390,tapentadol,1,10001597,Alcohol interaction,0.2857142857142857,7
+787390,tapentadol,1,10001612,Alcoholic,0.42857142857142855,7
+787390,tapentadol,1,10010071,Coma,0.8571428571428571,7
+787390,tapentadol,1,10011906,Death,0.8571428571428571,7
+787390,tapentadol,1,10012335,Dependence,0.8571428571428571,7
+787390,tapentadol,1,10013710,Drug interaction,0.8571428571428571,7
+787390,tapentadol,1,10033295,Overdose,0.8571428571428571,7
+787390,tapentadol,1,10038678,Respiratory depression,0.8571428571428571,7
+787390,tapentadol,1,10039897,Sedation,0.8571428571428571,7
+787390,tapentadol,1,10048010,Withdrawal syndrome,0.2857142857142857,7
+2598,clonazepam,1,10010071,Coma,1.0,80
+2598,clonazepam,1,10011906,Death,1.0,80
+2598,clonazepam,1,10038678,Respiratory depression,1.0,80
+2598,clonazepam,1,10039897,Sedation,1.0,80
+6851,methotrexate,1,10002034,Anaemia,0.1875,32
+6851,methotrexate,1,10002967,Aplastic anaemia,0.1875,32
+6851,methotrexate,1,10003445,Ascites,0.1875,32
+6851,methotrexate,1,10004791,Biopsy liver,0.1875,32
+6851,methotrexate,1,10011224,Cough,0.1875,32
+6851,methotrexate,1,10011906,Death,1.0,32
+6851,methotrexate,1,10012735,Diarrhoea,0.1875,32
+6851,methotrexate,1,10013710,Drug interaction,0.0625,32
+6851,methotrexate,1,10016642,Fibrosis,0.1875,32
+6851,methotrexate,1,10019851,Hepatotoxicity,0.1875,32
+6851,methotrexate,1,10021789,Infection,0.28125,32
+6851,methotrexate,1,10022694,Intestinal perforation,0.1875,32
+6851,methotrexate,1,10024670,Liver disorder,0.1875,32
+6851,methotrexate,1,10024690,Liver function test abnormal,0.1875,32
+6851,methotrexate,1,10025082,Lung disorder,0.1875,32
+6851,methotrexate,1,10025310,Lymphoma,0.1875,32
+6851,methotrexate,1,10028034,Mouth ulceration,0.1875,32
+6851,methotrexate,1,10030901,Opportunistic infection,0.1875,32
+6851,methotrexate,1,10031264,Osteonecrosis,0.1875,32
+6851,methotrexate,1,10035598,Pleural effusion,0.1875,32
+6851,methotrexate,1,10035664,Pneumonia,0.1875,32
+6851,methotrexate,1,10036790,Productive cough,0.1875,32
+6851,methotrexate,1,10037153,Psoriasis,0.1875,32
+6851,methotrexate,1,10037794,Radiotherapy,0.1875,32
+6851,methotrexate,1,10040914,Skin reaction,0.1875,32
+6851,methotrexate,1,10045170,Tumour lysis syndrome,0.1875,32
+6851,methotrexate,1,10055690,Foetal death,1.0,32
+6851,methotrexate,1,10059024,Gastrointestinal toxicity,0.21875,32
+6851,methotrexate,1,10062237,Renal impairment,0.21875,32
+6851,methotrexate,1,10065769,Soft tissue necrosis,0.1875,32
+6851,methotrexate,1,10073755,Pneumocystis jirovecii pneumonia,0.1875,32
+10582,levothyroxine,1,10029883,Obesity,1.0,290
+10582,levothyroxine,1,10047895,Weight decreased,1.0,290

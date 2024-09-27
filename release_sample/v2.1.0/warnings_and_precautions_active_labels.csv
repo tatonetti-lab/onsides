@@ -1,0 +1,50 @@
+set_id,spl_version,pt_meddra_id,pt_meddra_term,num_ingredients,ingredients_rxcuis,ingredients_names
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10011906,Death,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10020646,Hyperkalaemia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10021097,Hypotension,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10027534,Microcephaly,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10028934,Neonatal disorder,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10030289,Oligohydramnios,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10069339,Acute kidney injury,1,52175,losartan
+40671852-846e-4bc1-8e15-1f71add24414,5,10001367,Adrenal insufficiency,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10002974,Apnoea,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10010071,Coma,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10010947,Coordination abnormal,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10011906,Death,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10012335,Dependence,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10012735,Diarrhoea,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10020745,Hyperreflexia,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10021097,Hypotension,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10022773,Intracranial pressure increased,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10028330,Muscle rigidity,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10028813,Nausea,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10031127,Orthostatic hypotension,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10038669,Respiratory arrest,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10038678,Respiratory depression,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10039897,Sedation,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10039906,Seizure,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10040108,Serotonin syndrome,1,787390,tapentadol
+40671852-846e-4bc1-8e15-1f71add24414,5,10042772,Syncope,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10001367,Adrenal insufficiency,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10001497,Agitation,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10002974,Apnoea,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10003840,Autonomic nervous system imbalance,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10010071,Coma,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10011906,Death,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10012335,Dependence,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10020745,Hyperreflexia,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10021097,Hypotension,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10022773,Intracranial pressure increased,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10028813,Nausea,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10031127,Orthostatic hypotension,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10038669,Respiratory arrest,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10038678,Respiratory depression,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10039897,Sedation,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10039906,Seizure,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10040108,Serotonin syndrome,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10042772,Syncope,1,787390,tapentadol
+ad05d6a0-addc-46e9-a5bd-7892b262b090,5,10043071,Tachycardia,1,787390,tapentadol
+1ccc946a-f8f4-4136-9b3e-4bf95e69c94f,15,10000081,Abdominal pain,1,29046,lisinopril
+1ccc946a-f8f4-4136-9b3e-4bf95e69c94f,15,10002216,Anaphylactoid reaction,1,29046,lisinopril
+1ccc946a-f8f4-4136-9b3e-4bf95e69c94f,15,10002424,Angioedema,1,29046,lisinopril
+1ccc946a-f8f4-4136-9b3e-4bf95e69c94f,15,10011906,Death,1,29046,lisinopril

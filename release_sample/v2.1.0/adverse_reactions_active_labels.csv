@@ -1,0 +1,50 @@
+set_id,spl_version,pt_meddra_id,pt_meddra_term,num_ingredients,ingredients_rxcuis,ingredients_names
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10000081,Abdominal pain,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10002034,Anaemia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10002198,Anaphylactic reaction,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10002424,Angioedema,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10003239,Arthralgia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10003549,Asthenia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10003658,Atrial fibrillation,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10003988,Back pain,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10008190,Cerebrovascular accident,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10008479,Chest pain,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10010774,Constipation,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10011224,Cough,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10012378,Depression,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10012456,Dermatitis exfoliative generalised,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10012735,Diarrhoea,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10013573,Dizziness,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10013911,Dysgeusia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10013968,Dyspnoea,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10016256,Fatigue,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10019211,Headache,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10019717,Hepatitis,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10020646,Hyperkalaemia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10020993,Hypoglycaemia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10021036,Hyponatraemia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10021097,Hypotension,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10025482,Malaise,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10027599,Migraine,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10028372,Muscular weakness,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10028411,Myalgia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10028735,Nasal congestion,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10028813,Nausea,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10031127,Orthostatic hypotension,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10033557,Palpitations,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10033775,Paraesthesia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10034972,Photosensitivity reaction,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10037087,Pruritus,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10037844,Rash,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10039020,Rhabdomyolysis,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10040984,Sleep disorder,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10041349,Somnolence,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10042772,Syncope,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10043554,Thrombocytopenia,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10043882,Tinnitus,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10046306,Upper respiratory tract infection,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10046571,Urinary tract infection,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10046735,Urticaria,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10047115,Vasculitis,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10047340,Vertigo,1,52175,losartan
+1bf520a2-a50e-a6ae-0fdf-9be4e69729c0,6,10047700,Vomiting,1,52175,losartan

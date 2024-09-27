@@ -1,0 +1,50 @@
+ingredients_rxcuis,ingredients_names,num_ingredients,pt_meddra_id,pt_meddra_term,percent_labels,num_labels
+52175,losartan,1,10011906,Death,1.3681318681318682,182
+52175,losartan,1,10020646,Hyperkalaemia,1.1593406593406594,182
+52175,losartan,1,10021097,Hypotension,1.3681318681318682,182
+52175,losartan,1,10027534,Microcephaly,1.3681318681318682,182
+52175,losartan,1,10028934,Neonatal disorder,1.3681318681318682,182
+52175,losartan,1,10030289,Oligohydramnios,1.3681318681318682,182
+52175,losartan,1,10069339,Acute kidney injury,1.3681318681318682,182
+787390,tapentadol,1,10001367,Adrenal insufficiency,1.0,10
+787390,tapentadol,1,10002974,Apnoea,1.0,10
+787390,tapentadol,1,10010071,Coma,1.4,10
+787390,tapentadol,1,10010947,Coordination abnormal,1.1,10
+787390,tapentadol,1,10011906,Death,1.4,10
+787390,tapentadol,1,10012335,Dependence,1.4,10
+787390,tapentadol,1,10012735,Diarrhoea,1.1,10
+787390,tapentadol,1,10020745,Hyperreflexia,1.4,10
+787390,tapentadol,1,10021097,Hypotension,1.4,10
+787390,tapentadol,1,10022773,Intracranial pressure increased,1.4,10
+787390,tapentadol,1,10028330,Muscle rigidity,0.5,10
+787390,tapentadol,1,10028813,Nausea,1.4,10
+787390,tapentadol,1,10031127,Orthostatic hypotension,1.0,10
+787390,tapentadol,1,10038669,Respiratory arrest,1.0,10
+787390,tapentadol,1,10038678,Respiratory depression,1.4,10
+787390,tapentadol,1,10039897,Sedation,1.4,10
+787390,tapentadol,1,10039906,Seizure,1.4,10
+787390,tapentadol,1,10040108,Serotonin syndrome,1.4,10
+787390,tapentadol,1,10042772,Syncope,1.0,10
+787390,tapentadol,1,10001497,Agitation,1.1,10
+787390,tapentadol,1,10003840,Autonomic nervous system imbalance,1.1,10
+787390,tapentadol,1,10043071,Tachycardia,1.1,10
+29046,lisinopril,1,10000081,Abdominal pain,1.3946188340807175,223
+29046,lisinopril,1,10002216,Anaphylactoid reaction,1.3946188340807175,223
+29046,lisinopril,1,10002424,Angioedema,1.399103139013453,223
+29046,lisinopril,1,10011906,Death,1.3946188340807175,223
+29046,lisinopril,1,10019663,Hepatic failure,1.304932735426009,223
+29046,lisinopril,1,10020646,Hyperkalaemia,1.399103139013453,223
+29046,lisinopril,1,10021097,Hypotension,1.399103139013453,223
+29046,lisinopril,1,10023126,Jaundice,1.3766816143497758,223
+29046,lisinopril,1,10023129,Jaundice cholestatic,1.399103139013453,223
+29046,lisinopril,1,10027534,Microcephaly,1.3946188340807175,223
+29046,lisinopril,1,10028934,Neonatal disorder,1.345291479820628,223
+29046,lisinopril,1,10030289,Oligohydramnios,1.3946188340807175,223
+29046,lisinopril,1,10030302,Oliguria,1.3946188340807175,223
+29046,lisinopril,1,10062237,Renal impairment,1.399103139013453,223
+29046,lisinopril,1,10069339,Acute kidney injury,1.3946188340807175,223
+29046,lisinopril,1,10076229,Intestinal angioedema,1.3946188340807175,223
+10737,trazodone,1,10001497,Agitation,1.3968253968253967,126
+10737,trazodone,1,10003119,Arrhythmia,1.3968253968253967,126
+10737,trazodone,1,10003549,Asthenia,1.3968253968253967,126
+10737,trazodone,1,10005802,Blood sodium decreased,1.3968253968253967,126

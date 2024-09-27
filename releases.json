@@ -1,18 +1,25 @@
 {
     "releases": {
-        "v2.0.0-AR": {
-            "name": "OnSIDES Version 2.0.0 - Adverse Reactions",
-            "description": "Second major release of the model to extract side effect terms from the Adverse Reactions section of the labels, created on November 10, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 0.4633) was 0.913 on the validation set and 0.898 on the test set. AUROC was 0.934 on the validation set and 0.922 on the test set. AUPR was 0.960 on the validation set and 0.948 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.875, AUROC=0.912, and AUPR=0.937. Using the official eval script from TAC, the Macro-F1 is 85.40 and the Micro-F1 is 87.05. See notebook for Experiment 10E.",
+        "v2.1.0-AR": {
+            "name": "OnSIDES Version 2.1.0 - Adverse Reactions",
+            "description": "Second major release of the model to extract side effect terms from the Adverse Reactions section of the labels, created on November 10, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 0.4633) was 0.913 on the validation set and 0.898 on the test set. AUROC was 0.934 on the validation set and 0.922 on the test set. AUPR was 0.960 on the validation set and 0.948 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.875, AUROC=0.912, and AUPR=0.937. Using the official eval script from TAC, the Macro-F1 is 85.40 and the Micro-F1 is 87.05. See notebook for Experiment 10E. Same as 2.0.0 version, updated to 2.1.0 to sync with new WP section.",
             "threshold": 0.4633,
             "model": "bestepoch",
             "model_file": "./models/bestepoch-bydrug-PMB_14-AR-125-all_222_24_25_2.5e-05_256_32.pth"
         },
-        "v2.0.0-BW": {
-            "name": "OnSIDES Version 2.0.0 - Boxed Warnings",
-            "description": "Second major release of the model to extract side effect terms from the Boxed Warnings section of the labels, created on November 11, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 3.324) was 0.800 on the validation set and 0.714 on the test set. AUROC was 0.867 on the validation set and 0.849 on the test set. AUPR was 0.760 on the validation set and 0.722 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.680, AUROC=0.808, AUPR=0.636. See notebook for Experiment 10F.",
+        "v2.1.0-BW": {
+            "name": "OnSIDES Version 2.1.0 - Boxed Warnings",
+            "description": "Second major release of the model to extract side effect terms from the Boxed Warnings section of the labels, created on November 11, 2022. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 3.324) was 0.800 on the validation set and 0.714 on the test set. AUROC was 0.867 on the validation set and 0.849 on the test set. AUPR was 0.760 on the validation set and 0.722 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.680, AUROC=0.808, AUPR=0.636. See notebook for Experiment 10F. Same as 2.0.0 version, updated to 2.1.0 to sync with new WP section.",
             "threshold": 3.324,
             "model": "bestepoch",
             "model_file": "./models/bestepoch-bydrug-PMB2_14-BW-125-all_222_24_25_2.5e-05_256_32.pth"
+        },
+        "v2.1.0-WP": {
+            "name": "OnSIDES Version 2.1.0 - Warnings and Precautions",
+            "description": "Second major release of the model to extract side effect terms from the Warnings and Precautions section of the labels, created on September 18, 2024. These paramters were chosen through analysis of the results of Experiments 1 through 10. Max F1 (threshold = 3.324) was 0.800 on the validation set and 0.714 on the test set. AUROC was 0.867 on the validation set and 0.849 on the test set. AUPR was 0.760 on the validation set and 0.722 on the test set. When evaluated against the TAC gold standard, the model achieves: F1=0.680, AUROC=0.808, AUPR=0.636. See notebook for Experiment 10G.",
+            "threshold": 0.7328,
+            "model": "final",
+            "model_file": "./models/final-bydrug-PMB2_14-WP-125-all_222_24_25_2.5e-05_256_32.pth"
         }
     }
 }

@@ -42,7 +42,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--release', help='ID for the release to deploy.', type=str, required=True)
     parser.add_argument('--gpu', help="GPU ID to use if on a CUDA-enabled machine.", type=str, required=False)
-
+    parser.add_argument('--skip-spl-check', help="Skip the check for if the SPLs have been updated today.", action='store_true', required=False, default=False)
     args = parser.parse_args()
 
     use_gpu = False
@@ -97,7 +97,7 @@ def main():
 
     spl_status = load_json('./spl.json')
 
-    if not spl_status['last_updated'] == datetime.now().strftime("%Y%d%m"):
+    if not args.skip_spl_check and not spl_status['last_updated'] == datetime.now().strftime("%Y%d%m"):
         raise Exception("PREREQUISITE ERROR: The SPLs must be checked for updates immediately before the deployment tracker. Run with\n\npython3 src/spl_processor.py --update\n\nOnce complete re-run the deployment tracker.")
 
     eprint("ok.")

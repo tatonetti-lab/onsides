@@ -78,6 +78,45 @@ Filtered output from the model joined with the example file. Rows are filtered f
 - `pred0` : score from the model that the MedDRA term is not a reported drug side effect
 - `pred1` : score from the model that the MedDRA term is a reported drug side effect
 
+
+## warnings_and_precautions [.csv.gz]
+
+The `warnings_and_precautions` table/file is derived from the source OnSIDES data and created to be a convenient table to use for downstream analysis. This is one of the two primary tables that users of OnSIDES should use first as it should satisfy most of the use cases. Each drug ingredient or combination of ingredients is included in this table only once using the See [DATABASE.md](DATABASE.md) for specifics on how this table is created.
+
+- `ingredient_rxcuis` : string list of comma separated RxNORM identifiers for the ingredients
+- `ingredient_names` : string list of comma separated ingredients in the drug product (most are single but many combination medications as well)
+- `num_ingredients` : number of ingredients in this drug product
+- `pt_meddra_id` : the MedDRA preferred term code for the adverse reaction term identified
+- `pt_meddra_term` : the MedDRA preferred term for the adverse reaction term identified
+- `percent_labels` : the proportion of labels for which this adverse reaction was extracted (0-1)
+- `num_labels` : the number of active labels for this ingredient or ingredient combination
+
+## warnings_and_precautions_active_labels [.csv.gz]
+
+Same as the `warnings_and_precautions_active_labels` table above except for the WARNINGS AND PRECAUTIONS section of the structured product label. Note that the performance for this section is significantly lower than that found for the ADVERSE REACTIONS section. See the [README.md](README.md) file for the latest performance metrics.
+
+- `set_id` : unique identifier for a group of SPLs, the `set_id` and `spl_version` uniquely identify a label
+- `spl_version` : the version number of the SPL
+- `pt_meddra_id` : the MedDRA preferred term code for the adverse reaction term identified
+- `pt_meddra_term` : the MedDRA preferred term for the adverse reaction term identified
+- `num_ingredients` : number of ingredients in this drug product
+- `ingredient_rxcuis` : string list of comma separated RxNORM identifiers for the ingredients
+- `ingredient_names` : string list of comma separated ingredients in the drug product (most are single but many combination medications as well)
+
+## warnings_and_precautions_all_labels [.csv.gz]
+
+Filtered output from the model joined with the example file. Rows are filtered for those with scores (pred1) above the decision threshold (see the `release.json` file for threshold values).
+
+- `section` : the code for the section of the structured product label (SPL), AR for adverse reactions
+- `zip_id` : identifier for the structured product label zip download file
+- `label_id` : unique identifier for this version of the SPL
+- `set_id` : unique identifier for a group of SPLs, the `set_id` and `spl_version` uniquely identify a label
+- `spl_version` : the version number of the SPL
+- `pt_meddra_id` : the MedDRA preferred term code for the adverse reaction term identified
+- `pt_meddra_term` : the MedDRA preferred term for the adverse reaction term identified
+- `pred0` : score from the model that the MedDRA term is not a reported drug side effect
+- `pred1` : score from the model that the MedDRA term is a reported drug side effect
+
 ## ingredients [.csv.gz]
 
 Ingredients for each drug product (`set_id`) as an RxNorm ingredient.

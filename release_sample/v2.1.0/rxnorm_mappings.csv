@@ -1,0 +1,50 @@
+SETID,SPL_VERSION,RXCUI,RXSTRING,RXTTY
+000155a8-709c-44e5-a75f-cd890f3a7caf,29,198014,naproxen 500 MG Oral Tablet,PSN
+000155a8-709c-44e5-a75f-cd890f3a7caf,29,198014,naproxen 500 MG Oral Tablet,SCD
+0001d1cf-f727-4875-a44f-5a51f7b617a4,2,1046593,benzalkonium chloride 0.13 % Medicated Liquid Soap,PSN
+0001d1cf-f727-4875-a44f-5a51f7b617a4,2,1046593,benzalkonium chloride 0.13 % Medicated Liquid Soap,SY
+0001d1cf-f727-4875-a44f-5a51f7b617a4,2,1046593,benzalkonium chloride 1.3 MG/ML Medicated Liquid Soap,SCD
+0001d1cf-f727-4875-a44f-5a51f7b617a4,2,1046593,benzalkonium chloride 1.33 MG/ML Medicated Liquid Soap,SY
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,251577,salicylic acid 2 % Topical Solution,PSN
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,251577,salicylic acid 2 % Topical Solution,SY
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,251577,salicylic acid 20 MG/ML Topical Solution,SCD
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,282727,sulfur 5 % Topical Solution,PSN
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,282727,sulfur 5 % Topical Solution,SY
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,282727,sulfur 50 MG/ML Topical Solution,SCD
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,845836,benzoyl peroxide 2.5 % Medicated Liquid Soap,PSN
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,845836,benzoyl peroxide 2.5 % Medicated Liquid Soap,SY
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,845836,benzoyl peroxide 25 MG/ML Medicated Liquid Soap,SCD
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,1372925,benzoyl peroxide 2.5 % Medicated Liquid Soap (240 ML) / salicylic acid 2 % Topical Solution (120 ML) / sulfur 5 % Topical Solution (60 ML) Pack,PSN
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,1372925,{1 (240 ML) (benzoyl peroxide 2.5 % Medicated Liquid Soap) / 1 (120 ML) (salicylic acid 2 % Topical Solution) / 1 (60 ML) (sulfur 5 % Topical Solution) } Pack,SY
+0001eaa9-e890-4e94-9d44-47a0f3086a02,2,1372925,{1 (240 ML) (benzoyl peroxide 25 MG/ML Medicated Liquid Soap) / 1 (120 ML) (salicylic acid 20 MG/ML Topical Solution) / 1 (60 ML) (sulfur 50 MG/ML Topical Solution) } Pack,GPCK
+00025ea5-d15f-49d2-a52a-6c1bd8c6a033,12,562600,salicylic acid 2 % Facial Cleanser Toner,SY
+00025ea5-d15f-49d2-a52a-6c1bd8c6a033,12,562600,salicylic acid 2 % Facial Scrub,SY
+00025ea5-d15f-49d2-a52a-6c1bd8c6a033,12,562600,salicylic acid 2 % Medicated Liquid Soap,PSN
+00025ea5-d15f-49d2-a52a-6c1bd8c6a033,12,562600,salicylic acid 2 % Medicated Liquid Soap,SY
+00025ea5-d15f-49d2-a52a-6c1bd8c6a033,12,562600,salicylic acid 20 MG/ML Medicated Liquid Soap,SCD
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425104,trametinib 0.5 MG (as trametinib dimethyl sulfoxide 0.5635 MG) Oral Tablet,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425104,trametinib 0.5 MG Oral Tablet,PSN
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425104,trametinib 0.5 MG Oral Tablet,SCD
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425110,Mekinist 0.5 MG (as trametinib dimethyl sulfoxide 0.5635 MG) Oral Tablet,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425110,Mekinist 0.5 MG Oral Tablet,PSN
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425110,Mekinist 0.5 MG Oral Tablet,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425110,trametinib 0.5 MG Oral Tablet [Mekinist],SBD
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425116,trametinib 2 MG (as trametinib dimethyl sulfoxide 2.254 MG) Oral Tablet,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425116,trametinib 2 MG Oral Tablet,PSN
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425116,trametinib 2 MG Oral Tablet,SCD
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425118,Mekinist 2 MG (as trametinib dimethyl sulfoxide 2.254 MG) Oral Tablet,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425118,Mekinist 2 MG Oral Tablet,PSN
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425118,Mekinist 2 MG Oral Tablet,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,1425118,trametinib 2 MG Oral Tablet [Mekinist],SBD
+0002ad27-779d-42ab-83b5-bc65453412a1,25,2632560,trametinib 0.05 MG (equivalent to trametinib dimethyl sulfoxide) per 1 ML Oral Solution,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,2632560,trametinib 0.05 MG in 1 mL Oral Solution,PSN
+0002ad27-779d-42ab-83b5-bc65453412a1,25,2632560,trametinib 0.05 MG per 1 ML Oral Solution,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,2632560,trametinib 0.05 MG/ML Oral Solution,SCD
+0002ad27-779d-42ab-83b5-bc65453412a1,25,2632564,Mekinist 0.05 MG in 1 mL Oral Solution,PSN
+0002ad27-779d-42ab-83b5-bc65453412a1,25,2632564,Mekinist 0.05 MG per 1 ML Oral Solution,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,2632564,Mekinist 0.05 MG/ML Oral Solution,SY
+0002ad27-779d-42ab-83b5-bc65453412a1,25,2632564,trametinib 0.05 MG/ML Oral Solution [Mekinist],SBD
+0002eded-a283-4590-a78c-b6ff2027e684,1,310433,gabapentin 600 MG Oral Tablet,PSN
+0002eded-a283-4590-a78c-b6ff2027e684,1,310433,gabapentin 600 MG Oral Tablet,SCD
+0002eded-a283-4590-a78c-b6ff2027e684,1,310434,gabapentin 800 MG Oral Tablet,PSN
+0002eded-a283-4590-a78c-b6ff2027e684,1,310434,gabapentin 800 MG Oral Tablet,SCD

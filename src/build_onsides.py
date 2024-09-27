@@ -24,7 +24,8 @@ from collections import defaultdict
 
 section_names = {
     'AR': 'adverse_reactions',
-    'BW': 'boxed_warnings'
+    'BW': 'boxed_warnings',
+    'WP': 'warnings_and_precautions'
 }
 
 def main():

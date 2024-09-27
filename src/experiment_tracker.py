@@ -149,7 +149,7 @@ def tracker(args_id, args, data, replicate, clean_experiment):
         'bestepoch-bydrug-CB_0-ALL-125-all_222_24_25_1e-06_256_32.pth': 'CB2',
         'bestepoch-bydrug-PMB_14-AR-125-all_222_24_25_1e-06_256_32.pth': 'PMB0',
         'bestepoch-bydrug-PMB_14-BW-125-all_222_24_25_1e-06_256_32.pth': 'PMB1',
-        'bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth': 'PMB2'
+        'bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth': 'PMB2',
     }
 
     fcbd_params_outputs = list()

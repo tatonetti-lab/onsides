@@ -10,6 +10,7 @@ scripts/
 *.bu
 analysis.json
 spl.json
+environment
 replicates/
 replicates
 releases/
