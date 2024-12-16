@@ -1,114 +1,143 @@
-import numpy as np 
-import pandas as pd
-import requests
-from tqdm import tqdm
-from glob import glob
-import ast, re, json, orjson
-from time import sleep
+"""Find MedDRA term exact matches in drug label free text. Setup data for the
+OnSIDES model.
+
+There are a couple things that I did here which should be clarified.
+
+First, I don't do any RxNorm mapping here. I saw that previous code attempted to
+do this, but it was trying to join drug names from EMA to RxNorm SET IDs, which
+look like UUIDs. Text joins didn't work, so I just explicitly set those columns
+to None below, just to ensure we have all the same columns as the original code.
+
+Second, I'm not sure about the "AR" section. That's what the previous code did,
+so I just did it here too.
+
+Third, I used the same MedDRA terms as previous code (I think). Not sure why
+we're only using 5 character or longer terms. My code looks for either PT or LLT
+and maps to PT terms.
+"""
+
 import argparse
-import warnings
-warnings.filterwarnings('ignore')
-import os
+import logging
+import pathlib
+import re
+
+import polars as pl
+import tqdm.auto as tqdm
+
+logger = logging.getLogger(__name__)
+
+
+def build_bert_strings(
+    ade_text: str,
+    meddra_name: str,
+    nwords: int = 125,
+    prop_before: float = 0.125,
+) -> list[tuple[str, int]]:
+    if meddra_name not in ade_text:
+        raise ValueError(f"MedDRA name {meddra_name} not found in ade_text")
+
+    term_nwords = len(meddra_name.split())
+    n_words_before = prop_before * (nwords - 2 * term_nwords)
+    n_words_after = (1 - prop_before) * (nwords - 2 * term_nwords)
+    n_words_before = max(int(n_words_before), 1)
+    n_words_after = max(int(n_words_after), 1)
+
+    results = list()
+    matches = re.finditer(meddra_name, ade_text)
+    for match in matches:
+        start_pos = match.start()
+        end_pos = match.end()
+        before_words = ade_text[:start_pos].split()[-n_words_before:]
+        after_words = ade_text[end_pos:].split()[:n_words_after]
+        words_list = [meddra_name] + before_words + ["EVENT"] + after_words
+        result = " ".join(words_list)
+        results.append((result, start_pos))
+    return results
+
+
+def format_text(
+    data_folder: pathlib.Path,
+    external_data_folder: pathlib.Path,
+) -> None:
+    drug_to_ade_text = (
+        pl.read_csv(data_folder / "ade_text_table.csv")
+        .with_columns(pl.col("ade_text").str.to_lowercase())
+        .select("drug", "ade_text")
+        .to_dicts()
+    )
+    meddra_terms = (
+        pl.read_csv(external_data_folder / "umls_meddra_en.csv")
+        .with_columns(pl.col("STR").str.to_lowercase())
+        .filter(pl.col("TTY").is_in({"PT", "LLT"}))
+        .with_columns(
+            pl.when(pl.col("TTY").eq("PT"))
+            .then(pl.col("STR"))
+            .otherwise(None)
+            .max()
+            .over("SDUI")
+            .alias("pt_meddra_term"),
+            pl.col("SDUI").alias("pt_meddra_id"),
+        )
+        .select(
+            "pt_meddra_term",
+            "pt_meddra_id",
+            pl.col("CODE").alias("other_meddra_id"),
+            pl.col("STR").alias("other_meddra_term"),
+        )
+        .filter(pl.col("other_meddra_term").str.len_chars().ge(5))
+        .to_dicts()
+    )
+    logger.info(
+        f"Found {len(drug_to_ade_text)} drugs. "
+        f"Searching for exact matches of {len(meddra_terms)} MedDRA terms."
+    )
+    exact_terms = list()
+    for drug_term in tqdm.tqdm(drug_to_ade_text):
+        for meddra_term in meddra_terms:
+            meddra_name = meddra_term["other_meddra_term"]
+            ade_text = drug_term["ade_text"]
+            if meddra_name not in ade_text:
+                continue
+
+            bert_strings = build_bert_strings(ade_text, meddra_name)
+            for bert_string, start_pos in bert_strings:
+                row = {
+                    "label_id": drug_term["drug"],
+                    "found_term": meddra_name,
+                    "meddra_id": meddra_term["other_meddra_id"],
+                    "location": start_pos,
+                    "string": bert_string,
+                    "section": "AR",
+                    "set_id": drug_term["drug"],
+                    "drug": None,
+                    "spl_version": None,
+                    "pt_meddra_id": meddra_term["pt_meddra_id"],
+                    "pt_meddra_term": meddra_term["pt_meddra_term"],
+                }
+                exact_terms.append(row)
+
+    logger.info(f"Found {len(exact_terms)} exact matches.")
+    pl.DataFrame(exact_terms).write_csv(data_folder / "bert_input.csv")
+
 
 def main():
-    parser = argparse.ArgumentParser(description='let the code know where the data is held')
-    parser.add_argument('--data_folder', required=True, help='Path to the data folder.')
-    parser.add_argument('--external_data', required=True, help='Path to the where the external data is housed.')
-    parser.add_argument('--map_folder', required=True, help='Path to the where the external data used for OnSIDES model is housed.')
+    logging.basicConfig(level=logging.INFO)
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--data_folder",
+        type=pathlib.Path,
+        required=True,
+        help="Path to the data folder.",
+    )
+    parser.add_argument(
+        "--external_data",
+        type=pathlib.Path,
+        required=True,
+        help="Path to the external data folder.",
+    )
     args = parser.parse_args()
-    data_folder = args.data_folder
-    external_data_folder = args.external_data
-    map_folder = args.map_folder
-
-    #read in table for drug-ade free-text data
-    ade_text_table_df = pd.read_csv(data_folder+'ade_text_table.csv')
-
-    ##Standard Vocabulary Mapping - here, we will use the UMLS MedDRA tables.
-    meddra_df = pd.read_csv(external_data_folder+'umls_meddra_en.csv')
-    meddra_df['STR'] = meddra_df.STR.apply(lambda x: x.lower())
-    meddra_df['len'] = meddra_df.STR.apply(lambda x: len(x))
-    meddra_dict = dict(zip(meddra_df.STR, meddra_df.SDUI))
-    meddra_df = meddra_df[(meddra_df.TTY == 'PT')|(meddra_df['len'] > 5)]
-
-    exact_terms = []
-    for i, row in tqdm(ade_text_table_df.iterrows()):
-        label_id = row['drug']
-        text = row['ade_txt'].lower()
-        found_terms = list()
-        for mdr_term in meddra_dict.keys():
-            if text.find(mdr_term) == -1:
-                continue
-            else:
-                li = text.split(mdr_term)
-                start_pos = 0
-                for i in range(len(li)-1):
-                    # the occurrence of the word is at the end of the previous string
-                    start_pos = sum([len(li[j]) for j in range(i+1)]) + i*len(mdr_term)
-                    if not mdr_term == text[start_pos:(start_pos+len(mdr_term))]:
-                        raise Exception(f" mdr_term: '{mdr_term}', term_in_text: '{text[start_pos:(start_pos+len(mdr_term))]}'")
-                    found_terms.append((mdr_term, meddra_dict[mdr_term], start_pos, len(mdr_term)))
-        exact_terms.append([label_id, found_terms])
-
-    exact_terms_df = pd.DataFrame(exact_terms, columns=['label_id', 'found_terms'])
-    exact_terms_df = exact_terms_df.explode('found_terms')
-    exact_terms_df['len'] = exact_terms_df['found_terms'].apply(lambda x: x[3] if str(x) != 'nan' else None)
-    exact_terms_df = exact_terms_df[exact_terms_df['len'] >= 5]
-    exact_terms_df['found_term'] = exact_terms_df['found_terms'].apply(lambda x: x[0] if str(x) != 'nan' else None)
-    exact_terms_df['meddra_id'] = exact_terms_df['found_terms'].apply(lambda x: x[1] if str(x) != 'nan' else None)
-    exact_terms_df['location'] = exact_terms_df['found_terms'].apply(lambda x: x[2] if str(x) != 'nan' else None)
-    exact_terms_df = exact_terms_df.drop(['found_terms', 'len'], axis = 1)
-
-    building_strings = []
-    ade_text_table_dict = dict(zip(ade_text_table_df.drug, ade_text_table_df.ade_txt))
-    for i, row in tqdm(exact_terms_df.iterrows()):
-        term, label_id, start_pos = row['found_term'], row['label_id'], row['location']
-        #default settings
-        nwords, prop_before = 125, 0.125
-        #pull the full text
-        ar_text = ade_text_table_dict[label_id]
-
-        term_nwords = len(term.split())
-        size_before = max(int((nwords-2*term_nwords)*prop_before), 1)
-        size_after = max(int((nwords-2*term_nwords)*(1-prop_before)), 1)
-
-        before_text = ar_text[:start_pos]
-        after_text = ar_text[(start_pos+term_nwords):]
-
-        before_parts = before_text.split()[-1*size_before:]
-        after_parts = after_text.split()[:size_after]
-
-        li = [term]
-        li.extend(before_parts)
-        li.append('EVENT')
-        li.extend(after_parts)
-        example_string = ' '.join(li)
-        building_strings.append(example_string)
-        exact_terms_df['string'] = building_strings
-    
-    #save dataframe
-    exact_terms_df.to_csv(data_folder+'sentences-rx_method14_nwords125_clinical_bert_application_set_AR.csv', index=False)
-
-    #further prep the data for the model
-    #required columns : section, drug, label_id, set_id, spl_version, pt_meddra_id, pt_meddra_term
-    exact_terms_df = pd.read_csv(data_folder+'sentences-rx_method14_nwords125_clinical_bert_application_set_AR_v0924.csv')
-    exact_terms_df['section'] = 'AR'
-    exact_terms_df['set_id'] = exact_terms_df['label_id']
-    
-    drug_map = pd.read_csv(map_folder+'spl/maps/20230512/rxnorm_mappings.txt', delimiter = '|')
-    drug_id_dict = dict(zip(drug_map.SETID, drug_map.RXCUI))
-    drug_ver_dict = dict(zip(drug_map.SETID, drug_map.SPL_VERSION))
-    exact_terms_df['drug'] = exact_terms_df.set_id.apply(lambda x: drug_id_dict[x] if x in drug_id_dict.keys() else None)
-    exact_terms_df['spl_version'] = exact_terms_df.set_id.apply(lambda x: drug_ver_dict[x] if x in drug_ver_dict.keys() else None)
-
-    llt_pt = pd.read_csv(map_folder+'meddra_llt_pt_map.txt', delimiter = '|')
-    llt_pt_id_dict = dict(zip(llt_pt.llt_concept_code, llt_pt.pt_concept_code))
-    llt_pt_term_dict = dict(zip(llt_pt.llt_concept_code, llt_pt.pt_concept_name))
-    exact_terms_df['pt_meddra_id'] = exact_terms_df.meddra_id.apply(lambda x: llt_pt_id_dict[x] if x in llt_pt_id_dict.keys() else None)
-    exact_terms_df['pt_meddra_term'] =  exact_terms_df.meddra_id.apply(lambda x: llt_pt_term_dict[x] if x in llt_pt_term_dict.keys() else None)
-
-    #save dataframe
-    exact_terms_df.to_csv(data_folder+'sentences-rx_method14_nwords125_clinical_bert_application_set_AR.csv', index=False)
+    format_text(args.data_folder, args.external_data)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
