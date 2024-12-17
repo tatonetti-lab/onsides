@@ -1,0 +1,28 @@
+[project]
+name = "onsides_intl"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "onsides_eu",
+  "beautifulsoup4>=4.12.3",
+  "numpy>=2.1.3",
+  "openai>=1.56.0",
+  "orjson>=3.10.12",
+  "polars>=1.16.0",
+  "pydantic>=2.10.2",
+  "pypdf2>=3.0.1",
+  "requests>=2.32.3",
+  "sqlmodel>=0.0.22",
+  "tabula-py[jpype]>=2.10.0",
+  "torch>=2.5.1",
+  "tqdm>=4.67.1",
+  "transformers>=4.46.3",
+  "wget>=3.2",
+  "pandas>=2.2.3",
+]
+
+[tool.uv.sources]
+onsides_eu = { workspace = true }
+
+[tool.uv.workspace]
+members = ["onsides_eu"]
