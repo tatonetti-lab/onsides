@@ -157,3 +157,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+train
+onsides_intl/dev
+onsides_intl/external_data/MRCONSO.RRF
+onsides_intl/external_data/rxnorm_mappings.csv.gz
+onsides_intl/external_data/umls_meddra_en.csv
+onsides_intl/external_data/umls_rxnorm.csv
+onsides_intl/database.db
+onsides_intl/Untitled.ipynb
