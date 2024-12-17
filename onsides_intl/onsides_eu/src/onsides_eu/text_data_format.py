@@ -19,40 +19,18 @@ and maps to PT terms.
 import argparse
 import logging
 import pathlib
-import re
 
 import polars as pl
 import tqdm.auto as tqdm
 
+from onsides_eu.stringsearch import (
+    MeddraSearchTerm,
+    build_bert_string,
+    build_meddra_search_tree,
+    find_meddra_terms_in_text,
+)
+
 logger = logging.getLogger(__name__)
-
-
-def build_bert_strings(
-    ade_text: str,
-    meddra_name: str,
-    nwords: int = 125,
-    prop_before: float = 0.125,
-) -> list[tuple[str, int]]:
-    if meddra_name not in ade_text:
-        raise ValueError(f"MedDRA name {meddra_name} not found in ade_text")
-
-    term_nwords = len(meddra_name.split())
-    n_words_before = prop_before * (nwords - 2 * term_nwords)
-    n_words_after = (1 - prop_before) * (nwords - 2 * term_nwords)
-    n_words_before = max(int(n_words_before), 1)
-    n_words_after = max(int(n_words_after), 1)
-
-    results = list()
-    matches = re.finditer(meddra_name, ade_text)
-    for match in matches:
-        start_pos = match.start()
-        end_pos = match.end()
-        before_words = ade_text[:start_pos].split()[-n_words_before:]
-        after_words = ade_text[end_pos:].split()[:n_words_after]
-        words_list = [meddra_name] + before_words + ["EVENT"] + after_words
-        result = " ".join(words_list)
-        results.append((result, start_pos))
-    return results
 
 
 def format_text(
@@ -65,59 +43,58 @@ def format_text(
         .select("drug", "ade_text")
         .to_dicts()
     )
-    meddra_terms = (
+    meddra_df = (
         pl.read_csv(external_data_folder / "umls_meddra_en.csv")
-        .with_columns(pl.col("STR").str.to_lowercase())
-        .filter(pl.col("TTY").is_in({"PT", "LLT"}))
+        .filter(
+            pl.col("TTY").is_in({"PT", "LLT"}),
+        )
         .with_columns(
-            pl.when(pl.col("TTY").eq("PT"))
-            .then(pl.col("STR"))
-            .otherwise(None)
-            .max()
-            .over("SDUI")
-            .alias("pt_meddra_term"),
-            pl.col("SDUI").alias("pt_meddra_id"),
+            pl.col("STR").str.to_lowercase().alias("term"),
         )
-        .select(
-            "pt_meddra_term",
-            "pt_meddra_id",
-            pl.col("CODE").alias("other_meddra_id"),
-            pl.col("STR").alias("other_meddra_term"),
-        )
-        .filter(pl.col("other_meddra_term").str.len_chars().ge(5))
+        .rename({"SDUI": "meddra_pt_code"})
+    )
+    meddra_pt_code_to_term = (
+        meddra_df.filter(pl.col("TTY").eq("PT"))
+        .select("STR", "meddra_pt_code")
+        .to_pandas()
+        .set_index("meddra_pt_code")["STR"]
+        .to_dict()
+    )
+    meddra_terms = (
+        meddra_df.filter(pl.col("term").str.len_chars().ge(5))
+        .select("term", "meddra_pt_code")
+        .unique()
         .to_dicts()
     )
+    meddra_terms = [MeddraSearchTerm.model_validate(t) for t in meddra_terms]
     logger.info(
         f"Found {len(drug_to_ade_text)} drugs. "
         f"Searching for exact matches of {len(meddra_terms)} MedDRA terms."
     )
+    meddra_tree = build_meddra_search_tree(meddra_terms)
+
     exact_terms = list()
     for drug_term in tqdm.tqdm(drug_to_ade_text):
-        for meddra_term in meddra_terms:
-            meddra_name = meddra_term["other_meddra_term"]
-            ade_text = drug_term["ade_text"]
-            if meddra_name not in ade_text:
-                continue
-
-            bert_strings = build_bert_strings(ade_text, meddra_name)
-            for bert_string, start_pos in bert_strings:
-                row = {
-                    "label_id": drug_term["drug"],
-                    "found_term": meddra_name,
-                    "meddra_id": meddra_term["other_meddra_id"],
-                    "location": start_pos,
-                    "string": bert_string,
-                    "section": "AR",
-                    "set_id": drug_term["drug"],
-                    "drug": None,
-                    "spl_version": None,
-                    "pt_meddra_id": meddra_term["pt_meddra_id"],
-                    "pt_meddra_term": meddra_term["pt_meddra_term"],
-                }
-                exact_terms.append(row)
+        ade_text = drug_term["ade_text"]
+        matches = find_meddra_terms_in_text(ade_text, meddra_tree)
+        for match in matches:
+            bert_string = build_bert_string(ade_text, match)
+            row = {
+                "label_id": drug_term["drug"],
+                "found_term": match.term,
+                "location": match.start,
+                "string": bert_string,
+                "section": "AR",
+                "set_id": drug_term["drug"],
+                "drug": None,
+                "spl_version": None,
+                "pt_meddra_id": match.meddra_pt_code,
+                "pt_meddra_term": meddra_pt_code_to_term.get(match.meddra_pt_code),
+            }
+            exact_terms.append(row)
 
     logger.info(f"Found {len(exact_terms)} exact matches.")
-    pl.DataFrame(exact_terms).write_csv(data_folder / "bert_input.csv")
+    pl.DataFrame(exact_terms).write_csv(data_folder / "bert_input_v2.csv")
 
 
 def main():
