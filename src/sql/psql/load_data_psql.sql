@@ -1,0 +1,14 @@
+COPY adverse_reactions_active_labels FROM '/path/to/csv/adverse_reactions_active_labels.csv' DELIMITER ',' CSV HEADER;
+COPY adverse_reactions_all_labels FROM '/path/to/csv/adverse_reactions_all_labels.csv' DELIMITER ',' CSV HEADER;
+COPY adverse_reactions FROM '/path/to/csv/adverse_reactions.csv' DELIMITER ',' CSV HEADER;
+COPY boxed_warnings_active_labels FROM '/path/to/csv/boxed_warnings_active_labels.csv' DELIMITER ',' CSV HEADER;
+COPY boxed_warnings_all_labels FROM '/path/to/csv/boxed_warnings_all_labels.csv' DELIMITER ',' CSV HEADER;
+COPY boxed_warnings FROM '/path/to/csv/boxed_warnings.csv' DELIMITER ',' CSV HEADER;
+COPY warnings_and_precautions_active_labels FROM '/path/to/csv/warnings_and_precautions_active_labels.csv' DELIMITER ',' CSV HEADER;
+COPY warnings_and_precautions_all_labels FROM '/path/to/csv/warnings_and_precautions_all_labels.csv' DELIMITER ',' CSV HEADER;
+COPY warnings_and_precautions FROM '/path/to/csv/warnings_and_precautions.csv' DELIMITER ',' CSV HEADER;
+COPY dm_spl_zip_files_meta_data FROM '/path/to/csv/dm_spl_zip_files_meta_data.csv' DELIMITER ',' CSV HEADER;
+COPY ingredients FROM '/path/to/csv/ingredients.csv' DELIMITER ',' CSV HEADER;
+COPY rxcui_setid_map FROM '/path/to/csv/rxcui_setid_map.csv' DELIMITER ',' CSV HEADER;
+COPY rxnorm_mappings FROM '/path/to/csv/rxnorm_mappings.csv' DELIMITER ',' CSV HEADER;
+COPY rxnorm_product_to_ingredient FROM '/path/to/csv/rxnorm_product_to_ingredient.csv' DELIMITER ',' CSV HEADER;
