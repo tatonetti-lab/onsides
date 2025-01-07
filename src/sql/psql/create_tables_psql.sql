@@ -1,7 +1,7 @@
 -- # These queries modified for postgres
 
 -- Set the schema for all following tables
-SET search_path TO onsides;
+SET search_path TO public;
 
 CREATE TABLE adverse_reactions (
   ingredients_rxcuis text NULL,
