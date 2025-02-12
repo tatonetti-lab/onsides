@@ -11,7 +11,6 @@ from aiolimiter import AsyncLimiter
 from bs4 import BeautifulSoup, Tag
 from bs4.element import NavigableString
 from pydantic import BaseModel, Field
-from rich.progress import track
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlmodel import select
 

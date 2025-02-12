@@ -43,7 +43,7 @@ async def download_eu(state: State) -> None:
         logger.debug("EU: Downloading remaining drug labels")
         label_pdf_directory = eu_path.joinpath("pdf_labels")
         label_pdf_directory.mkdir(exist_ok=True)
-        for drug in track(drugs):
+        for drug in track(drugs, description="EU labels..."):
             await download_and_save(
                 drug, client, state.get_async_session(), label_pdf_directory
             )
