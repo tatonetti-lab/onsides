@@ -68,6 +68,8 @@ def download_labels(
         coros = list()
         if DrugLabelSource.EU in sources:
             coros.append(onsides.download.download_eu(state))
+        if DrugLabelSource.UK in sources:
+            coros.append(onsides.download.download_uk(state))
         return await asyncio.gather(*coros)
 
     return asyncio.run(download_simultaneously())
