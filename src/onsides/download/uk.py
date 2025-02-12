@@ -184,12 +184,12 @@ async def get_drugs_from_page(
             logger.warning(f"UK: No name element: {product}")
             continue
 
-        link = str(name_element["href"]).replace("/emc/product/", "")  # type: ignore
+        link = str(name_element["href"])  # type: ignore
         if link.endswith("/pil"):
-            source_id = link.replace("/pil", "")
+            source_id = link.replace("/pil", "").replace("/emc/product/", "")
             full_url = None
         else:
-            source_id = link.replace("/smpc", "")
+            source_id = link.replace("/smpc", "").replace("/emc/product/", "")
             full_url = f"{ROOT_URL}{link}"
 
         async with async_session() as session, session.begin():
@@ -214,10 +214,10 @@ async def get_drugs_from_page(
                 session.add(label)
 
             # If raw_text is missing, fetch and update it
-            if label.raw_text is None:
-                raw_text = await get_info_page(link, client)
+            if label.raw_text is None and label.label_url is not None:
+                raw_text = await get_info_page(label.label_url, client)
                 if isinstance(raw_text, AcquireLabelError):
-                    logger.error(f"UK: Error fetching info page: {link}")
+                    logger.error(f"UK: Error fetching info page: {label.label_url}")
                     continue
                 label.raw_text = raw_text
 
@@ -227,10 +227,8 @@ async def get_drugs_from_page(
     return results
 
 
-async def get_info_page(
-    suffix: str, client: httpx.AsyncClient
-) -> str | AcquireLabelError:
-    page = await get_helper(f"{ROOT_URL}{suffix}/print", client)
+async def get_info_page(url: str, client: httpx.AsyncClient) -> str | AcquireLabelError:
+    page = await get_helper(f"{url}/print", client)
     if isinstance(page, DownloadError):
         return AcquireLabelError(page.value)
 
