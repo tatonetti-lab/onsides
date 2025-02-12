@@ -15,6 +15,8 @@ class DrugLabel(SQLModel, table=True):
 
     label_id: int | None = Field(default=None, primary_key=True)
     source: DrugLabelSource
+    source_name: str
     source_id: str
     pdf_path: str | None = None
-    raw_text: str
+    label_url: str | None
+    raw_text: str | None

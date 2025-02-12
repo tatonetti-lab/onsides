@@ -222,6 +222,8 @@ async def save_label_db(
         label_id=label_id,
         source=DrugLabelSource.EU,
         source_id=label.code,
+        source_name=label.name,
+        label_url=label.page_url,
         pdf_path=label.path.resolve().as_posix(),
         raw_text=label.raw_text,
     )
