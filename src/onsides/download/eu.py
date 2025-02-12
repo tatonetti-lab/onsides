@@ -22,7 +22,7 @@ from onsides.state import State
 
 logger = logging.getLogger(__name__)
 
-limiter = AsyncLimiter(2, 5)
+limiter = AsyncLimiter(8)
 
 ROOT_URL = "https://www.ema.europa.eu"
 
