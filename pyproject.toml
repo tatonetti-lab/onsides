@@ -15,6 +15,7 @@ dependencies = [
     "beautifulsoup4>=4.13.3",
     "camelot-py>=1.0.0",
     "httpx>=0.28.1",
+    "lxml>=5.3.1",
     "pandas>=2.2.3",
     "polars>=1.22.0",
     "pyahocorasick>=2.1.0",
