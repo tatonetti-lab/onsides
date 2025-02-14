@@ -4,7 +4,7 @@ from sqlmodel import Field, SQLModel
 
 
 class DrugLabelSource(str, enum.Enum):
-    FDA = "FDA"
+    US = "US"
     UK = "UK"
     EU = "EU"
     JP = "JP"
