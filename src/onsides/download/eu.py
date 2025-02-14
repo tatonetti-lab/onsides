@@ -13,7 +13,6 @@ from aiolimiter import AsyncLimiter
 from bs4 import BeautifulSoup, Tag
 from bs4.element import NavigableString
 from pydantic import BaseModel, Field
-from rich.progress import track
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlmodel import select
 
@@ -43,10 +42,13 @@ async def download_eu(state: State) -> None:
         logger.debug("EU: Downloading remaining drug labels")
         label_pdf_directory = eu_path.joinpath("pdf_labels")
         label_pdf_directory.mkdir(exist_ok=True)
-        for drug in track(drugs, description="EU labels..."):
+
+        task = state.add_task("eu", "EU labels...", total=len(drugs))
+        for drug in drugs:
             await download_and_save(
                 drug, client, state.get_async_session(), label_pdf_directory
             )
+            state.progress.update(task, advance=1)
         logger.info("EU: Finished downloading")
 
 

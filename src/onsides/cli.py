@@ -72,4 +72,5 @@ def download_labels(
             coros.append(onsides.download.download_uk(state))
         return await asyncio.gather(*coros)
 
-    return asyncio.run(download_simultaneously())
+    with state.progress:
+        return asyncio.run(download_simultaneously())
