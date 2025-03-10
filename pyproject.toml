@@ -23,8 +23,10 @@ dependencies = [
     "pydantic>=2.10.6",
     "pypdf2>=3.0.1",
     "rich>=13.9.4",
+    "snakemake>=8.29.3",
     "sqlalchemy[asyncio]>=2.0.38",
     "sqlmodel>=0.0.22",
+    "tabula-py>=2.10.0",
     "typer>=0.15.1",
 ]
 

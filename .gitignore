@@ -9,3 +9,5 @@ wheels/
 # Virtual environments
 .venv
 _onsides
+.snakemake
+_onsides_old
