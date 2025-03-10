@@ -1,0 +1,148 @@
+import json
+import os
+import re
+from pathlib import Path
+
+from bs4 import BeautifulSoup, Tag
+from bs4.element import NavigableString
+import pandas as pd
+import polars as pl
+
+from onsides.download.utils import sanitize_filename
+
+
+config.update({"jobs": 1})
+
+ROOT_URL = "https://www.ema.europa.eu"
+
+
+def get_html_files(wildcards):
+    checkpoint_output = checkpoints.parse_manifest.get(**wildcards).output[0]
+    download_files = list(Path(checkpoint_output).glob("*.download"))
+    return [file.with_suffix(".html").as_posix() for file in download_files]
+
+
+def has_pdf_link(link_file):
+    if not Path(link_file).exists():
+        return False
+
+    with open(link_file) as f:
+        link = f.read().strip()
+
+    return len(link) > 0
+
+
+def get_link_files(wildcards):
+    checkpoint_output = checkpoints.parse_manifest.get(**wildcards).output[0]
+    html_files = list(Path(checkpoint_output).glob("*.download"))
+    return [file.with_suffix(".link").as_posix() for file in html_files]
+
+def get_pdf_files(wildcards):
+    checkpoint_output = checkpoints.parse_manifest.get(**wildcards).output[0]
+    link_files = list(Path(checkpoint_output).glob("*.link"))
+    return [file.with_suffix(".pdf").as_posix() for file in link_files if has_pdf_link(file)]
+
+
+rule all:
+    input:
+        get_html_files,
+        get_link_files,
+        get_pdf_files
+
+
+checkpoint download_manifest:
+    """Download a file that tells us what medicines are available
+
+    `checkpoint` means that the computation graph is re-evaluated after running
+    this, which we need because it could tell us we need to download different
+    files.
+    """
+
+    output: "_onsides/eu/manifest.xlsx"
+    params:
+        url = f"{ROOT_URL}/en/documents/report/medicines-output-medicines-report_en.xlsx"
+    shell: "curl -o {output} {params.url}"
+
+
+checkpoint parse_manifest:
+    """Read the manifest and write a <name>.download file for every drug name
+
+    `checkpoint` means that the computation graph is re-evaluated after running
+    this, which we need because it could tell us we need to download different
+    files.
+    """
+
+    input: "_onsides/eu/manifest.xlsx"
+    output: directory("_onsides/eu/labels")
+    run:
+        os.makedirs(output[0], exist_ok=True)
+        records = (
+            pd.read_excel(input[0], skiprows=8)
+            .pipe(pl.DataFrame)
+            .filter(pl.col("Category").eq("Human"))
+            .rename({
+                "Name of medicine": "name",
+                "EMA product number": "code",
+                "Medicine URL": "page_url",
+            })
+            .select("name", "code", "page_url")
+            .to_dicts()
+        )
+        for record in records:
+            name = sanitize_filename(record["name"])
+            with open(f"{output[0]}/{name}.download", "w") as f:
+                json.dump(record, f)
+
+
+
+rule download_label_page:
+    input: "_onsides/eu/labels/{name}.download"
+    output: "_onsides/eu/labels/{name}.html"
+    resources: jobs=1
+    params: url=lambda wildcards, input: json.load(open(input[0]))["page_url"]
+    shell:
+        "curl -L -o {output} '{params.url}'"
+
+
+def get_pdf_url_from_html(html_file_path: str) -> str:
+    with open(html_file_path) as f:
+        page = f.read()
+
+    assert isinstance(page, str)
+    soup = BeautifulSoup(page, "html.parser")
+    section = soup.find("div", id="ema-inpage-item-product-info")
+    if section is None or isinstance(section, NavigableString):
+        raise ValueError("No product info section")
+
+    assert isinstance(section, Tag)
+    links = section.find_all("a", target="_blank", href=True)
+    reg = r"^/en/documents/product-information/.+-epar-product-information_en.pdf$"
+    for link in links:
+        match = re.match(reg, link["href"])
+        if match is not None:
+            return match.group(0)
+
+    raise ValueError("No product info PDF URL")
+
+
+checkpoint extract_pdf_link:
+    input: "_onsides/eu/labels/{name}.html"
+    output: "_onsides/eu/labels/{name}.link"
+    run:
+        try:
+            url_suffix = get_pdf_url_from_html(input[0])
+            with open(output[0], "w") as f:
+                f.write(ROOT_URL + url_suffix)
+        except ValueError as e:
+            shell("touch {output}")
+
+
+
+rule download_label_pdf:
+    input: "_onsides/eu/labels/{name}.link"
+    output: "_onsides/eu/labels/{name}.pdf"
+    resources: jobs=1
+    run:
+        with open(input[0]) as f:
+            url = f.read().strip()
+        shell(f"curl -L -o {output[0]} '{url}'")

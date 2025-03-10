@@ -1,0 +1,62 @@
+from pathlib import Path
+
+from onsides.parse.utils import pull_tables_from_pdf
+
+
+config.update({"jobs": 10})
+
+LABELS_DIR = "_onsides/eu/labels"
+PDFs = list(Path(LABELS_DIR).glob("*.pdf"))
+
+def files_with_suffix(suffix):
+    return [pdf.with_suffix(suffix).as_posix() for pdf in PDFs]
+
+
+rule all:
+    input:
+        # Original PDF files
+        PDFs,
+        # Table count files (output even if #tables=0, to keep track of what's been done)
+        files_with_suffix(".tables.txt"),
+        # Side effect files
+        files_with_suffix(".side_effects.txt"),
+
+
+rule extract_tables_from_pdf:
+    input: "_onsides/eu/labels/{name}.pdf"
+    output: "_onsides/eu/labels/{name}.tables.txt"
+    resources: jobs=1
+    run: pull_tables_from_pdf(input[0], output[0], LABELS_DIR)
+
+
+rule convert_pdf_to_text:
+    input: "{name}.pdf"
+    output: "{name}.txt"
+    resources: jobs=5
+    shell: "pdftotext -nopgbrk -raw {input} {output} || touch {output}"
+
+
+rule extract_section_from_text:
+    input:
+        "{file}.txt"
+    output:
+        "{file}.side_effects.txt"
+    resources: jobs=1
+    run:
+        with open(input[0]) as f:
+            txt = f.read()
+
+        # Normalize whitespace
+        normed = " ".join(txt.split())
+
+        regex = r"(4\.8\. Undesirable|4\.8 Undesirable).+(4\.9 Overdose|4\.9\. Overdose)"
+        match = re.search(regex, normed)
+
+        if match is None:
+            clean_ade = ""
+        else:
+            undesirable_effects = match.group()
+            clean_ade = re.sub(r"[^\n\w\s.,]", "", undesirable_effects)
+
+        with open(output[0], "w") as f:
+            f.write(clean_ade)
