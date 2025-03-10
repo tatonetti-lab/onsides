@@ -1,0 +1,174 @@
+"""
+Basic overview:
+1. Get the first page -> extract the drug prefixes (e.g. 'A', 'B', '0-9', etc.)
+2. Get the first page of each prefix -> extract the number of pages in that prefix
+3. Download all remaining pages for all prefixes
+4. Parse all HTML pages and extract the SmPC URLs (links to drug labels)
+5. Download all drug label HTML documents
+"""
+
+import json
+import os
+import re
+from pathlib import Path
+
+from bs4 import BeautifulSoup, Tag
+from bs4.element import NavigableString
+
+from onsides.download.utils import sanitize_filename
+
+
+config.update({"jobs": 1})
+
+ROOT_URL = "https://www.medicines.org.uk"
+
+
+
+def get_prefix_pages(wildcards):
+    prefix_dir = checkpoints.extract_prefixes.get(**wildcards).output[0]
+    return [p.with_suffix(".html") for p in Path(prefix_dir).glob("*.*.link")]
+
+def get_count_files(wildcards):
+    prefix_dir = checkpoints.extract_prefixes.get(**wildcards).output[0]
+    return [p.with_suffix("").with_suffix(".count") for p in Path(prefix_dir).glob("*.*.link")]
+
+def get_label_files(wildcards):
+    label_dir = checkpoints.extract_drugs_from_pages.get(**wildcards).output[0]
+    return [p.with_suffix(".html") for p in Path(label_dir).glob("*.download")]
+
+
+rule all:
+    input:
+        "_onsides/uk/browse_page.html",
+        get_prefix_pages,
+        get_count_files,
+        "_onsides/uk/prefix_page",
+        "_onsides/uk/labels",
+        get_label_files
+
+
+rule download_browse_page:
+    output: "_onsides/uk/browse_page.html"
+    resources: jobs=1
+    shell: "curl -s -L -o {output} '{ROOT_URL}/emc/browse-medicines'"
+
+
+checkpoint extract_prefixes:
+    input: "_onsides/uk/browse_page.html"
+    output: directory("_onsides/uk/prefix_page")
+    run:
+        directory = Path(output[0])
+        directory.mkdir(exist_ok=True, parents=True)
+
+        with open(input[0], 'r') as f:
+            soup = BeautifulSoup(f.read(), 'html.parser')
+
+        section = soup.find('div', {'class': 'browse-menu'})
+        if section:
+            links = section.find_all('a', {'class': 'emc-link'}, href=True)
+            reg = r'^/emc/browse-medicines/.+$'
+            for link in links:
+                match = re.match(reg, link['href'])
+                if match:
+                    url = ROOT_URL + link["href"]
+                    prefix = Path(url).stem
+                    url = url.split("?")[0] + f"?offset=1&limit=200"
+
+                    path = directory.joinpath(prefix).with_suffix(".1.link")
+                    with open(path, "w") as f:
+                        f.write(url)
+
+
+rule download_prefix_page:
+    input: "_onsides/uk/prefix_page/{prefix}.{page}.link"
+    output: "_onsides/uk/prefix_page/{prefix}.{page}.html"
+    resources: jobs=1
+    shell: "curl -L -o {output} \"$(cat {input})\""
+
+
+checkpoint count_pages:
+    """Count the number of pages under each prefix.
+
+    Each page has a counter like 'Page 1 of 5'. We want `5` from this.
+
+    This function is run as a checkpoint because it also produces new `.link`
+    files, which give URLs that we still need to download. For example, if we
+    open the `A.1.html` file and see that there are 5 pages in the `A` prefix, we
+    create `A.2.link`, `A.3.link`, `A.4.link`, and `A.5.link`, which then trigger
+    a re-evaluation of the DAG, requriing those to be downloaded as well.
+    """
+
+    input:
+        html = "_onsides/uk/prefix_page/{prefix}.1.html",
+        link = "_onsides/uk/prefix_page/{prefix}.1.link"
+    output: "_onsides/uk/prefix_page/{prefix}.count"
+    run:
+        with open(input.link) as f:
+            first_page_link = f.read().strip()
+
+        with open(input.html) as f:
+            soup = BeautifulSoup(f.read(), "html.parser")
+
+        n_pages = 0
+        page_count = soup.find_all("li", {"class": "text-presentation"})
+        for inst in page_count:
+            if not inst.text.startswith("Page "):
+                continue
+
+            n_pages = int(inst.text.split()[-1])
+            for i in range(2, n_pages + 1):
+                offset = 1 + (i-1) * 200
+                url = first_page_link.replace("offset=1", f"offset={offset}")
+
+                link_path = Path(input.link.replace(".1.", f".{i}."))
+                link_path.touch()
+                with open(link_path, "w") as f:
+                    f.write(url)
+
+        with open(output[0], "w") as f:
+            f.write(str(n_pages))
+
+
+
+checkpoint extract_drugs_from_pages:
+    input: get_prefix_pages
+    output: directory("_onsides/uk/labels")
+    run:
+        directory = Path(output[0])
+        directory.mkdir(exist_ok=True, parents=True)
+
+        for file in input:
+            with open(file, 'r') as f:
+                soup = BeautifulSoup(f.read(), 'html.parser')
+
+            product_elements = soup.find_all('div', {'class': 'search-results-product'})
+            for product in product_elements:
+                name_element = product.find('a', {'class': 'search-results-product-info-title-link emc-link'}, href=True)
+                if name_element is None:
+                    continue
+
+                link = str(name_element['href'])
+                if link.endswith('/pil'):
+                    continue
+
+                name = name_element.text.strip()
+                source_id = link.replace('/smpc', '').replace('/emc/product/', '')
+                url = ROOT_URL + link.strip()
+                drug_info = {"name": name, "code": source_id, "page_url": url}
+
+                name = sanitize_filename(name)
+                path = directory.joinpath(name).with_suffix(".download")
+                with open(path, 'w') as out:
+                    json.dump(drug_info, out)
+
+
+rule download_label_page:
+    input: "_onsides/uk/labels/{name}.download"
+    output: "_onsides/uk/labels/{name}.html"
+    resources: jobs=1
+    run:
+        with open(input[0]) as f:
+            drug_info = json.load(f)
+
+        url = drug_info["page_url"] + "/print"
+        shell(f"curl -L -o {{output}} '{url}'")
