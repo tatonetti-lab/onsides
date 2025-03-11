@@ -8,6 +8,7 @@ config.update({"jobs": 10})
 LABELS_DIR = "_onsides/eu/labels"
 PDFs = list(Path(LABELS_DIR).glob("*.pdf"))
 
+
 def files_with_suffix(suffix):
     return [pdf.with_suffix(suffix).as_posix() for pdf in PDFs]
 

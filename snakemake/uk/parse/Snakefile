@@ -1,0 +1,49 @@
+import re
+from pathlib import Path
+
+from bs4 import BeautifulSoup
+
+from onsides.parse.utils import pull_tables_from_html, pull_undesirable_effects
+
+
+config.update({"jobs": 10})
+
+LABELS_DIR = "_onsides/uk/labels"
+HTMLs = [p for p in Path(LABELS_DIR).glob("*.html") if ".side_effects." not in p.name]
+
+
+def files_with_suffix(suffix):
+    return [file.with_suffix(suffix).as_posix() for file in HTMLs]
+
+
+rule all:
+    input:
+        # Original HTML files
+        HTMLs,
+        # Table count files (output even if #tables=0, to keep track of what's been done)
+        files_with_suffix(".tables.txt"),
+        # ADE section HTML files
+        files_with_suffix(".side_effects.html"),
+
+
+rule extract_section_from_html:
+    input: "_onsides/uk/labels/{file}.html"
+    output: "_onsides/uk/labels/{file}.side_effects.html"
+    wildcard_constraints: file="[^.]+"
+    resources: jobs=1
+    run: pull_undesirable_effects(input[0], output[0])
+
+
+rule extract_tables_from_html:
+    input: "_onsides/uk/labels/{name}.side_effects.html"
+    output: "_onsides/uk/labels/{name}.tables.txt"
+    wildcard_constraints: file="[^.]+"
+    resources: jobs=1
+    run: pull_tables_from_html(input[0], output[0], LABELS_DIR)
+
+
+# rule convert_html_to_text:
+#     input: "{name}.html"
+#     output: "{name}.txt"
+#     resources: jobs=5
+#     shell: "pandoc -s -t plain -o {output} {input}"

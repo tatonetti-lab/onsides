@@ -16,6 +16,7 @@
           buildInputs = [
             pkgs.uv  # Add uv package manager
             pkgs.jdk11  # Java is required for tabula-py
+            pkgs.pandoc # For some random conversions (e.g. HTML -> TXT)
           ];
 
           shellHook = ''

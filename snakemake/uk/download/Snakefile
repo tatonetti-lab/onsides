@@ -1,7 +1,16 @@
 """
 Basic overview:
-1. Get the first page -> extract the drug prefixes (e.g. 'A', 'B', '0-9', etc.)
-2. Get the first page of each prefix -> extract the number of pages in that prefix
+---------------
+These data come from the Electronic Medicines Compendium (EMC).
+
+Drug label data are organized by the prefix of the drug name (e.g. 'A', 'B',
+'0-9', etc.). To ensure we get every valid drug label, we search the EMC website
+as follows:
+
+1. Find all valid drug prefixes.
+     Get the first page -> extract the drug prefixes
+2. Determine the number of drugs in each prefix.
+     Get the first page of each prefix -> extract the number of pages in that prefix
 3. Download all remaining pages for all prefixes
 4. Parse all HTML pages and extract the SmPC URLs (links to drug labels)
 5. Download all drug label HTML documents
@@ -21,7 +30,6 @@ from onsides.download.utils import sanitize_filename
 config.update({"jobs": 1})
 
 ROOT_URL = "https://www.medicines.org.uk"
-
 
 
 def get_prefix_pages(wildcards):
