@@ -1,0 +1,128 @@
+import json
+from bs4 import BeautifulSoup, Tag
+
+
+DM_DOWNLOAD_URL = "https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm"
+DM_MAP_URL = "https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-mapping-files.cfm"
+
+
+def get_files_to_download(wildcards):
+    return [
+        p.with_suffix(".zip")
+        for p in Path(f"_onsides/us/download").glob("*.download")
+    ]
+
+
+def get_map_to_download(wildcards):
+    return [
+        p.with_suffix(".zip")
+        for p in Path(f"_onsides/us/map_download").glob("*.download")
+    ]
+
+
+def get_unzipped_confirmations(wildcards):
+    return [
+        p.with_suffix(".unzipped")
+        for p in Path(f"_onsides/us/download").glob("*.zip")
+    ]
+
+
+def get_label_zips(wildcards):
+    return list(Path("_onsides/us/labels").glob("*.zip"))
+
+
+# Define download targets based on available files
+rule all:
+    input:
+        "_onsides/us/download_page.html",
+        "_onsides/us/map_page.html",
+        "_onsides/us/parsed.done",
+        get_files_to_download,
+        get_unzipped_confirmations,
+        "_onsides/us/map_parsed.done",
+        get_map_to_download
+
+
+rule download_index_page:
+    output: "_onsides/us/download_page.html"
+    resources: jobs=1
+    shell: "curl -L --retry 10 --retry-all-errors -o {output} '{DM_DOWNLOAD_URL}'"
+
+
+checkpoint parse_download_pages:
+    input: "_onsides/us/download_page.html"
+    output: touch("_onsides/us/parsed.done")
+    run:
+        directory = Path("_onsides/us/download")
+        directory.mkdir(exist_ok=True, parents=True)
+
+        with open(input[0]) as f:
+            soup = BeautifulSoup(f.read(), "html.parser")
+
+        file_elements = soup.find_all("li", {"data-ddfilter": "human prescription labels"})
+        for file_element in file_elements:
+            assert isinstance(file_element, Tag)
+            links = file_element.find_all("a", href=True)
+            https_links = [l for l in links if l.text.strip() == "HTTPS"]
+            assert len(https_links) == 1
+            https_link = https_links[0]["href"]
+            file_name = Path(https_link).name
+            download_file = directory.joinpath(file_name).with_suffix(".download")
+            with open(download_file, "w") as f:
+                json.dump({"page_url": https_link}, f)
+
+
+rule download_file:
+    input: "_onsides/us/{name}.download"
+    output: "_onsides/us/{name}.zip"
+    resources: jobs=1
+    run:
+        with open(input[0]) as f:
+            drug_info = json.load(f)
+
+        url = drug_info["page_url"]
+        shell("curl -L --retry 10 --retry-all-errors -o {output} '{url}'")
+
+
+checkpoint unzip:
+    input: "_onsides/us/download/{name}.zip"
+    output: touch("_onsides/us/download/{name}.unzipped")
+    params: directory = "_onsides/us/labels"
+    resources: jobs=1
+    shell:
+        """
+        mkdir -p {params.directory}
+        unzip -u -j {input} 'prescription*.zip' -d {params.directory}
+        """
+
+
+rule download_map_page:
+    output: "_onsides/us/map_page.html"
+    resources: jobs=1
+    shell: "curl -L --retry 10 --retry-all-errors -o {output} '{DM_MAP_URL}'"
+
+
+checkpoint parse_map_page:
+    input: "_onsides/us/map_page.html"
+    output: touch("_onsides/us/map_parsed.done")
+    run:
+        directory = Path("_onsides/us/map_download")
+        directory.mkdir(exist_ok=True, parents=True)
+
+        with open(input[0]) as f:
+            soup = BeautifulSoup(f.read(), "html.parser")
+
+        download_element = soup.find("ul", {"class": "download heading"})
+        assert isinstance(download_element, Tag)
+
+        items = download_element.find_all("li", {"data-ddfilter": True})
+        for item in items:
+            assert isinstance(item, Tag)
+            links = item.find_all("a", href=True)
+            https_links = [l for l in links if l.text.strip() == "HTTPS"]
+            assert len(https_links) == 1, https_links
+            https_link = https_links[0]["href"]
+            file_name = Path(https_link).name
+            download_file = directory.joinpath(file_name).with_suffix(".download")
+            with open(download_file, "w") as f:
+                json.dump({"page_url": https_link}, f)
