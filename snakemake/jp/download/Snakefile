@@ -1,0 +1,142 @@
+import json
+import re
+from pathlib import Path
+
+from bs4 import BeautifulSoup, Tag
+
+from onsides.download.utils import sanitize_filename
+
+
+ROOT_URL = "https://www.kegg.jp/medicus-bin"
+INDEX_URL = f"{ROOT_URL}/search_drug"
+
+
+def get_index_pages(wildcards):
+    return [
+        p.with_suffix(".html")
+        for kind in ["med", "otc"]
+        for p in Path(f"_onsides/jp/{kind}_index_page").glob("*.download")
+    ]
+
+def get_product_pages(wildcards):
+    return [
+        p.with_suffix(".html")
+        for kind in ["med", "otc"]
+        for p in Path(f"_onsides/jp/{kind}_labels").glob("*.download")
+    ]
+
+
+rule all:
+    input:
+        "_onsides/jp/n_index_pages.json",
+        get_index_pages,
+        get_product_pages,
+
+
+rule download_index_page:
+    output: "_onsides/jp/{kind}_index_page/{page_number}.html"
+    resources: jobs=1
+    shell: """
+        curl -L --retry 10 --retry-all-errors -o {output} \
+        '{INDEX_URL}?display={wildcards.kind}&page={wildcards.page_number}'
+    """
+
+
+checkpoint count_index_pages:
+    input: "_onsides/jp/med_index_page/1.html"
+    output: "_onsides/jp/n_index_pages.json"
+    run:
+        with open(input[0]) as f:
+            soup = BeautifulSoup(f.read(), "html.parser")
+
+        kind_to_count = dict()
+        for kind in ["med on", "otc off"]:
+            count_tab = soup.find("li", {"class": kind})
+            assert count_tab is not None
+            assert isinstance(count_tab, Tag)
+
+            count_link = count_tab.find("a", href=True)
+            assert count_link is not None
+            assert isinstance(count_link, Tag)
+
+            match = re.search(r"(?<=\()\d+(?=\))", count_link.text)
+            assert match is not None, str(count_link.text)
+
+            n_drugs = int(match.group())
+            n_pages = n_drugs // 40 + int(n_drugs % 40 != 0) # 40 per page. 40->1, 41->2
+            kind = kind.split()[0] # "med on" -> "med"
+            kind_to_count[kind] = n_pages
+
+            directory = Path(f"_onsides/jp/{kind}_index_page")
+            directory.mkdir(exist_ok=True, parents=True)
+            for page in range(1, n_pages + 1):
+                path = directory.joinpath(str(page)).with_suffix(".download")
+                path.touch()
+
+        with open(output[0], "w") as f:
+            json.dump(kind_to_count, f)
+
+
+checkpoint extract_drugs_from_index_pages:
+    input: get_index_pages
+    output: directory("_onsides/jp/{kind}_labels")
+    run:
+        directory = Path(output[0])
+        directory.mkdir(exist_ok=True, parents=True)
+
+        for file in input:
+            with open(file, 'r') as f:
+                soup = BeautifulSoup(f.read(), 'html.parser')
+
+            table = soup.find('table', {'class': 'list1'})
+            assert table is not None and isinstance(table, Tag), file
+
+            rows = table.find_all("tr")
+            assert rows is not None
+
+            for row in rows:
+                if row is None or not isinstance(row, Tag):
+                    continue
+
+                data_cells = row.find_all("td", {"class": "data1"})
+
+                # Skip the header row
+                if data_cells is None or len(data_cells) == 0:
+                    continue
+
+                assert len(data_cells) == 4
+
+                # First column has the name and a link to the product page
+                product_cell = data_cells[0]
+                assert isinstance(product_cell, Tag)
+
+                link = product_cell.find("a", href=True)
+                assert link is not None and isinstance(link, Tag)
+
+                name = link.text.strip() # Product name
+                assert len(name) > 0
+
+                href = link["href"].strip()
+                match = re.match(r"japic_(?:med|otc)\?japic_code=(.+)", href)
+                assert match is not None, href
+                source_id = match.group(1)
+
+                url = f"{ROOT_URL}/{href}"
+                drug_info = {"name": name, "code": source_id, "page_url": url}
+
+                name = sanitize_filename(name)
+                path = directory.joinpath(name).with_suffix(".download")
+                with open(path, 'w') as out:
+                    json.dump(drug_info, out)
+
+
+rule download_label_page:
+    input: "_onsides/jp/{kind}_labels/{name}.download"
+    output: "_onsides/jp/{kind}_labels/{name}.html"
+    resources: jobs=1
+    run:
+        with open(input[0]) as f:
+            drug_info = json.load(f)
+
+        url = drug_info["page_url"]
+        shell("curl -L --retry 10 --retry-all-errors -o {output} '{url}'")
