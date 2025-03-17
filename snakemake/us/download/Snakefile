@@ -1,4 +1,6 @@
 import json
+from pathlib import Path
+
 from bs4 import BeautifulSoup, Tag
 
 
@@ -27,10 +29,6 @@ def get_unzipped_confirmations(wildcards):
     ]
 
 
-def get_label_zips(wildcards):
-    return list(Path("_onsides/us/labels").glob("*.zip"))
-
-
 # Define download targets based on available files
 rule all:
     input:
@@ -40,7 +38,7 @@ rule all:
         get_files_to_download,
         get_unzipped_confirmations,
         "_onsides/us/map_parsed.done",
-        get_map_to_download
+        get_map_to_download,
 
 
 rule download_index_page:
@@ -87,7 +85,7 @@ rule download_file:
 checkpoint unzip:
     input: "_onsides/us/download/{name}.zip"
     output: touch("_onsides/us/download/{name}.unzipped")
-    params: directory = "_onsides/us/labels"
+    params: directory = "_onsides/us/labelzips"
     resources: jobs=1
     shell:
         """

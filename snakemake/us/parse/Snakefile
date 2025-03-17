@@ -1,0 +1,70 @@
+import json
+from pathlib import Path
+
+from bs4 import BeautifulSoup, Tag
+
+
+section_codes = {
+    'AR': '34084-4', # Adverse Reactions
+    'BW': '34066-1', # Boxed Warnings
+    'WP': '43685-7', # Warnings and Precautions
+    'WA': '34071-1', # Warnings
+    'PR': '42232-9', # Precautions
+    'SP': '43684-0', # Use in Specific Populations
+    'OV': '34088-5', # Overdosage
+}
+
+
+def get_label_zips(wildcards):
+    return list(Path("_onsides/us/labelzips").glob("*.zip"))
+
+
+def get_label_jsons(wildcards):
+    return [
+        p.parent.parent.joinpath("labels").joinpath(p.name).with_suffix(".json")
+        for p in get_label_zips(wildcards)
+    ]
+
+
+rule all:
+    input:
+        get_label_jsons,
+
+
+rule unzip_label:
+    input: "_onsides/us/labelzips/{name}.zip"
+    output: temp("_onsides/us/labels/{name}.xml")
+    shell: "unzip -p {input} '*.xml' > {output}"
+
+
+rule extract_json:
+    input: "_onsides/us/labels/{name}.xml"
+    output: "_onsides/us/labels/{name}.json"
+    run:
+        with open(input[0]) as f:
+            soup = BeautifulSoup(f.read(), "xml")
+
+        set_id = soup.find('setId')['root']
+        label_id = soup.find('id')['root']
+        spl_version = soup.find('versionNumber')['value']
+
+        try:
+            title = soup.title.text.strip()
+        except AttributeError:
+            title = 'UNDEFINED'
+
+        result = {
+            "set_id": set_id,
+            "label_id": label_id,
+            "spl_version": spl_version,
+            "title": title,
+            "sections": dict()
+        }
+
+        for section_abbrev, section_code in section_codes.items():
+            code_tags = soup.find_all('code', {'code': section_code})
+            full_text = " ".join(tag.parent.text.strip() for tag in code_tags)
+            result["sections"][section_abbrev] = full_text
+
+        with open(output[0], "w") as f:
+            json.dump(result, f)
