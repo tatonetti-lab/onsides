@@ -100,8 +100,16 @@ rule download_label_page:
     output: "_onsides/eu/labels/{name}.html"
     resources: jobs=1
     params: url=lambda wildcards, input: json.load(open(input[0]))["page_url"]
+    retries: 3
     shell:
-        "curl -L -o {output} '{params.url}'"
+        """
+        curl -L -o {output} '{params.url}'
+        if grep -q "The server is temporarily unavailable" {output}; then
+            echo "Download failed: server unavailable" >&2
+            rm -f {output}
+            exit 1
+        fi
+        """
 
 
 def get_pdf_url_from_html(html_file_path: str) -> str:
@@ -142,7 +150,14 @@ rule download_label_pdf:
     input: "_onsides/eu/labels/{name}.link"
     output: "_onsides/eu/labels/{name}.pdf"
     resources: jobs=1
+    retries: 3
     run:
         with open(input[0]) as f:
             url = f.read().strip()
         shell(f"curl -L -o {output[0]} '{url}'")
+        shell("""
+            if grep -q "The server is temporarily unavailable" {output}; then
+                echo "Download failed: server unavailable" >&2
+                rm -f {output}
+                exit 1
+            fi""")
