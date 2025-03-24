@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import polars as pl
+
 from bs4 import BeautifulSoup, Tag
 
 
@@ -29,6 +31,7 @@ def get_label_jsons(wildcards):
 rule all:
     input:
         get_label_jsons,
+        "_onsides/us/label_text.parquet",
 
 
 rule unzip_label:
@@ -68,3 +71,23 @@ rule extract_json:
 
         with open(output[0], "w") as f:
             json.dump(result, f)
+
+
+rule combine_labels:
+    input: get_label_jsons,
+    output: "_onsides/us/label_text.parquet"
+    run:
+        results = list()
+        for path in input:
+            with open(path) as f:
+                result = json.load(f)
+            results.append(result)
+        (
+            pl.DataFrame(results)
+            .select(
+                "set_id", "label_id", "spl_version", "title",
+                    pl.col("sections").struct.unnest(),
+                    # "AR", "BW", "OV", "PR", "SP", "WA", "WP",
+            )
+            .write_parquet(output[0])
+        )

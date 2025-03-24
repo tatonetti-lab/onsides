@@ -1,4 +1,7 @@
+import json
 from pathlib import Path
+
+import polars as pl
 
 from onsides.parse.utils import pull_tables_from_html, pull_undesirable_effects
 
@@ -21,6 +24,7 @@ rule all:
         files_with_suffix(".tables.txt"),
         # ADE section HTML files
         files_with_suffix(".side_effects.html"),
+        "_onsides/uk/label_text.parquet",
 
 
 rule extract_section_from_html:
@@ -39,8 +43,28 @@ rule extract_tables_from_html:
     run: pull_tables_from_html(input[0], output[0], LABELS_DIR)
 
 
-# rule convert_html_to_text:
-#     input: "{name}.html"
-#     output: "{name}.txt"
-#     resources: jobs=5
-#     shell: "pandoc -s -t plain -o {output} {input}"
+rule convert_html_to_text:
+    input: "{name}.html"
+    output: "{name}.txt"
+    resources: jobs=5
+    shell: "pandoc -s -t plain -o {output} {input}"
+
+rule combine_labels:
+    input: files_with_suffix(".side_effects.txt")
+    output: "_onsides/uk/label_text.parquet"
+    run:
+        results = list()
+        for path in input:
+            with open(path) as f:
+                text = f.read().strip()
+
+            if not text:
+                continue
+
+            meta_path = path.replace(".side_effects.txt", ".download")
+            with open(meta_path) as f:
+                meta = json.load(f)
+
+            meta["text"] = text
+            results.append(meta)
+        pl.DataFrame(results).write_parquet(output[0])
