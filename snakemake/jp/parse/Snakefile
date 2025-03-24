@@ -1,0 +1,81 @@
+import json
+from pathlib import Path
+
+import polars as pl
+
+from onsides.parse.utils import pull_tables_from_html, pull_side_effects_jp, filter_mrconso_jp
+
+
+config.update({"jobs": 10})
+
+labels_dirs = ["_onsides/jp/med_labels", "_onsides/jp/otc_labels"]
+HTMLs = [p for d in labels_dirs for p in Path(d).glob("*.html") if ".side_effects." not in p.name]
+
+
+def files_with_suffix(suffix):
+    return [file.with_suffix(suffix).as_posix() for file in HTMLs]
+
+
+def get_txt_files(wildcards):
+    return [
+        p.as_posix()
+        for p in Path(f"_onsides/jp/{wildcards.kind}_labels").glob("*side_effects.txt")
+    ]
+
+
+rule all:
+    input:
+        # Original HTML files
+        HTMLs,
+        # Table count files (output even if #tables=0, to keep track of what's been done)
+        files_with_suffix(".tables.txt"),
+        # ADE section HTML files
+        files_with_suffix(".side_effects.html"),
+        # ADE section TXT files
+        files_with_suffix(".side_effects.txt"),
+        "_onsides/jp/med_label_text.parquet",
+        "_onsides/jp/otc_label_text.parquet",
+
+
+rule extract_section_from_html:
+    input: "_onsides/jp/{kind}_labels/{file}.html"
+    output: "_onsides/jp/{kind}_labels/{file}.side_effects.html"
+    wildcard_constraints: file="[^.]+"
+    resources: jobs=1
+    run: pull_side_effects_jp(input[0], output[0])
+
+
+rule convert_html_to_text:
+    input: "{name}.html"
+    output: "{name}.txt"
+    resources: jobs=2
+    shell: "pandoc -s -t plain -o {output} {input}"
+
+
+rule extract_tables_from_html:
+    input: "_onsides/jp/{kind}_labels/{name}.side_effects.html"
+    output: "_onsides/jp/{kind}_labels/{name}.tables.txt"
+    wildcard_constraints: file="[^.]+"
+    resources: jobs=1
+    run: pull_tables_from_html(input[0], output[0], f"_onsides/jp/{wildcards.kind}_labels/")
+
+
+rule combine_labels:
+    input: get_txt_files
+    output: "_onsides/jp/{kind}_label_text.parquet"
+    run:
+        results = list()
+        for path in input:
+            with open(path) as f:
+                text = f.read().strip()
+
+            if not text:
+                continue
+
+            meta_path = path.replace(".side_effects.txt", ".download")
+            with open(meta_path) as f:
+                meta = json.load(f)
+
+            meta["text"] = text
+            results.append(meta)
+        pl.DataFrame(results).write_parquet(output[0])
