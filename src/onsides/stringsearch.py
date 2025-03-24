@@ -7,8 +7,8 @@ from onsides.types import IndexedText
 
 class MatchContext(BaseModel):
     match_id: int
-    text_id: int
-    term_id: int
+    text_id: str
+    term_id: str
     term: str
     context: str
 
@@ -56,7 +56,7 @@ def parse_texts(
 
 
 class _FoundTerm(BaseModel):
-    term_id: int
+    term_id: str
     term: str
     start: int
     end: int
