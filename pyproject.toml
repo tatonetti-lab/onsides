@@ -30,9 +30,6 @@ dependencies = [
     "typer>=0.15.1",
 ]
 
-[project.scripts]
-onsides = "onsides.cli:app"
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
