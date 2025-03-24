@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 import pandas as pd
+import polars as pl
 import tabula
 from bs4 import BeautifulSoup, Tag
 
@@ -108,133 +109,25 @@ def pull_undesirable_effects(input_file, output_file) -> None:
     output_file.touch()
 
 
-# def extract_undesirable_effects(raw_label: str) -> str | None:
-#     """Extract the 'Undesirable Effects' section from a drug label.
-#     Applicable only to UK and EU labels, which have this sections.
-#     """
-#
-#     normed = " ".join(raw_label.split())
-#
-#     regex = (
-#         r"(4\. CLINICAL|4 CLINICAL|4\. CLINCAL|4\. Clinical).+"
-#         r"(5\. PHARMACOLOGIC|5 PHARMACOLOGIC)"
-#     )
-#     match = re.search(regex, normed)
-#     if match is None:
-#         logger.error("Could not find 4. CLINICAL")
-#         return None
-#
-#     clinical_particulars = match.group()
-#     regex = r"(4\.8\. Undesirable|4\.8 Undesirable).+(4\.9 Overdose|4\.9\. Overdose)"
-#     match = re.search(regex, clinical_particulars)
-#     if match is None:
-#         logger.error("Could not find 4.8 Undesirable")
-#         return None
-#
-#     undesirable_effects = match.group()
-#     clean_ade = re.sub(r"[^\n\w\s.,]", "", undesirable_effects)
-#     return clean_ade
+def pull_side_effects_jp(input_file, output_file) -> None:
+    """Extract the side effects section from a Japan drug label, export HTML"""
 
+    input_file = Path(input_file)
+    output_file = Path(output_file)
 
-# def analyze_drug_tables(input_folder, output_file):
-#     """
-#     Analyze drug tables to extract adverse events information.
-#     This function reimplements the logic from the original code, but in a cleaner way.
-#
-#     Args:
-#         input_folder: Folder containing the CSV table files
-#         output_file: Path to save the processed dataframe
-#     """
-#     # Define known categories
-#     freqs = ["very common", "common", "uncommon", "rare", "very rare", "not known"]
-#
-#     socs = [
-#         "blood and lymphatic system disorders",
-#         "cardiac disorders",
-#         "congenital, familial and genetic disorders",
-#         "ear and labyrinth disorders",
-#         "endocrine disorders",
-#         "eye disorders",
-#         "gastrointestinal disorders",
-#         "general disorders and administration site conditions",
-#         "hepatobiliary disorders",
-#         "immune system disorders",
-#         "infections and infestations",
-#         "injury, poisoning and procedural complications",
-#         "investigations",
-#         "metabolism and nutrition disorders",
-#         "musculoskeletal and connective tissue disorders",
-#         "neoplasms benign, malignant and unspecified (incl cysts and polyps)",
-#         "nervous system disorders",
-#         "pregnancy, puerperium and perinatal conditions",
-#         "psychiatric disorders",
-#         "renal and urinary disorders",
-#         "reproductive system and breast disorders",
-#         "respiratory, thoracic and mediastinal disorders",
-#         "skin and subcutaneous tissue disorders",
-#         "social circumstances",
-#         "surgical and medical procedures",
-#         "vascular disorders",
-#         "product issues",
-#     ]
-#
-#     titles = ["system organ class", "frequency", "adverse events"]
-#
-#     processed_list = []
-#     input_folder = Path(input_folder)
-#
-#     # Process all CSV files in the input folder
-#     for csv_file in input_folder.glob("*.table.*.csv"):
-#         # Extract product ID from filename
-#         product_id = csv_file.stem.split(".table.")[0]
-#
-#         # Read CSV file
-#         try:
-#             df = pd.read_csv(csv_file)
-#
-#             # Process each row of the table
-#             for _, row in df.iterrows():
-#                 items = [str(item).lower().strip() for item in row if pd.notna(item)]
-#
-#                 # Skip header rows
-#                 if any(title in " ".join(items) for title in titles):
-#                     continue
-#
-#                 # Initialize values
-#                 f, s, a = None, None, None
-#
-#                 # Categorize each cell
-#                 for item in items:
-#                     item = item.strip().replace("*", "")
-#
-#                     if item in freqs:
-#                         f = item
-#                     elif item in socs:
-#                         s = item
-#                     else:
-#                         a = item
-#
-#                 # Add to processed list
-#                 processed_list.append([product_id, f, s, a])
-#
-#         except Exception as e:
-#             print(f"Error processing {csv_file}: {e}")
-#
-#     # Create DataFrame
-#     processed_df = pd.DataFrame(
-#         processed_list, columns=["product_id", "freq", "soc", "ade"]
-#     )
-#
-#     # Further process frequency from adverse event text
-#     processed_df["freq"] = processed_df.apply(
-#         lambda x: str(x.ade).split(":")[0]
-#         if pd.notna(x.ade) and str(x.ade).split(":")[0] in freqs
-#         else x.freq,
-#         axis=1,
-#     )
-#
-#     # Save processed data
-#     processed_df.to_csv(output_file, index=False)
-#     print(
-#         f"Finished processing of tabular data for {processed_df.product_id.nunique()} products"
-#     )
+    with open(input_file, encoding="utf-8") as f:
+        soup = BeautifulSoup(f.read(), "html.parser")
+
+    header = re.compile("^h[1-6]$")
+    start = soup.find(header, {"class": "contents-title", "id": "par-11"})
+    assert isinstance(start, Tag), start
+
+    end = start.find_next(header, {"class": "contents-title"})
+    assert isinstance(end, Tag)
+
+    elements_between = start.find_all_next()
+    elements_between = elements_between[: elements_between.index(end)]
+
+    text = "\n".join(str(e) for e in elements_between)
+    with open(output_file, "w") as f:
+        f.write(text)
