@@ -1,7 +1,9 @@
 import logging
 from pathlib import Path
 
+import numpy as np
 import torch
+from numpy._typing import NDArray
 from pydantic import BaseModel
 
 from onsides.clinicalbert import ClinicalBertClassifier, evaluate
@@ -21,7 +23,7 @@ def predict(
     weights_path: Path,
     text_settings: TextSettings | None = None,
     batch_size: int | None = None,
-) -> list[float]:
+) -> NDArray[np.float64]:
     if text_settings is None:
         text_settings = TextSettings()
 

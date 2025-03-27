@@ -19,6 +19,7 @@
             pkgs.uv
             pkgs.jdk11
             pkgs.pandoc
+            pkgs.duckdb
           ];
 
           # Even though we say "shell = fish", the shellHook is still parsed by Bash!

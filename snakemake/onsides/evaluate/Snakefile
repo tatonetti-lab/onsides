@@ -1,6 +1,7 @@
 import polars as pl
 
 from onsides import stringsearch
+from onsides.predict import predict
 from onsides.types import IndexedText
 
 langs = ["english", "japanese"]
@@ -9,8 +10,8 @@ langs = ["english", "japanese"]
 rule all:
     input:
         expand("_onsides/vocab/meddra_{language}.parquet", language=langs),
-        expand("_onsides/combined/label_{language}_preds.parquet", language=langs)
-
+        expand("_onsides/combined/label_{language}_preds.parquet", language=["english"]),
+        # expand("_onsides/combined/label_{language}_preds.parquet", language=langs)
 
 
 rule build_vocabulary:
@@ -56,6 +57,29 @@ rule evaluate_onsides:
 
         # Find exact string matches
         matches = stringsearch.parse_texts(texts=labels, terms=terms)
-        print(f"Found {len(matches)} exact matches")
+        print(f"Found {len(matches)} string matches")
 
         # Apply the BERT model to evaluate the matches in their contexts
+        match_texts = [m.context for m in matches]
+        network_path = Path(
+            "/data1/home/berkowitzj/onsides/models/microsoft/"
+            "BiomedNLP-PubMedBERT-base-uncased-abstract"
+        )
+        model_path = Path(
+            "/data1/home/berkowitzj/onsides/models/"
+            "bestepoch-bydrug-PMB_14-AR-125-all_222_24_25_2.5e-05_256_32.pth"
+        )
+        predictions = predict(
+            texts=match_texts,
+            network_path=network_path,
+            weights_path=model_path,
+            text_settings=None,
+            batch_size=None,
+        )
+        (
+            pl.concat([
+                pl.DataFrame(matches),
+                pl.DataFrame(predictions, schema=["pred0", "pred1"])
+            ], how="horizontal")
+            .write_parquet(output[0])
+        )

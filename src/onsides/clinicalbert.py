@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import tqdm.auto as tqdm
+from numpy._typing import NDArray
 from torch import nn
 from transformers import AutoModel, AutoTokenizer
 
@@ -35,7 +36,7 @@ def evaluate(
     texts: list[str],
     max_length: int,
     batch_size: int,
-) -> list[float]:
+) -> NDArray[np.float64]:
     model.eval()
     if torch.cuda.is_available():
         device = torch.device("cuda")
@@ -66,7 +67,7 @@ def evaluate(
     npoutputs = [x.cpu().detach().numpy() for x in outputs]
     predictions = np.vstack(npoutputs)
     print(f"Predictions have shape: {predictions.shape}")
-    return predictions.ravel().tolist()
+    return predictions
 
 
 class Dataset(torch.utils.data.Dataset):
