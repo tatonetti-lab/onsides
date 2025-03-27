@@ -24,7 +24,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup, Tag
 from bs4.element import NavigableString
 
-from onsides.download.utils import sanitize_filename
+from onsides.download_utils import sanitize_filename
 
 
 config.update({"jobs": 1})

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import polars as pl
 
-from onsides.parse.utils import pull_tables_from_html, pull_side_effects_jp
+from onsides.parse_utils import pull_tables_from_html, pull_side_effects_jp
 
 
 config.update({"jobs": 10})

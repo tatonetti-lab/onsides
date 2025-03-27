@@ -4,7 +4,7 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup, Tag
 
-from onsides.download.utils import sanitize_filename
+from onsides.download_utils import sanitize_filename
 
 
 ROOT_URL = "https://www.kegg.jp/medicus-bin"
