@@ -3,6 +3,7 @@ import polars as pl
 from onsides import stringsearch
 from onsides.predict import predict
 from onsides.types import IndexedText
+from onsides.stringsearch import MatchContext
 
 langs = ["english", "japanese"]
 
@@ -39,11 +40,11 @@ rule build_labels:
     shell: "duckdb < {input.queries}"
 
 
-rule evaluate_onsides:
+rule string_match:
     input:
         labels = "_onsides/combined/{language}_labels.parquet",
         vocabulary = "_onsides/vocab/meddra_{language}.parquet",
-    output: "_onsides/combined/label_{language}_preds.parquet"
+    output: "_onsides/combined/label_{language}_string_match.parquet"
     run:
         # Load the labels themselves
         raw_labels = pl.read_parquet(input.labels).to_dicts()
@@ -58,6 +59,16 @@ rule evaluate_onsides:
         # Find exact string matches
         matches = stringsearch.parse_texts(texts=labels, terms=terms)
         print(f"Found {len(matches)} string matches")
+        pl.DataFrame(matches).write_parquet(output[0])
+
+
+rule evaluate_onsides:
+    input: "_onsides/combined/label_{language}_string_match.parquet"
+    output: "_onsides/combined/label_{language}_preds.parquet"
+    run:
+        raw_matches = pl.read_parquet(input[0]).to_dicts()
+        matches = [MatchContext.model_validate(x) for x in raw_matches]
+        print(f"Found {len(matches)} raw matches")
 
         # Apply the BERT model to evaluate the matches in their contexts
         match_texts = [m.context for m in matches]
