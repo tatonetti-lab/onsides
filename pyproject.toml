@@ -27,6 +27,9 @@ dependencies = [
     "sqlalchemy[asyncio]>=2.0.38",
     "sqlmodel>=0.0.22",
     "tabula-py>=2.10.0",
+    "torch>=2.6.0",
+    "tqdm>=4.67.1",
+    "transformers>=4.50.2",
     "typer>=0.15.1",
 ]
 
