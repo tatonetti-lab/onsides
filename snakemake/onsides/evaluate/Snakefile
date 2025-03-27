@@ -65,6 +65,7 @@ rule string_match:
 rule evaluate_onsides:
     input: "_onsides/combined/label_{language}_string_match.parquet"
     output: "_onsides/combined/label_{language}_preds.parquet"
+    resources: jobs=1
     run:
         raw_matches = pl.read_parquet(input[0]).to_dicts()
         matches = [MatchContext.model_validate(x) for x in raw_matches]
