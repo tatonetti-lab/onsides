@@ -33,15 +33,15 @@ def predict(
     if batch_size is None:
         batch_size = train_settings.batch_size * 2
 
-    logger.info(f"Loading model from {network_path}")
+    print(f"Loading model from {network_path}")
     model = ClinicalBertClassifier(network_path)
 
-    logger.info(f"Loading model data from {weights_path}")
+    print(f"Loading model data from {weights_path}")
     state_dict = torch.load(weights_path, weights_only=True)
     state_dict.pop("bert.embeddings.position_ids")  # Error if included
     model.load_state_dict(state_dict)
 
-    logger.info("Evaluating text with the model...")
+    print("Evaluating text with the model...")
     outputs = evaluate(
         model,
         network_path,
