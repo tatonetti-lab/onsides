@@ -1,0 +1,61 @@
+import polars as pl
+
+from onsides import stringsearch
+from onsides.types import IndexedText
+
+langs = ["english", "japanese"]
+
+
+rule all:
+    input:
+        expand("_onsides/vocab/meddra_{language}.parquet", language=langs),
+        expand("_onsides/combined/label_{language}_preds.parquet", language=langs)
+
+
+
+rule build_vocabulary:
+    input:
+        queries = "snakemake/onsides/evaluate/meddra_vocabs.sql",
+        mrconso = "data/mrconso.rrf"
+    output:
+        expand(
+            "_onsides/vocab/meddra_{language}.parquet",
+            language=langs
+        )
+    shell: "duckdb duck.db < {input.queries}"
+
+
+rule build_labels:
+    input:
+        us = "_onsides/us/label_text.parquet",
+        uk = "_onsides/uk/label_text.parquet",
+        eu = "_onsides/eu/label_text.parquet",
+        jp = "_onsides/jp/med_label_text.parquet",
+        queries = "snakemake/onsides/evaluate/format_labels.sql",
+    output:
+        "_onsides/combined/english_labels.parquet",
+        "_onsides/combined/japanese_labels.parquet",
+    shell: "duckdb < {input.queries}"
+
+
+rule evaluate_onsides:
+    input:
+        labels = "_onsides/combined/{language}_labels.parquet",
+        vocabulary = "_onsides/vocab/meddra_{language}.parquet",
+    output: "_onsides/combined/label_{language}_preds.parquet"
+    run:
+        # Load the labels themselves
+        raw_labels = pl.read_parquet(input.labels).to_dicts()
+        labels = [IndexedText.model_validate(x) for x in raw_labels]
+        print(f"Found {len(labels)} labels")
+
+        # Load the vocabularies (which we are trying to match)
+        raw_terms = pl.read_parquet(input.vocabulary).to_dicts()
+        terms = [IndexedText.model_validate(x) for x in raw_terms]
+        print(f"Matching {len(terms)} terms")
+
+        # Find exact string matches
+        matches = stringsearch.parse_texts(texts=labels, terms=terms)
+        print(f"Found {len(matches)} exact matches")
+
+        # Apply the BERT model to evaluate the matches in their contexts
