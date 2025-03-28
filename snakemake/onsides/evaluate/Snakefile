@@ -86,7 +86,7 @@ rule evaluate_onsides:
             network_path=network_path,
             weights_path=model_path,
             text_settings=None,
-            batch_size=1_000,
+            batch_size=5_000,
         )
         (
             pl.concat([
