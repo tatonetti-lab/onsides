@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 class TextSettings(BaseModel):
     nwords: int = 125
     refset: int = 14  # TODO: Unsure what this is
-    section: str = "AR"  # TODO: This isn't necessary here
 
 
 def predict(
@@ -176,12 +175,6 @@ def validate_settings(
             "Examples were generated with different reference method "
             f"({text_settings.refset}) than the model was trained with "
             f"({model_settings.refset})"
-        )
-    if text_settings.section != model_settings.refsection:
-        raise ValueError(
-            "Examples were generated for a different label section "
-            f"({text_settings.section}) than the model was trained with "
-            f"({model_settings.refsection})"
         )
 
 
