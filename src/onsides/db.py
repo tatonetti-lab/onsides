@@ -24,6 +24,17 @@ class MatchMethod(str, enum.Enum):
     PMB = "PMB"  # String match + PubMedBERT
 
 
+class ProductToRxNorm(SQLModel, table=True):
+    __tablename__: str = "product_to_rxnorm"  # type: ignore
+
+    label_id: int | None = Field(
+        default=None, foreign_key="product_label.label_id", primary_key=True
+    )
+    rxnorm_product_id: int | None = Field(
+        default=None, foreign_key="rxnorm_product.rxnorm_id", primary_key=True
+    )
+
+
 class ProductLabel(SQLModel, table=True):
     __tablename__: str = "product_label"  # type: ignore
 
@@ -32,11 +43,10 @@ class ProductLabel(SQLModel, table=True):
     source_product_name: str
     source_product_id: str
     source_label_url: str | None
-    rxnorm_product_id: int | None = Field(
-        default=None, foreign_key="rxnorm_product.rxnorm_id"
-    )
 
-    rxnorm_product: "RxNormProduct" = Relationship(back_populates="labels")
+    rxnorm_products: list["RxNormProduct"] = Relationship(
+        back_populates="labels", link_model=ProductToRxNorm
+    )
     adverse_effects: list["AdverseEffect"] = Relationship(
         back_populates="product_label"
     )
@@ -66,6 +76,19 @@ class AdverseEffect(SQLModel, table=True):
 # Reference tables
 
 
+class MedDraAdverseEffect(SQLModel, table=True):
+    __tablename__: str = "meddra_adverse_effect"  # type: ignore
+
+    meddra_id: int = Field(primary_key=True)
+    meddra_name: str
+    meddra_term_type: str
+    omop_concept_id: int | None
+
+    label_adverse_effects: list[AdverseEffect] = Relationship(
+        back_populates="effect_meddra"
+    )
+
+
 class RxNormIngredientToProduct(SQLModel, table=True):
     __tablename__: str = "rxnorm_ingredient_to_product"  # type: ignore
 
@@ -77,20 +100,6 @@ class RxNormIngredientToProduct(SQLModel, table=True):
     )
 
 
-class RxNormProduct(SQLModel, table=True):
-    __tablename__: str = "rxnorm_product"  # type: ignore
-
-    rxnorm_id: int = Field(primary_key=True)
-    rxnorm_name: str
-    rxnorm_term_type: str
-    omop_concept_id: int | None
-
-    ingredients: list["RxNormIngredient"] = Relationship(
-        back_populates="products", link_model=RxNormIngredientToProduct
-    )
-    labels: list[ProductLabel] = Relationship(back_populates="rxnorm_product")
-
-
 class RxNormIngredient(SQLModel, table=True):
     __tablename__: str = "rxnorm_ingredient"  # type: ignore
 
@@ -99,19 +108,22 @@ class RxNormIngredient(SQLModel, table=True):
     rxnorm_term_type: str
     omop_concept_id: int | None
 
-    products: list[RxNormProduct] = Relationship(
+    products: list["RxNormProduct"] = Relationship(
         back_populates="ingredients", link_model=RxNormIngredientToProduct
     )
 
 
-class MedDraAdverseEffect(SQLModel, table=True):
-    __tablename__: str = "meddra_adverse_effect"  # type: ignore
+class RxNormProduct(SQLModel, table=True):
+    __tablename__: str = "rxnorm_product"  # type: ignore
 
-    meddra_id: int = Field(primary_key=True)
-    meddra_name: str
-    meddra_term_type: str
+    rxnorm_id: int = Field(primary_key=True)
+    rxnorm_name: str
+    rxnorm_term_type: str
     omop_concept_id: int | None
 
-    label_adverse_effects: list[AdverseEffect] = Relationship(
-        back_populates="effect_meddra"
+    ingredients: list[RxNormIngredient] = Relationship(
+        back_populates="products", link_model=RxNormIngredientToProduct
+    )
+    labels: list[ProductLabel] = Relationship(
+        back_populates="rxnorm_products", link_model=ProductToRxNorm
     )
