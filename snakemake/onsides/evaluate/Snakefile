@@ -79,7 +79,7 @@ rule evaluate_onsides:
         )
         model_path = Path(
             "/data1/home/berkowitzj/onsides/models/"
-            "bestepoch-bydrug-PMB_14-AR-125-all_222_24_25_2.5e-05_256_32.pth"
+            "bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth"
         )
         predictions = predict(
             texts=match_texts,
