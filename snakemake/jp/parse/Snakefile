@@ -8,7 +8,7 @@ from onsides.parse_utils import pull_tables_from_html, pull_side_effects_jp
 
 config.update({"jobs": 10})
 
-labels_dirs = ["_onsides/jp/med_labels", "_onsides/jp/otc_labels"]
+labels_dirs = ["_onsides/jp/med_labels"]
 HTMLs = [p for d in labels_dirs for p in Path(d).glob("*.html") if ".side_effects." not in p.name]
 
 
@@ -34,7 +34,6 @@ rule all:
         # ADE section TXT files
         files_with_suffix(".side_effects.txt"),
         "_onsides/jp/med_label_text.parquet",
-        "_onsides/jp/otc_label_text.parquet",
 
 
 rule extract_section_from_html:
