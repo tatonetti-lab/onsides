@@ -18,6 +18,7 @@ def get_index_pages(wildcards):
         for p in Path(f"_onsides/jp/{kind}_index_page").glob("*.download")
     ]
 
+
 def get_product_pages(wildcards):
     return [
         p.with_suffix(".html")
@@ -26,11 +27,21 @@ def get_product_pages(wildcards):
     ]
 
 
+def get_download_files(wildcards):
+    return [
+        p
+        for kind in ["med", "otc"]
+        for p in Path(f"_onsides/jp/{kind}_labels").glob("*.download")
+    ]
+
+
 rule all:
     input:
         "_onsides/jp/n_index_pages.json",
+        get_download_files,
         get_index_pages,
         get_product_pages,
+        "_onsides/jp/reparse_med.txt",
 
 
 rule download_index_page:
@@ -79,9 +90,11 @@ checkpoint count_index_pages:
 
 checkpoint extract_drugs_from_index_pages:
     input: get_index_pages
-    output: directory("_onsides/jp/{kind}_labels")
+    output: touch("_onsides/jp/reparse_{kind}.txt"),
+    params:
+        d = lambda wildcards: f"_onsides/jp/{wildcards.kind}_labels"
     run:
-        directory = Path(output[0])
+        directory = Path(params.d)
         directory.mkdir(exist_ok=True, parents=True)
 
         for file in input:
@@ -121,8 +134,21 @@ checkpoint extract_drugs_from_index_pages:
                 assert match is not None, href
                 source_id = match.group(1)
 
+                # KEGG ID in the fourth column
+                kegg_cell = data_cells[3]
+                assert isinstance(kegg_cell, Tag)
+                link = kegg_cell.find("a", href=True)
+                assert link is not None and isinstance(link, Tag)
+                kegg_id = link.text.strip() # KEGG D-id
+                assert len(kegg_id) > 0
+
                 url = f"{ROOT_URL}/{href}"
-                drug_info = {"name": name, "code": source_id, "page_url": url}
+                drug_info = {
+                    "name": name,
+                    "code": source_id,
+                    "kegg_id": kegg_id,
+                    "page_url": url,
+                }
 
                 name = sanitize_filename(name)
                 path = directory.joinpath(name).with_suffix(".download")
