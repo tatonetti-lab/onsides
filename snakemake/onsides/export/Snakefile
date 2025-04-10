@@ -1,0 +1,176 @@
+import json
+from pathlib import Path
+
+import polars as pl
+from rich.progress import track
+
+from onsides import rxnorm
+
+
+rule all:
+    input:
+        "data/onsides.db"
+
+
+rule generate_vocabulary:
+    input:
+        concept = "data/omop_vocab/CONCEPT.csv",
+        concept_relationship = "data/omop_vocab/CONCEPT_RELATIONSHIP.csv",
+        queries = "snakemake/onsides/export/rxnorm_match_vocabulary.sql",
+    output: "_onsides/combined/rxnorm_terms.parquet"
+    shell: "duckdb < {input.queries}"
+
+
+rule map_eu_to_rxnorm:
+    input:
+        manifest = "_onsides/eu/manifest.xlsx",
+        labels = "_onsides/eu/label_text.parquet",
+        vocabulary = "_onsides/combined/rxnorm_terms.parquet",
+    output:
+        "_onsides/eu/labels_to_rxnorm.parquet"
+    run:
+        # Load the vocabulary, build the dictionary
+        vocab = (
+            pl.read_parquet(input.vocabulary)
+            .with_columns(pl.col("term").str.to_lowercase())
+            .to_pandas()
+            .set_index("term")
+            ["concept_code"]
+            .to_dict()
+        )
+        # Load the manifest
+        manifest_df = (
+            pl.read_excel(input.manifest)
+            .pipe(
+                lambda df: df
+                    .rename(df.head(1).to_dicts().pop())
+                    .slice(1)
+            )
+        )
+        # Load the labels
+        labels = (
+            pl.read_parquet(input.labels)
+            .join(manifest_df, left_on="code", right_on="EMA product number")
+            .rename({
+                "Name of medicine": "med_name",
+                "International non-proprietary name (INN) / common name": "inn",
+                "Active substance": "substance",
+            })
+            .select(
+                "code",
+                terms=pl.concat_list(
+                    pl.col("med_name", "inn", "substance").str.to_lowercase()
+                ),
+            )
+            .to_dicts()
+        )
+        # Iterate over the labels and map each one
+        for label in track(labels):
+            terms = [t for t in label["terms"] if t is not None]
+            match = rxnorm.match_terms_to_rxcui(terms, vocab)
+            if match is not None:
+                label["rxcui"] = match.rxcui
+                label["match_type"] = match.match_type
+
+        # Collect results and write to the file
+        (
+            pl.DataFrame(labels)
+            .select("code", "rxcui", "match_type")
+            .write_parquet(output[0])
+        )
+
+
+rule map_uk_to_rxnorm:
+    input:
+        labels = "_onsides/uk/label_text.parquet",
+        vocabulary = "_onsides/combined/rxnorm_terms.parquet",
+    output:
+        "_onsides/uk/labels_to_rxnorm.parquet"
+    run:
+        # Load the vocabulary, build the dictionary
+        vocab = (
+            pl.read_parquet(input.vocabulary)
+            .with_columns(pl.col("term").str.to_lowercase())
+            .to_pandas()
+            .set_index("term")
+            ["concept_code"]
+            .to_dict()
+        )
+        # Load the labels
+        labels = pl.read_parquet(input.labels, columns=["name", "code"]).to_dicts()
+        # Iterate over the labels and map each one
+        for label in track(labels):
+            match = rxnorm.match_terms_to_rxcui([label["name"]], vocab)
+            if match is not None:
+                label["rxcui"] = match.rxcui
+                label["match_type"] = match.match_type
+
+        # Collect results and write to the file
+        (
+            pl.DataFrame(labels)
+            .select("code", "rxcui", "match_type")
+            .write_parquet(output[0])
+        )
+
+
+rule get_kegg_ndc_mappings:
+    output: "_onsides/jp/kegg_drug_to_ndc.txt"
+    shell: "curl -o {output} 'https://rest.kegg.jp/link/ndc/drug'"
+
+
+rule gather_jp_download_files:
+    output: "_onsides/jp/combined_download_files.parquet"
+    run:
+        files = list(Path("_onsides/jp/med_labels/").glob("*.download"))
+        results = list()
+        for file in files:
+            with open(file) as f:
+                meta = json.load(f)
+            results.append(meta)
+        pl.DataFrame(results).write_parquet(output[0])
+
+
+rule combine_results_to_sqlite:
+    input:
+        jp_ndc_map = "_onsides/jp/kegg_drug_to_ndc.txt",
+        jp_meta = "_onsides/jp/combined_download_files.parquet",
+        jp_match = '_onsides/combined/label_japanese_string_match.parquet',
+        eng_preds = '_onsides/combined/label_english_preds.parquet',
+        eu_text = '_onsides/eu/label_text.parquet',
+        eu_rxnorm = '_onsides/eu/labels_to_rxnorm.parquet',
+        uk_text = '_onsides/uk/label_text.parquet',
+        uk_rxnorm = '_onsides/uk/labels_to_rxnorm.parquet',
+        us_rxnorm = '_onsides/us/map_download/rxnorm_mappings.txt',
+        us_meta = '_onsides/us/map_download/dm_spl_zip_files_meta_data.txt',
+        concept = "data/omop_vocab/CONCEPT.csv",
+        concept_relationship = "data/omop_vocab/CONCEPT_RELATIONSHIP.csv",
+        jp_sql = "snakemake/onsides/export/japan_mapping.sql",
+        us_sql = "snakemake/onsides/export/us_mapping.sql",
+        uk_sql = "snakemake/onsides/export/uk_mapping.sql",
+        eu_sql = "snakemake/onsides/export/eu_mapping.sql",
+        vocab_sql = "snakemake/onsides/export/final_vocabulary_tables.sql",
+        filter_sql = "snakemake/onsides/export/filter_deficient.sql",
+        threshold_sql = "snakemake/onsides/export/threshold.sql",
+    output: "data/onsides.db"
+    run:
+        from sqlmodel import create_engine
+        from onsides.db import SQLModel
+        engine = create_engine("sqlite:///data/onsides.db")
+        SQLModel.metadata.create_all(engine)
+
+        duckdb_scripts = [
+            input.jp_sql,
+            input.us_sql,
+            input.uk_sql,
+            input.eu_sql,
+            input.vocab_sql,
+            input.filter_sql,
+        ]
+        for file in duckdb_scripts:
+            shell("duckdb duck.db < {file}")
+
+        sqlite_scripts = [
+            input.threshold_sql,
+        ]
+        for file in sqlite_scripts:
+            shell("sqlite3 data/onsides.db < {file}")

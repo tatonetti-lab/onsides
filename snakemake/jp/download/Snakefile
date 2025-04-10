@@ -88,7 +88,7 @@ checkpoint count_index_pages:
             json.dump(kind_to_count, f)
 
 
-checkpoint extract_drugs_from_index_pages:
+rule extract_drugs_from_index_pages:
     input: get_index_pages
     output: touch("_onsides/jp/reparse_{kind}.txt"),
     params:
@@ -138,9 +138,11 @@ checkpoint extract_drugs_from_index_pages:
                 kegg_cell = data_cells[3]
                 assert isinstance(kegg_cell, Tag)
                 link = kegg_cell.find("a", href=True)
-                assert link is not None and isinstance(link, Tag)
-                kegg_id = link.text.strip() # KEGG D-id
-                assert len(kegg_id) > 0
+                if link is not None and isinstance(link, Tag):
+                    kegg_id = link.text.strip() # KEGG D-id
+                    assert len(kegg_id) > 0
+                else:
+                    kegg_id = None
 
                 url = f"{ROOT_URL}/{href}"
                 drug_info = {

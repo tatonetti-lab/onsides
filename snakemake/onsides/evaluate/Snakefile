@@ -12,6 +12,8 @@ rule all:
     input:
         expand("_onsides/vocab/meddra_{language}.parquet", language=langs),
         expand("_onsides/combined/label_{language}_preds.parquet", language=["english"]),
+        "_onsides/combined/label_japanese_string_match.parquet",
+        "_onsides/vocab/meddra_jp_to_eng.parquet",
         # expand("_onsides/combined/label_{language}_preds.parquet", language=langs)
 
 
@@ -95,3 +97,13 @@ rule evaluate_onsides:
             ], how="horizontal")
             .write_parquet(output[0])
         )
+
+
+rule create_jp_to_eng_meddra_map:
+    input:
+        mrconso = "data/mrconso.rrf",
+        queries = "snakemake/onsides/evaluate/meddra_jp_to_eng.sql",
+    output:
+        "_onsides/vocab/meddra_jp_to_eng.parquet"
+    shell:
+        "duckdb < {input.queries}"
