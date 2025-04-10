@@ -6,10 +6,24 @@ from rich.progress import track
 
 from onsides import rxnorm
 
+tables = [
+    "product_adverse_effect",
+    "vocab_rxnorm_ingredient",
+    "product_label",
+    "vocab_rxnorm_ingredient_to_product",
+    "product_to_rxnorm",
+    "vocab_rxnorm_product",
+    "vocab_meddra_adverse_effect",
+]
+
+dialects = ["sqlite", "postgres", "mysql", "mssql"]
+
 
 rule all:
     input:
-        "data/onsides.db"
+        "data/onsides.db",
+        expand("data/csv/{table}.csv", table=tables),
+        expand("data/schema/{dialect}.sql", dialect=dialects),
 
 
 rule generate_vocabulary:
@@ -174,3 +188,25 @@ rule combine_results_to_sqlite:
         ]
         for file in sqlite_scripts:
             shell("sqlite3 data/onsides.db < {file}")
+
+
+rule export_table_csv:
+    input: "data/onsides.db"
+    output: "data/csv/{table}.csv"
+    shell: """
+        sqlite3 -header -csv {input} "SELECT * FROM {wildcards.table};" > {output}
+        """
+
+rule export_schema:
+    output: "data/schema/{dialect}.sql"
+    run:
+        from sqlalchemy.dialects import mysql, postgresql, mssql, sqlite
+        from onsides.export_schema import export_schema_for_dialect
+        name_to_dialect = {
+            "sqlite": sqlite.dialect(),
+            "mysql": mysql.dialect(),
+            "postgres": postgresql.dialect(),
+            "mssql": mssql.dialect(),
+        }
+        dialect = name_to_dialect[wildcards.dialect]
+        export_schema_for_dialect(dialect, output[0])
