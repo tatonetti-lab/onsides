@@ -16,3 +16,5 @@ openai_api_key.json
 duck.db
 duck.db.wal
 umls-2024AB-mrconso.zip
+train/models
+train/results
