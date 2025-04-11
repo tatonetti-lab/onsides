@@ -1,6 +1,6 @@
 CREATE TABLE product_label (
     label_id SERIAL NOT NULL,
-    source druglabelsource NOT NULL,
+    source VARCHAR NOT NULL,
     source_product_name VARCHAR NOT NULL,
     source_product_id VARCHAR NOT NULL,
     source_label_url VARCHAR,
@@ -31,9 +31,9 @@ CREATE TABLE vocab_rxnorm_product (
 CREATE TABLE product_adverse_effect (
     product_label_id INTEGER,
     effect_id SERIAL NOT NULL,
-    label_section druglabelsection NOT NULL,
+    label_section VARCHAR NOT NULL,
     effect_meddra_id INTEGER,
-    match_method matchmethod NOT NULL,
+    match_method VARCHAR NOT NULL,
     pred0 FLOAT,
     pred1 FLOAT,
     PRIMARY KEY (effect_id),
