@@ -3,7 +3,7 @@
 -- ===============================================
 LOAD sqlite;
 
-ATTACH IF NOT EXISTS 'data/onsides.db' AS db (TYPE sqlite);
+ATTACH IF NOT EXISTS 'database/onsides.db' AS db (TYPE sqlite);
 
 USE db;
 

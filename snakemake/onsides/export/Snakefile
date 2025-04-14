@@ -16,14 +16,15 @@ tables = [
     "vocab_meddra_adverse_effect",
 ]
 
-dialects = ["sqlite", "postgres", "mysql", "mssql"]
+dialects = ["sqlite", "postgres", "mysql"]
 
 
 rule all:
     input:
-        "data/onsides.db",
-        expand("data/csv/{table}.csv", table=tables),
-        expand("data/schema/{dialect}.sql", dialect=dialects),
+        "database/onsides.db",
+        expand("database/csv/{table}.csv", table=tables),
+        expand("database/schema/{dialect}.sql", dialect=dialects),
+        "database/csv/high_confidence.csv"
 
 
 rule generate_vocabulary:
@@ -165,11 +166,11 @@ rule combine_results_to_sqlite:
         vocab_sql = "snakemake/onsides/export/final_vocabulary_tables.sql",
         filter_sql = "snakemake/onsides/export/filter_deficient.sql",
         threshold_sql = "snakemake/onsides/export/threshold.sql",
-    output: "data/onsides.db"
+    output: "database/onsides.db"
     run:
         from sqlmodel import create_engine
         from onsides.db import SQLModel
-        engine = create_engine("sqlite:///data/onsides.db")
+        engine = create_engine("sqlite:///database/onsides.db")
         SQLModel.metadata.create_all(engine)
 
         duckdb_scripts = [
@@ -187,18 +188,27 @@ rule combine_results_to_sqlite:
             input.threshold_sql,
         ]
         for file in sqlite_scripts:
-            shell("sqlite3 data/onsides.db < {file}")
+            shell("sqlite3 database/onsides.db < {file}")
+
+
+rule export_high_confidence:
+    input:
+        db = "database/onsides.db",
+        query = "snakemake/onsides/export/high_confidence.sql"
+    output: "database/csv/high_confidence.csv"
+    shell: "duckdb < {input.query}"
 
 
 rule export_table_csv:
-    input: "data/onsides.db"
-    output: "data/csv/{table}.csv"
+    input: "database/onsides.db"
+    output: "database/csv/{table}.csv"
     shell: """
         sqlite3 -header -csv {input} "SELECT * FROM {wildcards.table};" > {output}
         """
 
+
 rule export_schema:
-    output: "data/schema/{dialect}.sql"
+    output: "database/schema/{dialect}.sql"
     run:
         from sqlalchemy.dialects import mysql, postgresql, mssql, sqlite
         from onsides.export_schema import export_schema_for_dialect
@@ -206,7 +216,6 @@ rule export_schema:
             "sqlite": sqlite.dialect(),
             "mysql": mysql.dialect(),
             "postgres": postgresql.dialect(),
-            "mssql": mssql.dialect(),
         }
         dialect = name_to_dialect[wildcards.dialect]
         export_schema_for_dialect(dialect, output[0])
