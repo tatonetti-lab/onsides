@@ -1,7 +1,11 @@
 #!/bin/bash
 
+set -e
+
 # Define the SQLite database file
 DATABASE="onsides.db"
+
+cd database/
 
 # Remove any existing database file to start fresh
 if [ -f "$DATABASE" ]; then
@@ -11,11 +15,11 @@ fi
 
 # Import the schema into the database
 echo "Creating SQLite database and importing schema..."
-sqlite3 "$DATABASE" <data/schema/sqlite.sql
+sqlite3 "$DATABASE" <schema/sqlite.sql
 
 echo "Importing CSV files..."
 
-cd data/csv
+cd csv
 
 CSV_FILES=(
     "vocab_meddra_adverse_effect.csv"
@@ -34,10 +38,12 @@ for file in "${CSV_FILES[@]}"; do
     echo "Loading $file into ${table} table..."
 
     # Use sqlite3's .import command in CSV mode to load the data
-    sqlite3 "$DATABASE" <<EOF
+    sqlite3 "../$DATABASE" <<EOF
 .mode csv
 .import --skip 1 '$file' $table
 EOF
 done
 
 echo "Data import completed successfully!"
+
+cd ..

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Spin up the PostgreSQL database container
 podman run --name postgres-container \
     -e POSTGRES_HOST_AUTH_METHOD=trust \
@@ -20,9 +22,9 @@ CREATE DATABASE onsides
 "
 
 # Import schema (non-interactive). Assume your PostgreSQL schema file is named postgres.sql.
-podman exec -i postgres-container psql -U postgres -d onsides -f - <data/schema/postgres.sql
+podman exec -i postgres-container psql -U postgres -d onsides -f - <database/schema/postgres.sql
 
-cd data/csv
+cd database/csv
 
 # Define array of CSV files
 CSV_FILES=(
@@ -51,3 +53,5 @@ COPY ${table} FROM '/${file}' WITH (FORMAT csv, HEADER true, DELIMITER ',');
 done
 
 echo "Data import completed successfully!"
+
+cd ..

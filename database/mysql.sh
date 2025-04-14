@@ -1,7 +1,12 @@
 #!/bin/bash
 
+set -e
+
 # Spin up the database
 podman run --name mysql-container -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -p 3306:3306 -d mysql:latest
+
+# Allow some time for the container to initialize
+sleep 5
 
 # Set up database
 podman exec mysql-container mysql -e "
@@ -14,7 +19,7 @@ SET GLOBAL character_set_connection = 'utf8mb4';
 SET GLOBAL local_infile = 1;
 "
 
-cd data/schema
+cd database/schema
 
 # Import schema - non-interactive
 podman exec -i mysql-container mysql onsides <mysql.sql
@@ -55,3 +60,5 @@ for file in "${CSV_FILES[@]}"; do
 done
 
 echo "Data import completed successfully!"
+
+cd ..
