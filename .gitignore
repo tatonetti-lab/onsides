@@ -21,3 +21,5 @@ train/results
 database/csv
 log
 database/onsides.db
+db.zip
+summary.md
