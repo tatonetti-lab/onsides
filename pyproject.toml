@@ -1,19 +1,16 @@
 [project]
 name = "onsides"
-version = "0.1.0"
-description = "Add your description here"
+version = "3.0.0"
+description = "Database of drug adverse events from product labels"
 readme = "README.md"
 authors = [
-    { name = "Michael Zietz", email = "michael.zietz@gmail.com" }
+    { name = "Nicholas Tatonetti" },
+    { name = "Yutaro Tanaka" },
+    { name = "Michael Zietz" }
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "aiofiles>=24.1.0",
-    "aiolimiter>=1.2.1",
-    "aiosqlite>=0.21.0",
-    "attrs>=25.1.0",
     "beautifulsoup4>=4.13.3",
-    "camelot-py>=1.0.0",
     "connectorx>=0.4.2",
     "fastexcel>=0.13.0",
     "httpx>=0.28.1",
@@ -34,7 +31,6 @@ dependencies = [
     "torch>=2.6.0",
     "tqdm>=4.67.1",
     "transformers>=4.50.2",
-    "typer>=0.15.1",
 ]
 
 [build-system]
