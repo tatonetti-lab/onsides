@@ -166,6 +166,15 @@ If you prefer not to use nix, you'll need to install all the dependencies yourse
 Simple answer?
 [Install nix](https://determinate.systems/nix-installer/), then run `nix develop`.
 
+### Releasing
+
+Here's how the v3.0.0 archive was created.
+
+```bash
+cd database
+zip -r ../onsides-v3.0.0.zip . -x onsides.db -x test.sql -x summarize.sql
+```
+
 ---
 
 ## Limitations
