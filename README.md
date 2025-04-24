@@ -195,7 +195,7 @@ Here's how the v3.0.0 archive was created.
 
 ```bash
 cd database
-zip -r ../onsides-v3.0.0.zip . -x onsides.db -x test.sql -x summarize.sql
+zip -r ../onsides-v3.0.0.zip annotations csv database_scripts schema
 ```
 
 ---
