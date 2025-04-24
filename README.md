@@ -29,7 +29,7 @@ If you use the OnSIDES database, results, or methods in your work, please refere
 
 ## Downloading the data
 
-OnSIDES is released as a set of flat files (comma-separated), a SQLite database, and as an interactive dataset at [onsidesdb.org](https://onsidesdb.org).
+OnSIDES is released as a set of flat files (comma-separated) and as an interactive dataset at [onsidesdb.org](https://onsidesdb.org).
 Downloads are available in the [Releases](https://github.com/tatonetti-lab/onsides/releases) section.
 
 ---
