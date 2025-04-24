@@ -62,6 +62,29 @@ Here's a diagram of the database schema:
 ![Database ER diagram](docs/schema.png)
 
 
+### High confidence set
+
+In addition to this, there is one additional CSV file called `high_confidence.csv`.
+This file contains ingredient-adverse effect pairs that were observed in all four sources (US, UK, EU, Japan).
+
+Since this table is derived, it has not been included in the database schemas.
+A suitable definition (SQLite here) would be:
+
+```sql
+CREATE TABLE high_confidence (
+    ingredient_id TEXT,
+    effect_meddra_id INTEGER,
+    FOREIGN KEY(ingredient_id) REFERENCES vocab_rxnorm_ingredient(rxnorm_id),
+    FOREIGN KEY(effect_meddra_id) REFERENCES vocab_meddra_adverse_effect(meddra_id)
+);
+```
+
+After creating the table, import as follows (SQLite again):
+```
+.mode csv
+.import --skip 1 'csv/high_confidence.csv' high_confidence
+```
+
 ---
 
 ## Data Generation and Metrics
