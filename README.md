@@ -66,6 +66,7 @@ Here's a diagram of the database schema:
 
 In addition to this, there is one additional CSV file called `high_confidence.csv`.
 This file contains ingredient-adverse effect pairs that were observed in all four sources (US, UK, EU, Japan).
+We found 562,281 high-confidence ADEs across 5761 ingredients and 733 effects.
 
 Since this table is derived, it has not been included in the database schemas.
 A suitable definition (SQLite here) would be:
