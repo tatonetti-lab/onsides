@@ -85,6 +85,11 @@ After creating the table, import as follows (SQLite again):
 .import --skip 1 'csv/high_confidence.csv' high_confidence
 ```
 
+### Manual annotations
+
+As part of the v3.0.0 release and on, we include a set of manual annotations for download as well.
+For more information, see the [annotation description](database/annotations/README.md).
+
 ---
 
 ## Data Generation and Metrics
