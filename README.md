@@ -146,10 +146,10 @@ If you prefer not to use nix, you'll need to install all the dependencies yourse
 
 ```bash
 nix develop
-snakemake -s snakemake/us/download/Snakefile
-snakemake -s snakemake/uk/download/Snakefile
-snakemake -s snakemake/eu/download/Snakefile
-snakemake -s snakemake/jp/download/Snakefile
+snakemake -s snakemake/us/download/Snakefile --resources jobs=1
+snakemake -s snakemake/uk/download/Snakefile --resources jobs=1
+snakemake -s snakemake/eu/download/Snakefile --resources jobs=1
+snakemake -s snakemake/jp/download/Snakefile --resources jobs=1
 snakemake -s snakemake/us/parse/Snakefile
 snakemake -s snakemake/uk/parse/Snakefile
 snakemake -s snakemake/eu/parse/Snakefile
