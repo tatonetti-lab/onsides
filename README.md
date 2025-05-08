@@ -145,6 +145,20 @@ Simple answer?
 
 ### Building
 
+```bash
+nix develop
+snakemake -s snakemake/us/download/Snakefile
+snakemake -s snakemake/uk/download/Snakefile
+snakemake -s snakemake/eu/download/Snakefile
+snakemake -s snakemake/jp/download/Snakefile
+snakemake -s snakemake/us/parse/Snakefile
+snakemake -s snakemake/uk/parse/Snakefile
+snakemake -s snakemake/eu/parse/Snakefile
+snakemake -s snakemake/jp/parse/Snakefile
+snakemake -s snakemake/onsides/evaluate/Snakefile
+snakemake -s snakemake/onsides/export/Snakefile
+```
+
 This project uses [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) to reproducibly download and build the database.
 Snakemake is a workflow management tool that ensures work is not unnecessarily duplicated.
 Various steps are stored as `Snakefile`s, in the `snakemake` directory.
@@ -179,26 +193,12 @@ snakemake
 
 To run everything, you'll want to download each source, then parse, then evaluate (`onsides/evaluate`), then export (`onsides/export`).
 
-Here is a minimal set of commands to generate everything:
-
-```bash
-snakemake -s snakemake/us/download/Snakefile
-snakemake -s snakemake/uk/download/Snakefile
-snakemake -s snakemake/eu/download/Snakefile
-snakemake -s snakemake/jp/download/Snakefile
-snakemake -s snakemake/us/parse/Snakefile
-snakemake -s snakemake/uk/parse/Snakefile
-snakemake -s snakemake/eu/parse/Snakefile
-snakemake -s snakemake/jp/parse/Snakefile
-snakemake -s snakemake/onsides/evaluate/Snakefile
-snakemake -s snakemake/onsides/export/Snakefile
-```
-
 To be transparent, the reason I didn't package everything into a single command is because these scripts will inevitably become stale in various ways (source URLs change, etc.), and this makes debugging significantly easier for the inheritors of this project.
 
 
 ### Releasing
 
+Once everything above has been run, create the final release ZIP archive.
 Here's how the v3.1.0 archive was created.
 
 ```bash
