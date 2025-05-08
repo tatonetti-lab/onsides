@@ -64,6 +64,9 @@ Here's a diagram of the database schema:
 
 ![Database ER diagram](docs/schema.png)
 
+### Usage
+
+For some example queries, view [the documentation](docs/README.md).
 
 ### High confidence set
 
