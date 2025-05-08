@@ -32,7 +32,7 @@
             echo
             if [ ! -d ".venv" ]; then
               echo "Creating new virtual environment with uv..."
-              ${pkgs.uv}/bin/uv sync
+              ${pkgs.uv}/bin/uv sync --frozen
             fi
 
             source .venv/bin/activate
