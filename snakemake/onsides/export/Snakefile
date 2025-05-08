@@ -184,7 +184,7 @@ rule combine_results_to_sqlite:
             print(f"Running: 'duckdb duck.db < {file}'")
             shell("duckdb duck.db < {file}")
 
-        generate_rxnorm_map("snakemake/onsides/rxnav-path-table.html")
+        generate_rxnorm_map("snakemake/onsides/export/rxnav-path-table.html")
 
         vocab_scripts = [
             input.vocab_sql,
