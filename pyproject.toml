@@ -42,3 +42,6 @@ build-backend = "hatchling.build"
 dev = [
     "pytest>=8.3.5",
 ]
+
+[project.scripts]
+build-zip = "onsides.cli:main"

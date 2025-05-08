@@ -197,11 +197,10 @@ Simple answer?
 
 ### Releasing
 
-Here's how the v3.0.0 archive was created.
+Here's how the v3.1.0 archive was created.
 
 ```bash
-cd database
-zip -r ../onsides-v3.0.0.zip annotations csv database_scripts schema
+build-zip --version v3.1.0
 ```
 
 ---
