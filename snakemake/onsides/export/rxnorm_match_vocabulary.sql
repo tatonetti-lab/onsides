@@ -1,5 +1,5 @@
 -- Everything that maps to an RxNorm or RxNorm extension concept
-CREATE TABLE if not exists concept AS
+CREATE TABLE IF NOT EXISTS concept AS
 FROM
     read_csv(
         'data/omop_vocab/CONCEPT.csv',
@@ -7,7 +7,7 @@ FROM
         quote = ''
     );
 
-CREATE TABLE if not exists concept_relationship AS
+CREATE TABLE IF NOT EXISTS concept_relationship AS
 FROM
     read_csv(
         'data/omop_vocab/CONCEPT_RELATIONSHIP.csv',

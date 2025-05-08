@@ -1,6 +1,6 @@
 [project]
 name = "onsides"
-version = "3.0.0"
+version = "3.1.0"
 description = "Database of drug adverse events from product labels"
 readme = "README.md"
 authors = [
@@ -12,6 +12,7 @@ requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.13.3",
     "connectorx>=0.4.2",
+    "duckdb>=1.2.2",
     "fastexcel>=0.13.0",
     "httpx>=0.28.1",
     "lxml>=5.3.1",
@@ -41,3 +42,6 @@ build-backend = "hatchling.build"
 dev = [
     "pytest>=8.3.5",
 ]
+
+[project.scripts]
+build-zip = "onsides.cli:main"

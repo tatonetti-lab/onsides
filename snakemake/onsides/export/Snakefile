@@ -5,6 +5,7 @@ import polars as pl
 from rich.progress import track
 
 from onsides import rxnorm
+from onsides.rxnorm_ingredients import generate_rxnorm_map
 
 tables = [
     "product_adverse_effect",
@@ -178,16 +179,26 @@ rule combine_results_to_sqlite:
             input.us_sql,
             input.uk_sql,
             input.eu_sql,
+        ]
+        for file in duckdb_scripts:
+            print(f"Running: 'duckdb duck.db < {file}'")
+            shell("duckdb duck.db < {file}")
+
+        generate_rxnorm_map("snakemake/onsides/export/rxnav-path-table.html")
+
+        vocab_scripts = [
             input.vocab_sql,
             input.filter_sql,
         ]
-        for file in duckdb_scripts:
+        for file in vocab_scripts:
+            print(f"Running: 'duckdb duck.db < {file}'")
             shell("duckdb duck.db < {file}")
 
         sqlite_scripts = [
             input.threshold_sql,
         ]
         for file in sqlite_scripts:
+            print(f"Running: 'sqlite3 database/onsides.db < {file}'")
             shell("sqlite3 database/onsides.db < {file}")
 
 

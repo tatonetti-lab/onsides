@@ -63,93 +63,138 @@ COPY (
         deficient_product_adverse_effect
 ) TO 'log/product_adverse_effect_deficient.parquet' (FORMAT 'parquet');
 
-DELETE FROM
-    product_adverse_effect USING deficient_product_adverse_effect d
+USE duck.main;
+
+CREATE TEMPORARY TABLE non_deficient_adverse_effect AS
+SELECT
+    pae.*
+FROM
+    db.product_adverse_effect pae
 WHERE
-    product_adverse_effect.effect_id = d.effect_id;
+    effect_meddra_id IN (
+        SELECT
+            meddra_id
+        FROM
+            db.vocab_meddra_adverse_effect
+    )
+    AND product_label_id IN (
+        SELECT
+            label_id
+        FROM
+            db.product_label
+    );
+
+DROP TABLE db.product_adverse_effect;
+
+CREATE TABLE db.product_adverse_effect AS
+SELECT
+    *
+FROM
+    non_deficient_adverse_effect;
+
+USE db;
 
 -- ===============================================
 -- 4. Handle product_label issues (Test 3b)
 --    Delete rows where the product has no ingredient mapping.
 -- ===============================================
-CREATE
-OR REPLACE TEMPORARY VIEW deficient_product_label AS
-SELECT
-    pl.*
-FROM
-    product_label pl
-WHERE
-    NOT EXISTS (
-        SELECT
-            1
-        FROM
-            product_to_rxnorm p2r
-            JOIN vocab_rxnorm_ingredient_to_product vi2p ON p2r.rxnorm_product_id = vi2p.product_id
-        WHERE
-            p2r.label_id = pl.label_id
-    );
-
 COPY (
     SELECT
-        *
+        pl.label_id
     FROM
-        deficient_product_label
+        product_label pl ANTI
+        JOIN (
+            SELECT
+                DISTINCT label_id
+            FROM
+                product_to_rxnorm p2r
+                INNER JOIN vocab_rxnorm_ingredient_to_product vi2p ON p2r.rxnorm_product_id = vi2p.product_id
+        ) AS labels_with_ingredients USING (label_id)
 ) TO 'log/product_label_missing_ingredient.parquet' (FORMAT 'parquet');
 
-DELETE FROM
-    product_label USING deficient_product_label d
-WHERE
-    product_label.label_id = d.label_id;
+USE duck.main;
+
+CREATE TEMPORARY TABLE non_deficient_products AS
+SELECT
+    p.*
+FROM
+    db.product_label p
+    INNER JOIN (
+        SELECT
+            DISTINCT label_id
+        FROM
+            db.product_to_rxnorm p2r
+            INNER JOIN db.vocab_rxnorm_ingredient_to_product vi2p ON p2r.rxnorm_product_id = vi2p.product_id
+    ) AS labels_with_ingredients USING (label_id);
+
+DROP TABLE db.product_label;
+
+CREATE TABLE db.product_label AS
+SELECT
+    *
+FROM
+    non_deficient_products;
+
+USE db;
 
 -- ===============================================
 -- 5. Clean up orphaned rows in mapping tables referencing deleted product_label rows
 -- ===============================================
 -- 5a. Remove orphaned rows from product_to_rxnorm.
-CREATE
-OR REPLACE TEMPORARY VIEW orphan_product_to_rxnorm AS
-SELECT
-    p2r.*
-FROM
-    product_to_rxnorm p2r
-    LEFT JOIN product_label pl ON p2r.label_id = pl.label_id
-WHERE
-    pl.label_id IS NULL;
-
 COPY (
     SELECT
-        *
+        p2r.*
     FROM
-        orphan_product_to_rxnorm
+        product_to_rxnorm p2r ANTI
+        JOIN product_label pl ON p2r.label_id = pl.label_id
 ) TO 'log/orphan_product_to_rxnorm.parquet' (FORMAT 'parquet');
 
-DELETE FROM
-    product_to_rxnorm USING orphan_product_to_rxnorm o
-WHERE
-    product_to_rxnorm.label_id = o.label_id
-    AND product_to_rxnorm.rxnorm_product_id = o.rxnorm_product_id;
+USE duck.main;
+
+CREATE TEMPORARY TABLE non_orphan_product_to_rxnorm AS
+SELECT
+    p.*
+FROM
+    db.product_to_rxnorm p
+    INNER JOIN db.product_label l USING (label_id);
+
+DROP TABLE db.product_to_rxnorm;
+
+CREATE TABLE db.product_to_rxnorm AS
+SELECT
+    *
+FROM
+    non_orphan_product_to_rxnorm;
+
+USE db;
 
 -- 5b. Remove orphaned rows from product_adverse_effect.
-CREATE
-OR REPLACE TEMPORARY VIEW orphan_product_adverse_effect AS
+COPY (
+    SELECT
+        pae.*
+    FROM
+        product_adverse_effect pae ANTI
+        JOIN product_label pl ON pae.product_label_id = pl.label_id
+) TO 'log/orphan_product_adverse_effect.parquet' (FORMAT 'parquet');
+
+USE duck.main;
+
+CREATE TEMPORARY TABLE non_deficient_product_adverse_effect AS
 SELECT
     pae.*
 FROM
-    product_adverse_effect pae
-    LEFT JOIN product_label pl ON pae.product_label_id = pl.label_id
-WHERE
-    pl.label_id IS NULL;
+    db.product_adverse_effect pae
+    INNER JOIN db.product_label pl ON pae.product_label_id = pl.label_id;
 
-COPY (
-    SELECT
-        *
-    FROM
-        orphan_product_adverse_effect
-) TO 'log/orphan_product_adverse_effect.parquet' (FORMAT 'parquet');
+DROP TABLE db.product_adverse_effect;
 
-DELETE FROM
-    product_adverse_effect USING orphan_product_adverse_effect o
-WHERE
-    product_adverse_effect.effect_id = o.effect_id;
+CREATE TABLE db.product_adverse_effect AS
+SELECT
+    *
+FROM
+    non_deficient_product_adverse_effect;
+
+USE db;
 
 -- ===============================================
 -- 6. Remove orphaned vocabulary entries (Tests 4a & 4c)

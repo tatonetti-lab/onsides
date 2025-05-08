@@ -1,4 +1,4 @@
-create table if not exists mrconso as
+CREATE TABLE IF NOT EXISTS mrconso AS
 SELECT
     * EXCLUDE('column18')
 FROM
@@ -11,9 +11,7 @@ FROM
           'SCUI', 'SDUI', 'SAB', 'TTY', 'CODE', 'STR', 'SRL', 'SUPPRESS', 'CVF']
     );
 
-CREATE TABLE us_final AS
-WITH
-us_preds AS (
+CREATE TABLE us_final AS WITH us_preds AS (
     SELECT
         split_part(text_id, '.', 1) AS setid,
         split_part(text_id, '.', 3) AS spl_version,
@@ -37,26 +35,26 @@ us_map AS (
             sep = '|'
         )
 ),
-us_name as (
-    select
+us_name AS (
+    SELECT
         setid,
         spl_version,
-        title as source_product_name
-    from
+        title AS source_product_name
+    FROM
         read_csv(
             '_onsides/us/map_download/dm_spl_zip_files_meta_data.txt',
             sep = '|'
         )
-    where
+    WHERE
         title != 'NOT A DRUG LABEL'
 )
 SELECT
     *,
-    setid || '.' || spl_version as source_product_id
+    setid || '.' || spl_version AS source_product_id
 FROM
     us_preds
     INNER JOIN us_map USING (setid, spl_version)
-    inner join us_name using (setid, spl_version);
+    INNER JOIN us_name USING (setid, spl_version);
 
 -- Export tables
 INSTALL sqlite;
@@ -72,16 +70,14 @@ INSERT INTO
         source_product_name,
         source_product_id,
         source_label_url
+    ) WITH us_inner AS (
+        SELECT
+            DISTINCT setid,
+            source_product_id,
+            source_product_name
+        FROM
+            us_final
     )
-with
-us_inner as (
-    select distinct
-        setid,
-        source_product_id,
-        source_product_name
-    from
-        us_final
-)
 SELECT
     'US' AS source,
     source_product_name,
@@ -92,19 +88,17 @@ FROM
 
 -- Product to RxNorm
 INSERT INTO
-    db.product_to_rxnorm (label_id, rxnorm_product_id)
-WITH
-new_labels AS (
-    SELECT
-        label_id,
-        source_product_id
-    FROM
-        db.product_label
-    WHERE
-        source = 'US'
-)
-SELECT DISTINCT
-    label_id,
+    db.product_to_rxnorm (label_id, rxnorm_product_id) WITH new_labels AS (
+        SELECT
+            label_id,
+            source_product_id
+        FROM
+            db.product_label
+        WHERE
+            source = 'US'
+    )
+SELECT
+    DISTINCT label_id,
     RXCUI AS rxnorm_product_id
 FROM
     new_labels
@@ -119,17 +113,15 @@ INSERT INTO
         match_method,
         pred0,
         pred1
+    ) WITH new_labels AS (
+        SELECT
+            label_id,
+            source_product_id
+        FROM
+            db.product_label
+        WHERE
+            source = 'US'
     )
-WITH
-new_labels AS (
-    SELECT
-        label_id,
-        source_product_id
-    FROM
-        db.product_label
-    WHERE
-        source = 'US'
-)
 SELECT
     label_id AS product_label_id,
     label_section,

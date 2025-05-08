@@ -40,7 +40,7 @@
             test_tabula() {
               python -c "import tabula" >/dev/null 2>&1
               if [ $? -eq 0 ]; then
-                echo "Onsides development environment activated!"
+                echo "OnSIDES development environment activated!"
               else
                 echo "There was an error installing tabula. Please check your installation."
               fi
