@@ -135,13 +135,9 @@ In a separate comparison, this modeling approach was compared to the TAC 2017 da
 
 ### Dependencies
 
-To speed development and avoid dependency headaches, I built a development environment as a [nix flake](https://zero-to-nix.com/concepts/dev-env/).
-Nix is a declarative, reproducible package and environment manager.
-What this means is that, after you [install nix](https://determinate.systems/nix-installer/), all you need to run is `nix develop` to enter the development shell, and every prerequisite needed for OnSIDES will be available.
-If you prefer not to use nix, you'll need to install all the dependencies yourself, including Python (I recommend [uv](https://docs.astral.sh/uv/)), [Java](https://java.com), [tabula](https://tabula.technology/), [pandoc](https://pandoc.org/), and [DuckDB](https://duckdb.org/), then create the virtual environment for Python (e.g. `uv sync`).
-
-Simple answer?
 [Install nix](https://determinate.systems/nix-installer/), then run `nix develop`.
+
+If you prefer not to use nix, you'll need to install all the dependencies yourself, including Python (I recommend [uv](https://docs.astral.sh/uv/)), [Java](https://java.com), [tabula](https://tabula.technology/), [pandoc](https://pandoc.org/), and [DuckDB](https://duckdb.org/), then create the virtual environment for Python (e.g. `uv sync`).
 
 ### Building
 
