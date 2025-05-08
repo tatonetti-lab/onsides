@@ -1,6 +1,6 @@
 [project]
 name = "onsides"
-version = "3.0.0"
+version = "3.1.0"
 description = "Database of drug adverse events from product labels"
 readme = "README.md"
 authors = [
