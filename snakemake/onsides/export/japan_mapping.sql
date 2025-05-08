@@ -20,9 +20,7 @@ FROM
 
 DROP TABLE IF EXISTS kegg_map;
 
-CREATE TABLE kegg_map AS
-WITH
-raw_kegg AS (
+CREATE TABLE kegg_map AS WITH raw_kegg AS (
     SELECT
         REPLACE(kegg_id, 'dr:', '') AS kegg_id,
         REPLACE(REPLACE(ndc_id, 'ndc:', ''), '-', '') AS ndc_id
@@ -44,7 +42,7 @@ SELECT
 FROM
     raw_kegg;
 
-drop table if exists kegg_drug_to_rxnorm;
+DROP TABLE IF EXISTS kegg_drug_to_rxnorm;
 
 CREATE TABLE kegg_drug_to_rxnorm AS
 SELECT
@@ -60,11 +58,9 @@ WHERE
     AND c2.vocabulary_id IN ('RxNorm', 'RxNorm Extension')
     AND cr.relationship_id = 'Maps to';
 
-drop table if exists jp_labels_meta;
+DROP TABLE IF EXISTS jp_labels_meta;
 
-CREATE TABLE jp_labels_meta AS
-WITH
-raw_meta AS (
+CREATE TABLE jp_labels_meta AS WITH raw_meta AS (
     SELECT
         name,
         code,
@@ -83,11 +79,9 @@ FROM
     kegg_drug_to_rxnorm
     INNER JOIN raw_meta USING (kegg_id);
 
-drop table if exists japan_final_full;
+DROP TABLE IF EXISTS japan_final_full;
 
-CREATE TABLE japan_final_full AS
-WITH
-raw_matches AS (
+CREATE TABLE japan_final_full AS WITH raw_matches AS (
     SELECT
         split_part(text_id, '.', 1) AS japic_code,
         term_id
@@ -113,16 +107,14 @@ INSERT INTO
         source_product_name,
         source_product_id,
         source_label_url
+    ) WITH jp_inner AS (
+        SELECT
+            DISTINCT source_product_name,
+            source_product_id,
+            source_label_url
+        FROM
+            japan_final_full
     )
-with
-jp_inner as (
-    select distinct
-        source_product_name,
-        source_product_id,
-        source_label_url
-    from
-        japan_final_full
-)
 SELECT
     'JP' AS source,
     source_product_name,
@@ -132,19 +124,17 @@ FROM
     jp_inner;
 
 INSERT INTO
-    db.product_to_rxnorm (label_id, rxnorm_product_id)
-WITH
-new_labels AS (
-    SELECT
-        label_id,
-        source_product_id
-    FROM
-        db.product_label
-    WHERE
-        source = 'JP'
-)
-SELECT DISTINCT
-    label_id,
+    db.product_to_rxnorm (label_id, rxnorm_product_id) WITH new_labels AS (
+        SELECT
+            label_id,
+            source_product_id
+        FROM
+            db.product_label
+        WHERE
+            source = 'JP'
+    )
+SELECT
+    DISTINCT label_id,
     rxnorm_id AS rxnorm_product_id
 FROM
     new_labels
@@ -156,17 +146,15 @@ INSERT INTO
         label_section,
         effect_meddra_id,
         match_method
+    ) WITH new_labels AS (
+        SELECT
+            label_id,
+            source_product_id
+        FROM
+            db.product_label
+        WHERE
+            source = 'JP'
     )
-WITH
-new_labels AS (
-    SELECT
-        label_id,
-        source_product_id
-    FROM
-        db.product_label
-    WHERE
-        source = 'JP'
-)
 SELECT
     label_id AS product_label_id,
     'NA' AS label_section,

@@ -1,6 +1,5 @@
 -- Begin an atomic transaction.
-BEGIN
-TRANSACTION;
+BEGIN TRANSACTION;
 
 -- 1. Remove rows from product_adverse_effect with pred1 <= 3.258.
 DELETE FROM
@@ -13,8 +12,8 @@ DELETE FROM
     product_label
 WHERE
     label_id NOT IN (
-        SELECT DISTINCT
-            product_label_id
+        SELECT
+            DISTINCT product_label_id
         FROM
             product_adverse_effect
     );
@@ -35,8 +34,8 @@ DELETE FROM
     vocab_meddra_adverse_effect
 WHERE
     meddra_id NOT IN (
-        SELECT DISTINCT
-            effect_meddra_id
+        SELECT
+            DISTINCT effect_meddra_id
         FROM
             product_adverse_effect
         WHERE
@@ -48,8 +47,8 @@ DELETE FROM
     vocab_rxnorm_product
 WHERE
     rxnorm_id NOT IN (
-        SELECT DISTINCT
-            rxnorm_product_id
+        SELECT
+            DISTINCT rxnorm_product_id
         FROM
             product_to_rxnorm
     );
@@ -77,8 +76,8 @@ DELETE FROM
     vocab_rxnorm_ingredient
 WHERE
     rxnorm_id NOT IN (
-        SELECT DISTINCT
-            ingredient_id
+        SELECT
+            DISTINCT ingredient_id
         FROM
             vocab_rxnorm_ingredient_to_product
     );
