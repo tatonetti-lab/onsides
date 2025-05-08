@@ -24,6 +24,7 @@
             pkgs.jdk11
             pkgs.pandoc
             pkgs.duckdb
+            pkgs.curl
           ];
 
           shellHook = ''
