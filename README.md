@@ -135,7 +135,7 @@ In a separate comparison, this modeling approach was compared to the TAC 2017 da
 
 ### Dependencies
 
-[Install nix](https://determinate.systems/nix-installer/), then run `nix develop`.
+[Install nix](https://determinate.systems/nix-installer/).
 
 If you prefer not to use nix, you'll need to install all the dependencies yourself, including Python (I recommend [uv](https://docs.astral.sh/uv/)), [Java](https://java.com), [tabula](https://tabula.technology/), [pandoc](https://pandoc.org/), and [DuckDB](https://duckdb.org/), then create the virtual environment for Python (e.g. `uv sync`).
 
