@@ -1,5 +1,8 @@
 # OnSIDES
 
+**Just looking for the data?**
+Click on the "Releases" tab on the right.
+
 ## Table of Contents
 
 - [Introduction](#introduction)
