@@ -161,6 +161,10 @@ snakemake -s snakemake/onsides/evaluate/Snakefile
 snakemake -s snakemake/onsides/export/Snakefile
 ```
 
+**If you see red**, there are errors.
+You will need to either fix or, if they're download errors, just re-run the Snakefile until it passes.
+**This is particularly relevant for downloading from the EU!**
+
 This project uses [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) to reproducibly download and build the database.
 Snakemake is a workflow management tool that ensures work is not unnecessarily duplicated.
 Various steps are stored as `Snakefile`s, in the `snakemake` directory.
@@ -173,10 +177,6 @@ Because Snakefiles can overwrite things, I recommend an initial dry run before r
 
 The `snakemake` directory is organized as follows, with each sub-directory having a `Snakefile` and any additional scripts that are needed.
 You should run these `Snakefile`s from the project root directory.
-
-**If you see red**, there are errors.
-You will need to either fix or, if they're download errors, just re-run the Snakefile until it passes.
-**This is particularly relevant for downloading from the EU!**
 
 ```
 snakemake
