@@ -151,7 +151,7 @@ If you prefer not to use nix, you'll need to install all the dependencies yourse
 nix develop
 snakemake -s snakemake/us/download/Snakefile --resources jobs=1
 snakemake -s snakemake/uk/download/Snakefile --resources jobs=1
-snakemake -s snakemake/eu/download/Snakefile --resources jobs=1
+snakemake -s snakemake/eu/download/Snakefile --resources jobs=1 --keep-going # Ignore errors
 snakemake -s snakemake/jp/download/Snakefile --resources jobs=1
 snakemake -s snakemake/us/parse/Snakefile
 snakemake -s snakemake/uk/parse/Snakefile
@@ -173,6 +173,10 @@ Because Snakefiles can overwrite things, I recommend an initial dry run before r
 
 The `snakemake` directory is organized as follows, with each sub-directory having a `Snakefile` and any additional scripts that are needed.
 You should run these `Snakefile`s from the project root directory.
+
+**If you see red**, there are errors.
+You will need to either fix or, if they're download errors, just re-run the Snakefile until it passes.
+**This is particularly relevant for downloading from the EU!**
 
 ```
 snakemake

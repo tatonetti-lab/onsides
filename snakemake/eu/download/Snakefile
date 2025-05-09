@@ -103,6 +103,7 @@ rule download_label_page:
     retries: 3
     shell:
         """
+        sleep 1
         curl -L -o {output} '{params.url}'
         if grep -q "The server is temporarily unavailable" {output}; then
             echo "Download failed: server unavailable" >&2
