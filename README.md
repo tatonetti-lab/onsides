@@ -68,29 +68,82 @@ Here's a diagram of the database schema:
 
 For some example queries, view [the documentation](docs/README.md).
 
-### High confidence set
+### High confidence sets
 
-In addition to this, there is one additional CSV file called `high_confidence.csv`.
-This file contains ingredient-adverse effect pairs that were observed in all four sources (US, UK, EU, Japan).
-We found 562,281 high-confidence ADEs across 5761 ingredients and 733 effects.
+You may be interested in especially high confidence drug-effect relationships. In this case, we recommend 
+using the intersection of the adverse drug effects that are extracted from difference sources. For example,
+a drug-effect relationship reported on both the US and UK labels for an ingredient would be higher confidence
+than a drug-effect relationshipi reported on on the US labels. 
+
+The highest confidence would be the intersection of all four sources (US, UK, EU, and Japan). Note, however, 
+that the overlap in this case is relatively small. We found 663 ADEs across 71 ingredients and 180 effects
+fit this criteria. Below is some SQL to create a table from which any of the intersections can be queried. 
 
 Since this table is derived, it has not been included in the database schemas.
 A suitable definition (SQLite here) would be:
 
 ```sql
-CREATE TABLE high_confidence (
-    ingredient_id TEXT,
-    effect_meddra_id INTEGER,
-    FOREIGN KEY(ingredient_id) REFERENCES vocab_rxnorm_ingredient(rxnorm_id),
-    FOREIGN KEY(effect_meddra_id) REFERENCES vocab_meddra_adverse_effect(meddra_id)
-);
+CREATE TABLE source_intersection AS
+SELECT
+pi.ingredient_id,
+a.effect_meddra_id,
+count(distinct source) as num_sources,
+max((source = 'US')::int) as US,
+max((source = 'EU')::int) as EU,
+max((source = 'UK')::int) as UK,
+max((source = 'JP')::int) as JP
+FROM
+product_label l
+INNER JOIN product_to_rxnorm lp USING (label_id)
+INNER JOIN vocab_rxnorm_product p ON lp.rxnorm_product_id = p.rxnorm_id
+INNER JOIN vocab_rxnorm_ingredient_to_product pi ON p.rxnorm_id = pi.product_id
+INNER JOIN product_adverse_effect a ON l.label_id = a.product_label_id
+group by pi.ingredient_id, a.effect_meddra_id;
 ```
 
-After creating the table, import as follows (SQLite again):
+After creating the table, you can run a query to check the counts of advese drug effects by which sources
+you are intersecting with:
+
+```sql
+SELECT 'US-EU' AS source_combo, COUNT(*) as num_ades, count(distinct ingredient_id) as num_ingredients, count(distinct effect_meddra_id) as num_effects FROM source_intersection WHERE US = 1 AND EU = 1
+UNION ALL
+SELECT 'US-UK', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE US = 1 AND UK = 1
+UNION ALL
+SELECT 'US-JP', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE US = 1 AND JP = 1
+UNION ALL
+SELECT 'EU-UK', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE EU = 1 AND UK = 1
+UNION ALL
+SELECT 'EU-JP', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE EU = 1 AND JP = 1
+UNION ALL
+SELECT 'UK-JP', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE UK = 1 AND JP = 1
+UNION ALL
+SELECT 'US-EU-UK', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE US = 1 AND EU = 1 AND UK = 1
+UNION ALL
+SELECT 'US-EU-JP', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE US = 1 AND EU = 1 AND JP = 1
+UNION ALL
+SELECT 'US-UK-JP', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE US = 1 AND UK = 1 AND JP = 1
+UNION ALL
+SELECT 'EU-UK-JP', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE EU = 1 AND UK = 1 AND JP = 1
+UNION ALL
+SELECT 'US-EU-UK-JP', COUNT(*), count(distinct ingredient_id), count(distinct effect_meddra_id) FROM source_intersection WHERE US = 1 AND EU = 1 AND UK = 1 AND JP = 1;
 ```
-.mode csv
-.import --skip 1 'csv/high_confidence.csv' high_confidence
-```
+
+In OnSIDES version 3.1.1 this would yield the following table:
+
+| Source Combination | Num Ingredient-Effect Pairs | Num Ingredients | Num Effects |
+|--------------------|-----------------------------|------------------|--------------|
+| US-EU-UK-JP        | 663                         | 71               | 180          |
+| US-EU-UK           | 3489                        | 206              | 591          |
+| US-EU-JP           | 1047                        | 85               | 261          |
+| US-UK-JP           | 1516                        | 197              | 284          |
+| EU-UK-JP           | 1285                        | 74               | 355          |
+| US-EU              | 11199                       | 501              | 1143         |
+| US-UK              | 10141                       | 620              | 1045         |
+| US-JP              | 4240                        | 297              | 557          |
+| EU-UK              | 9541                        | 267              | 1571         |
+| EU-JP              | 2270                        | 87               | 569          |
+| UK-JP              | 3462                        | 223              | 591          |
+
 
 ### Manual annotations
 
