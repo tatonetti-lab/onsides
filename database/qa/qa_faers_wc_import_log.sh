@@ -17,7 +17,7 @@ Notes:
 - Uses PG* env vars for connection (PGHOST, PGPORT, PGUSER, PGDATABASE, PGPASSWORD, etc.).
 - Computes wc -l on the file and SELECT COUNT(*) from <schema>.<table>.
 - Inserts a log row into onsides.z_qa_faers_wc_import_log.
-- The "--source" can be a free-form tag (e.g., FAERS, LAERS, or a release like v3.1.0). Max length 10.
+- The "--source" can be a free-form tag (e.g., FAERS, LAERS, or a release like v3.1.0). Max length 32.
 USAGE
 }
 
@@ -56,9 +56,9 @@ fi
 # Normalize and validate
 ########################################
 
-# Allow any non-empty source/tag up to 10 chars (column is varchar(10))
-if [[ ${#SOURCE} -gt 10 ]]; then
-  echo "--source length must be <= 10 characters (got ${#SOURCE})" >&2
+# Allow any non-empty source/tag up to 32 chars (column is varchar(32))
+if [[ ${#SOURCE} -gt 32 ]]; then
+  echo "--source length must be <= 32 characters (got ${#SOURCE})" >&2
   exit 2
 fi
 SOURCE_UPPER=$(echo "$SOURCE" | tr '[:lower:]' '[:upper:]')
@@ -113,7 +113,7 @@ SOURCE_ESC=$(escape_sql "$SOURCE_UPPER")
 if [[ -z "$EXECUTION_ID" ]]; then EXEC_SQL="NULL"; else EXEC_SQL="$EXECUTION_ID"; fi
 
 SQL_STMT="INSERT INTO onsides.z_qa_faers_wc_import_log
-  (log_filename, filename, laers_or_faers, yr, qtr, wc_l_count,
+  (log_filename, filename, onsides_release_version, yr, qtr, wc_l_count,
    select_count_on_domain, select_count_diff, select_count_diff_pct,
    execution_id, csv_record_count, csv_count_diff, csv_count_diff_pct)
 VALUES

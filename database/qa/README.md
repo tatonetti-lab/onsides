@@ -5,7 +5,7 @@ This workflow logs basic QA metrics comparing a source data file's line count to
 ## What it records
 - `log_filename` (varchar(255), NOT NULL): basename of the source file (placeholder; can be customized)
 - `filename` (varchar(255), NOT NULL): full path to the source file at logging time
-- `laers_or_faers` (varchar(10), NOT NULL): a short dataset tag, e.g. `FAERS`, `LAERS`, or a release tag like `v3.1.0`
+- `onsides_release_version` (varchar(32), NOT NULL): OnSIDES release tag or short dataset tag, e.g. `v3.1.0`, `FAERS`, or `LAERS`
 - `yr` (int, NOT NULL): dataset year (YY or YYYY)
 - `qtr` (int, NOT NULL): dataset quarter (1–4)
 - `wc_l_count` (int, NOT NULL): raw `wc -l` physical line count of the source file (includes header)
