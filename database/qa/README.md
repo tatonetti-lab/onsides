@@ -47,6 +47,20 @@ Notes:
 - Year supports YY or YYYY (e.g., 25 or 2025).
 - `select_count_on_domain` is computed from `SELECT COUNT(*) FROM <schema>.<table>`.
 
+Convenience scripts
+- `database/qa/ensure_qa_table_and_grants.sh` — idempotently creates/updates the QA log table (runs DDL and migration) and grants `rw_grp` the required privileges. Run as a superuser or pass PGUSER=postgres.
+- `database/qa/run_qa_bulk.sh` — run the QA logger across all CSVs in a directory (defaults to `data/csv/`). Uses `database/qa/qa_faers_wc_import_log.sh` for each file.
+
+Example one-line to prepare DB and run QA over CSVs:
+
+```
+# Ensure table and grants (run as postgres or a superuser)
+PGUSER=postgres PGDATABASE=cem_development_2025 PGPORT=5433 bash database/qa/ensure_qa_table_and_grants.sh
+
+# Run QA logger for all CSVs (as rw_grp)
+PGUSER=rw_grp PGDATABASE=cem_development_2025 PGPORT=5433 bash database/qa/run_qa_bulk.sh data/csv v3.1.0 2025 1 onsides
+```
+
 ## Troubleshooting
 - Permission denied: ensure your DB user can `SELECT` from the domain table and `INSERT` into `onsides.z_qa_faers_wc_import_log`.
 - Table not found: pass `--domain-schema` if your table is not in `onsides`.
