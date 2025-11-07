@@ -120,7 +120,17 @@ else
 fi
 
 # Get domain table count
-DOMAIN_COUNT=$(psql -tA -v ON_ERROR_STOP=1 -c "SELECT COUNT(*) FROM ${QUALIFIED_TABLE};")
+# For vocab tables, exclude placeholder entries if column exists
+if [[ "$DOMAIN_TABLE" == vocab_* ]]; then
+  HAS_PLACEHOLDER=$(psql -tA -v ON_ERROR_STOP=1 -c "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = '${DOMAIN_SCHEMA}' AND table_name = '${DOMAIN_TABLE}' AND column_name = 'is_placeholder');")
+  if [[ "$HAS_PLACEHOLDER" == 't' ]]; then
+    DOMAIN_COUNT=$(psql -tA -v ON_ERROR_STOP=1 -c "SELECT COUNT(*) FROM ${QUALIFIED_TABLE} WHERE is_placeholder IS NOT TRUE;")
+  else
+    DOMAIN_COUNT=$(psql -tA -v ON_ERROR_STOP=1 -c "SELECT COUNT(*) FROM ${QUALIFIED_TABLE};")
+  fi
+else
+  DOMAIN_COUNT=$(psql -tA -v ON_ERROR_STOP=1 -c "SELECT COUNT(*) FROM ${QUALIFIED_TABLE};")
+fi
 
 escape_sql() { printf "%s" "${1//\'/''}"; }
 
