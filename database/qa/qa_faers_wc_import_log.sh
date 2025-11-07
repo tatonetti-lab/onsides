@@ -15,8 +15,9 @@ Usage: $0 \
 
 Notes:
 - Uses PG* env vars for connection (PGHOST, PGPORT, PGUSER, PGDATABASE, PGPASSWORD, etc.).
-- Computes wc -l on the file and SELECT COUNT(*) from <schema>.<table>.
-- Inserts a log row into onsides.z_qa_faers_wc_import_log.
+- Computes wc -l on the file (raw line count, may overcount due to embedded newlines) and SELECT COUNT(*) from <schema>.<table>.
+- Also computes logical CSV record count using Python csv reader (handles embedded newlines correctly).
+- Inserts a log row into onsides.z_qa_faers_wc_import_log with diffs: select_count_diff (domain vs wc -l), csv_count_diff (domain vs logical records).
 - The "--source" can be a free-form tag (e.g., FAERS, LAERS, or a release like v3.1.0). Max length 32.
 USAGE
 }
