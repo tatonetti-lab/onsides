@@ -97,9 +97,27 @@ PY
 
 QUALIFIED_TABLE="${DOMAIN_SCHEMA}.${DOMAIN_TABLE}"
 
-# Ensure the log table exists (safe to run repeatedly)
+# Ensure the log table exists (safe to run repeatedly).
+# If the table is missing, only run the DDL when the connected user is a superuser.
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-psql -v ON_ERROR_STOP=1 -f "$SCRIPT_DIR/z_qa_faers_wc_import_log.sql"
+# Check if table exists
+TABLE_EXISTS=$(psql -tA -v ON_ERROR_STOP=1 -c "SELECT to_regclass('onsides.z_qa_faers_wc_import_log');") || TABLE_EXISTS=""
+if [[ -z "$TABLE_EXISTS" ]]; then
+  # Check if current_user is a superuser; only superusers should run the DDL
+  IS_SUPER=$(psql -tA -v ON_ERROR_STOP=1 -c "SELECT rolsuper FROM pg_roles WHERE rolname = current_user;") || IS_SUPER="f"
+  IS_SUPER=$(echo "$IS_SUPER" | tr -d '[:space:]')
+  if [[ "$IS_SUPER" == 't' ]]; then
+    echo "Log table not found — creating via DDL as superuser"
+    psql -v ON_ERROR_STOP=1 -f "$SCRIPT_DIR/z_qa_faers_wc_import_log.sql"
+  else
+    echo "Warning: onsides.z_qa_faers_wc_import_log does not exist and current user lacks privileges to create it." >&2
+    echo "Please run the DDL as a superuser (postgres) or have a DBA create the table." >&2
+    exit 1
+  fi
+else
+  # Table exists — nothing to do
+  :
+fi
 
 # Get domain table count
 DOMAIN_COUNT=$(psql -tA -v ON_ERROR_STOP=1 -c "SELECT COUNT(*) FROM ${QUALIFIED_TABLE};")
