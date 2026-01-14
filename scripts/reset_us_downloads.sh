@@ -18,5 +18,10 @@ rm -f "${US_DIR}"/download/*.unzipped
 rm -f "${US_DIR}"/map_download/*.zip
 rm -f "${US_DIR}"/map_download/*.download
 
+rm -f "${US_DIR}"/labelzips/*.zip
+rm -f "${US_DIR}"/labels/*.xml
+rm -f "${US_DIR}"/labels/*.json
+rm -f "${US_DIR}/label_text.parquet"
+
 echo "US download artifacts cleared. Re-run:"
 echo "  snakemake -s snakemake/us/download/Snakefile --resources jobs=1"
