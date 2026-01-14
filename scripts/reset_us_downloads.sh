@@ -11,16 +11,16 @@ rm -f \
   "${US_DIR}/parsed.done" \
   "${US_DIR}/map_parsed.done"
 
-rm -f "${US_DIR}"/download/*.zip
-rm -f "${US_DIR}"/download/*.download
-rm -f "${US_DIR}"/download/*.unzipped
+find "${US_DIR}/download" -type f -name "*.zip" -delete 2>/dev/null || true
+find "${US_DIR}/download" -type f -name "*.download" -delete 2>/dev/null || true
+find "${US_DIR}/download" -type f -name "*.unzipped" -delete 2>/dev/null || true
 
-rm -f "${US_DIR}"/map_download/*.zip
-rm -f "${US_DIR}"/map_download/*.download
+find "${US_DIR}/map_download" -type f -name "*.zip" -delete 2>/dev/null || true
+find "${US_DIR}/map_download" -type f -name "*.download" -delete 2>/dev/null || true
 
-rm -f "${US_DIR}"/labelzips/*.zip
-rm -f "${US_DIR}"/labels/*.xml
-rm -f "${US_DIR}"/labels/*.json
+find "${US_DIR}/labelzips" -type f -name "*.zip" -delete 2>/dev/null || true
+find "${US_DIR}/labels" -type f -name "*.xml" -delete 2>/dev/null || true
+find "${US_DIR}/labels" -type f -name "*.json" -delete 2>/dev/null || true
 rm -f "${US_DIR}/label_text.parquet"
 
 echo "US download artifacts cleared. Re-run:"
