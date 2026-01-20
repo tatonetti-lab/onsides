@@ -6,6 +6,7 @@ dist/
 wheels/
 *.egg-info
 
+
 # Virtual environments
 .venv
 _onsides
@@ -23,3 +24,4 @@ log
 database/onsides.db
 db.zip
 summary.md
+.DS_Store
