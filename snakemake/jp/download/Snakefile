@@ -48,8 +48,13 @@ rule download_index_page:
     output: "_onsides/jp/{kind}_index_page/{page_number}.html"
     resources: jobs=1
     shell: """
-        curl -L --retry 10 --retry-all-errors -o {output} \
-        '{INDEX_URL}?display={wildcards.kind}&page={wildcards.page_number}'
+        if curl --help | grep -q -- '--retry-all-errors'; then
+            curl -L --retry 10 --retry-all-errors -o {output} \
+            '{INDEX_URL}?display={wildcards.kind}&page={wildcards.page_number}'
+        else
+            curl -L --retry 10 -o {output} \
+            '{INDEX_URL}?display={wildcards.kind}&page={wildcards.page_number}'
+        fi
     """
 
 
