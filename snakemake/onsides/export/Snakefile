@@ -167,6 +167,7 @@ rule combine_results_to_sqlite:
         vocab_sql = "snakemake/onsides/export/final_vocabulary_tables.sql",
         filter_sql = "snakemake/onsides/export/filter_deficient.sql",
         threshold_sql = "snakemake/onsides/export/threshold.sql",
+        derived_sql = "snakemake/onsides/export/derived_tables.sql",
     output: "database/onsides.db"
     run:
         from sqlmodel import create_engine
@@ -196,6 +197,7 @@ rule combine_results_to_sqlite:
 
         sqlite_scripts = [
             input.threshold_sql,
+            input.derived_sql,
         ]
         for file in sqlite_scripts:
             print(f"Running: 'sqlite3 database/onsides.db < {file}'")
