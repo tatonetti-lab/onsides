@@ -19,3 +19,4 @@ cem_development_2026=# `select count(*) from umls.mrconso ;`
 ----------
  17390109
 
+* also see readme at 

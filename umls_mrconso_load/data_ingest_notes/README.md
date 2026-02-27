@@ -1,0 +1,1 @@
+other README's are just notes I copied from the server on how I downloaded the data
