@@ -7,6 +7,15 @@ from onsides.stringsearch import MatchContext
 
 langs = ["english", "japanese"]
 
+NETWORK_PATH = Path(config.get(
+    "network_path",
+    "models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract",
+))
+WEIGHTS_PATH = Path(config.get(
+    "weights_path",
+    "models/bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth",
+))
+
 
 rule all:
     input:
@@ -75,18 +84,10 @@ rule evaluate_onsides:
 
         # Apply the BERT model to evaluate the matches in their contexts
         match_texts = [m.context for m in matches]
-        network_path = Path(
-            "/data1/home/berkowitzj/onsides/models/microsoft/"
-            "BiomedNLP-PubMedBERT-base-uncased-abstract"
-        )
-        model_path = Path(
-            "/data1/home/berkowitzj/onsides/models/"
-            "bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth"
-        )
         predictions = predict(
             texts=match_texts,
-            network_path=network_path,
-            weights_path=model_path,
+            network_path=NETWORK_PATH,
+            weights_path=WEIGHTS_PATH,
             text_settings=None,
             batch_size=1_000,
         )

@@ -13,10 +13,12 @@ These are read directly by the pipeline:
 - `data/omop_vocab/CONCEPT.csv` (can be downloaded from OMOP common data model files)
 - `data/omop_vocab/CONCEPT_RELATIONSHIP.csv`
 
-## 3) Configure the BERT model paths
-Update hardcoded paths in `snakemake/onsides/evaluate/Snakefile`:
-- `network_path` (transformer model directory)
-- `model_path` (trained weights)
+## 3) Place BERT model files
+The evaluate step expects model files under `models/` in the repo root:
+- `models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract/` (transformer model directory)
+- `models/bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth` (trained weights)
+
+To use a different location, pass `--config network_path=/path/to/model weights_path=/path/to/weights.pth` to the evaluate snakemake command.
 
 ## 4) Download label sources (per region)
 ```bash
