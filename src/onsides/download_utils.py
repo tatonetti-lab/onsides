@@ -17,10 +17,17 @@ def sanitize_filename(name):
     # Remove any characters that aren't alphanumeric, underscore, or hyphen
     clean_name = re.sub(r"[^\w\-]", "", clean_name)
 
-    # If name is too long (over 100 chars), truncate and add hash to ensure uniqueness
-    if len(clean_name) > 100:
+    # If name is too long, truncate and add hash to ensure uniqueness.
+    # Use byte length since filesystems (ext4) enforce a 255-byte limit,
+    # and multi-byte characters (e.g. Japanese) can be 3+ bytes each.
+    max_bytes = 240  # leave room for hash suffix and file extension
+    if len(clean_name.encode()) > max_bytes:
         name_hash = hashlib.md5(name.encode()).hexdigest()[:8]
-        clean_name = f"{clean_name[:90]}_{name_hash}"
+        # Truncate by characters until the byte length fits
+        truncated = clean_name
+        while len(truncated.encode()) > max_bytes - 9:  # 9 = underscore + 8-char hash
+            truncated = truncated[:-1]
+        clean_name = f"{truncated}_{name_hash}"
 
     # Ensure we don't have an empty string
     if not clean_name:

@@ -22,16 +22,13 @@ Update hardcoded paths in `snakemake/onsides/evaluate/Snakefile`:
 ```bash
 snakemake -s snakemake/us/download/Snakefile --resources jobs=1
 snakemake -s snakemake/uk/download/Snakefile --resources jobs=1
-# 1/14/26:NPT - currently here with help from codex resume 019bbe12-8e55-7d91-9ccf-1a76df393af0
-#             - running in screen -r onsides on thorshammer
-# When running, please record the number of attempts it took to get this job to complete
-# number of tries: 4
 snakemake -s snakemake/eu/download/Snakefile --resources jobs=1 --keep-going
-snakemake -s snakemake/jp/download/Snakefile --resources jobs=1
+snakemake -s snakemake/jp/download/Snakefile --resources jobs=1 --keep-going
 ```
 Notes:
 - repeat each of these above until you get no output
-- EU downloads are especially flaky; keep rerunning the EU download Snakefile until it completes.
+- EU and JP downloads are flaky (KEGG resets connections); use `--keep-going`
+  and keep rerunning until all labels are fetched.
 - US download also pulls DailyMed map files. The export step expects:
   `_onsides/us/map_download/rxnorm_mappings.txt` and
   `_onsides/us/map_download/dm_spl_zip_files_meta_data.txt`.
@@ -53,6 +50,25 @@ snakemake -s snakemake/eu/parse/Snakefile
 snakemake -s snakemake/jp/parse/Snakefile
 ```
 Outputs land in `_onsides/*/label_text.parquet`.
+
+**Checkpoint — verify parsed labels before continuing.** Empty or missing parquet
+files will silently propagate through the rest of the pipeline, producing a release
+with missing data for that region. Run:
+```bash
+python -c "
+import polars as pl
+for source, path in [
+    ('US', '_onsides/us/label_text.parquet'),
+    ('UK', '_onsides/uk/label_text.parquet'),
+    ('EU', '_onsides/eu/label_text.parquet'),
+    ('JP', '_onsides/jp/med_label_text.parquet'),
+]:
+    df = pl.read_parquet(path)
+    print(f'{source}: {len(df):,} rows ({path})')
+"
+```
+All four sources should have a non-zero row count. If any are empty, check that the
+download step fully completed for that region before re-running the parse.
 
 ## 6) Build vocabularies, match terms, run model scoring
 ```bash
