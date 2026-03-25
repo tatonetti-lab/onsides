@@ -10,6 +10,7 @@ Click on the "Releases" tab on the right.
 - [Loading into a database](#loading-the-data-into-the-database)
 - [Database design and organization](#database-design-and-organization)
 - [Data generation and metrics](#data-generation-and-metrics)
+- [Versioning](VERSIONING.md)
 - [Developer documentation](#developer-documentation)
 - [Limitations](#limitations)
 - [Contact](#contact)
