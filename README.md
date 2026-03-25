@@ -61,6 +61,8 @@ The OnSIDES database has the following seven tables:
 
 Tables starting with `product_` contain data from drug labels, while `vocab_` tables contain vocabulary mapping information from the [UMLS Metathesaurus](https://www.nlm.nih.gov/research/umls/knowledge_sources/metathesaurus/index.html) and the OMOP vocabularies (from [Athena](https://athena.ohdsi.org/)).
 
+**Note on RxNorm identifiers:** The `rxnorm_id` columns in `vocab_rxnorm_product` and `vocab_rxnorm_ingredient` contain standard [RxNorm](https://www.nlm.nih.gov/research/umls/rxnorm/index.html) concept codes for US drugs. For international drugs (EU, UK, JP) that lack standard RxNorm codes, the identifiers come from OMOP's [RxNorm Extension](https://www.ohdsi.org/web/wiki/doku.php?id=documentation:vocabulary:rxnorm_extension) vocabulary and are prefixed with `OMOP` (e.g., `OMOP991424`).
+
 Here's a diagram of the database schema:
 
 ![Database ER diagram](docs/schema.png)

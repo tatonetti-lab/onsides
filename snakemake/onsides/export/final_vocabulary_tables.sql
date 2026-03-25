@@ -78,7 +78,8 @@ LOAD sqlite;
 
 ATTACH IF NOT EXISTS 'database/onsides.db' AS db (TYPE sqlite);
 
--- Products
+-- Products: LEFT JOIN so all referenced rxnorm_product_ids get a vocab entry,
+-- even if they are missing from MRCONSO/OMOP.
 INSERT INTO
     db.vocab_rxnorm_product (
         rxnorm_id,
@@ -86,15 +87,14 @@ INSERT INTO
         rxnorm_term_type
     )
 SELECT
-    DISTINCT rxnorm_id,
-    rxnorm_name,
-    rxnorm_term_type
+    DISTINCT rxnorm_product_id AS rxnorm_id,
+    COALESCE(rxnorm_name, 'Unknown') AS rxnorm_name,
+    COALESCE(rxnorm_term_type, 'Unknown') AS rxnorm_term_type
 FROM
-    db.product_label
-    INNER JOIN db.product_to_rxnorm USING (label_id)
-    INNER JOIN vocab_rxnorm ON rxnorm_product_id = rxnorm_id;
+    db.product_to_rxnorm
+    LEFT JOIN vocab_rxnorm ON rxnorm_product_id = rxnorm_id;
 
--- Ingredients
+-- Ingredients: LEFT JOIN so all ingredient_ids get a vocab entry.
 INSERT INTO
     db.vocab_rxnorm_ingredient (
         rxnorm_id,
@@ -102,30 +102,53 @@ INSERT INTO
         rxnorm_term_type
     )
 SELECT
-    DISTINCT concept_code AS rxnorm_id,
-    concept_name AS rxnorm_name,
-    concept_class_id AS rxnorm_term_type
+    DISTINCT ingredient_id AS rxnorm_id,
+    COALESCE(concept_name, 'Unknown') AS rxnorm_name,
+    COALESCE(concept_class_id, 'Unknown') AS rxnorm_term_type
 FROM
-    concept
-    INNER JOIN db.vocab_rxnorm_ingredient_to_product ON concept_code = ingredient_id
-WHERE
-    vocabulary_id IN ('RxNorm', 'RxNorm Extension');
+    db.vocab_rxnorm_ingredient_to_product
+    LEFT JOIN concept
+        ON concept_code = ingredient_id
+        AND vocabulary_id IN ('RxNorm', 'RxNorm Extension');
 
--- MedDRA
+-- MedDRA: Use both OMOP and MRCONSO as sources so all referenced effect_meddra_ids
+-- get a vocab entry. Removes the domain_id = 'Condition' filter which was too
+-- restrictive and excluded valid MedDRA terms classified under other OMOP domains.
 INSERT INTO
     db.vocab_meddra_adverse_effect (
         meddra_id,
         meddra_name,
         meddra_term_type
     )
+WITH meddra_from_omop AS (
+    SELECT
+        DISTINCT cast(concept_code AS int) AS meddra_id,
+        concept_name AS meddra_name,
+        concept_class_id AS meddra_term_type
+    FROM
+        concept
+    WHERE
+        vocabulary_id = 'MedDRA'
+        AND concept_class_id IN ('PT', 'LLT')
+),
+meddra_from_mrconso AS (
+    SELECT
+        DISTINCT cast(CODE AS int) AS meddra_id,
+        STR AS meddra_name,
+        TTY AS meddra_term_type
+    FROM
+        mrconso
+    WHERE
+        SAB = 'MDR'
+        AND LAT = 'ENG'
+        AND TTY IN ('PT', 'LLT')
+)
 SELECT
-    DISTINCT cast(concept_code AS int) AS meddra_id,
-    concept_name AS meddra_name,
-    concept_class_id AS meddra_term_type
+    DISTINCT ids.effect_meddra_id AS meddra_id,
+    COALESCE(omop.meddra_name, mrc.meddra_name, 'Unknown') AS meddra_name,
+    COALESCE(omop.meddra_term_type, mrc.meddra_term_type, 'Unknown') AS meddra_term_type
 FROM
-    concept
-    INNER JOIN db.product_adverse_effect ON cast(concept_code AS int) = effect_meddra_id
-WHERE
-    vocabulary_id = 'MedDRA'
-    AND concept_class_id IN ('PT', 'LLT')
-    AND domain_id = 'Condition';
+    (SELECT DISTINCT effect_meddra_id FROM db.product_adverse_effect
+     WHERE effect_meddra_id IS NOT NULL) ids
+    LEFT JOIN meddra_from_omop omop ON ids.effect_meddra_id = omop.meddra_id
+    LEFT JOIN meddra_from_mrconso mrc ON ids.effect_meddra_id = mrc.meddra_id;
