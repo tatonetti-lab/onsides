@@ -2,6 +2,24 @@
 
 Follow these steps from the repo root to refresh the OnSIDES database artifacts.
 
+## Computational requirements
+
+A full pipeline run requires:
+- **Disk**: ~40 GB for intermediate files (`_onsides/`), plus ~4 GB for external data files.
+- **GPU**: Required for Step 6 (BERT scoring). A single GPU is sufficient.
+- **RAM**: 16 GB+ recommended for the DuckDB-based export and vocabulary steps.
+- **Time estimates** (will vary by hardware and network):
+
+| Step | Duration | Notes |
+|------|----------|-------|
+| 4. Download | Hours to days | EU and JP sources are flaky; expect multiple reruns |
+| 5. Parse | Hours | US is the largest (~51k labels) |
+| 6. Evaluate | Days (single-digit) | GPU-bound; BERT scoring over millions of string matches |
+| 7. Export | Minutes | CPU-only, DuckDB + SQLite |
+| 8. Build zip | Seconds | |
+
+We recommend running long steps (download, parse, evaluate) in `screen` or `tmux` sessions.
+
 ## 1) Prepare the environment
 - Preferred: `nix develop`
 - Without Nix: `uv sync` and ensure these tools are installed and on PATH:
