@@ -76,18 +76,23 @@ rule extract_json:
 rule combine_labels:
     input: get_label_jsons,
     output: "_onsides/us/label_text.parquet"
+    log: "log/parse/us_combine_labels.log"
     run:
         results = list()
         for path in input:
             with open(path) as f:
                 result = json.load(f)
             results.append(result)
-        (
+        df = (
             pl.DataFrame(results)
             .select(
                 "set_id", "label_id", "spl_version", "title",
                     pl.col("sections").struct.unnest(),
                     # "AR", "BW", "OV", "PR", "SP", "WA", "WP",
             )
-            .write_parquet(output[0])
         )
+        df.write_parquet(output[0])
+        msg = f"US: combined {len(df)} labels into {output[0]}"
+        print(msg)
+        with open(log[0], "w") as f:
+            f.write(msg + "\n")

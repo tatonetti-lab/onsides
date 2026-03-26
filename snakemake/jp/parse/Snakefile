@@ -62,6 +62,7 @@ rule extract_tables_from_html:
 rule combine_labels:
     input: get_txt_files
     output: "_onsides/jp/{kind}_label_text.parquet"
+    log: "log/parse/jp_{kind}_combine_labels.log"
     run:
         results = list()
         for path in input:
@@ -78,3 +79,7 @@ rule combine_labels:
             meta["text"] = text
             results.append(meta)
         pl.DataFrame(results).write_parquet(output[0])
+        msg = f"JP ({wildcards.kind}): combined {len(results)} labels into {output[0]}"
+        print(msg)
+        with open(log[0], "w") as f:
+            f.write(msg + "\n")

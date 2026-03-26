@@ -52,6 +52,7 @@ rule convert_html_to_text:
 rule combine_labels:
     input: files_with_suffix(".side_effects.txt")
     output: "_onsides/uk/label_text.parquet"
+    log: "log/parse/uk_combine_labels.log"
     run:
         results = list()
         for path in input:
@@ -68,3 +69,7 @@ rule combine_labels:
             meta["text"] = text
             results.append(meta)
         pl.DataFrame(results).write_parquet(output[0])
+        msg = f"UK: combined {len(results)} labels into {output[0]}"
+        print(msg)
+        with open(log[0], "w") as f:
+            f.write(msg + "\n")

@@ -35,7 +35,8 @@ rule build_vocabulary:
             "_onsides/vocab/meddra_{language}.parquet",
             language=langs
         )
-    shell: "duckdb duck.db < {input.queries}"
+    log: "log/evaluate/build_vocabulary.log"
+    shell: "duckdb duck.db < {input.queries} 2>&1 | tee {log}"
 
 
 rule build_labels:
@@ -48,7 +49,8 @@ rule build_labels:
     output:
         "_onsides/combined/english_labels.parquet",
         "_onsides/combined/japanese_labels.parquet",
-    shell: "duckdb < {input.queries}"
+    log: "log/evaluate/build_labels.log"
+    shell: "duckdb < {input.queries} 2>&1 | tee {log}"
 
 
 rule string_match:
@@ -56,48 +58,59 @@ rule string_match:
         labels = "_onsides/combined/{language}_labels.parquet",
         vocabulary = "_onsides/vocab/meddra_{language}.parquet",
     output: "_onsides/combined/label_{language}_string_match.parquet"
+    log: "log/evaluate/string_match_{language}.log"
     run:
-        # Load the labels themselves
-        raw_labels = pl.read_parquet(input.labels).to_dicts()
-        labels = [IndexedText.model_validate(x) for x in raw_labels]
-        print(f"Found {len(labels)} labels")
+        with open(log[0], "w") as logfile:
+            def log_print(msg):
+                print(msg)
+                logfile.write(msg + "\n")
 
-        # Load the vocabularies (which we are trying to match)
-        raw_terms = pl.read_parquet(input.vocabulary).to_dicts()
-        terms = [IndexedText.model_validate(x) for x in raw_terms]
-        print(f"Matching {len(terms)} terms")
+            # Load the labels themselves
+            raw_labels = pl.read_parquet(input.labels).to_dicts()
+            labels = [IndexedText.model_validate(x) for x in raw_labels]
+            log_print(f"Found {len(labels)} labels")
 
-        # Find exact string matches
-        matches = stringsearch.parse_texts(texts=labels, terms=terms)
-        print(f"Found {len(matches)} string matches")
-        pl.DataFrame(matches).write_parquet(output[0])
+            # Load the vocabularies (which we are trying to match)
+            raw_terms = pl.read_parquet(input.vocabulary).to_dicts()
+            terms = [IndexedText.model_validate(x) for x in raw_terms]
+            log_print(f"Matching {len(terms)} terms")
+
+            # Find exact string matches
+            matches = stringsearch.parse_texts(texts=labels, terms=terms)
+            log_print(f"Found {len(matches)} string matches")
+            pl.DataFrame(matches).write_parquet(output[0])
 
 
 rule evaluate_onsides:
     input: "_onsides/combined/label_{language}_string_match.parquet"
     output: "_onsides/combined/label_{language}_preds.parquet"
+    log: "log/evaluate/evaluate_onsides_{language}.log"
     resources: jobs=1
     run:
-        raw_matches = pl.read_parquet(input[0]).to_dicts()
-        matches = [MatchContext.model_validate(x) for x in raw_matches]
-        print(f"Found {len(matches)} raw matches")
+        with open(log[0], "w") as logfile:
+            def log_print(msg):
+                print(msg)
+                logfile.write(msg + "\n")
 
-        # Apply the BERT model to evaluate the matches in their contexts
-        match_texts = [m.context for m in matches]
-        predictions = predict(
-            texts=match_texts,
-            network_path=NETWORK_PATH,
-            weights_path=WEIGHTS_PATH,
-            text_settings=None,
-            batch_size=1_000,
-        )
-        (
-            pl.concat([
+            raw_matches = pl.read_parquet(input[0]).to_dicts()
+            matches = [MatchContext.model_validate(x) for x in raw_matches]
+            log_print(f"Found {len(matches)} raw matches")
+
+            # Apply the BERT model to evaluate the matches in their contexts
+            match_texts = [m.context for m in matches]
+            predictions = predict(
+                texts=match_texts,
+                network_path=NETWORK_PATH,
+                weights_path=WEIGHTS_PATH,
+                text_settings=None,
+                batch_size=1_000,
+            )
+            result = pl.concat([
                 pl.DataFrame(matches),
                 pl.DataFrame(predictions, schema=["pred0", "pred1"])
             ], how="horizontal")
-            .write_parquet(output[0])
-        )
+            result.write_parquet(output[0])
+            log_print(f"Wrote {len(result)} predictions to {output[0]}")
 
 
 rule create_jp_to_eng_meddra_map:
@@ -106,5 +119,6 @@ rule create_jp_to_eng_meddra_map:
         queries = "snakemake/onsides/evaluate/meddra_jp_to_eng.sql",
     output:
         "_onsides/vocab/meddra_jp_to_eng.parquet"
+    log: "log/evaluate/jp_to_eng_meddra_map.log"
     shell:
-        "duckdb < {input.queries}"
+        "duckdb < {input.queries} 2>&1 | tee {log}"
