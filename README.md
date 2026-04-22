@@ -22,7 +22,7 @@ Click on the "Releases" tab on the right.
 
 OnSIDES is an international, comprehensive database of drugs and their adverse events using data from drug product labels.
 Information was extracted by fine-tuning a [PubMedBERT language model](https://huggingface.co/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract) on 200 manually curated labels available from [Denmer-Fushman et al.](https://pubmed.ncbi.nlm.nih.gov/29381145/).
-This comprehensive database will be updated quarterly, and currently contains more than 7.1 million drug-ADE pairs for 4,097 drug ingredients extracted from 51,460 labels, processed from all of the labels available to download from [DailyMed (USA)](https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm), [EMA (EU)](https://www.ema.europa.eu/en/medicines), [EMC (UK)](https://www.medicines.org.uk/emc), and [KEGG (Japan)](https://www.kegg.jp/kegg/drug/) as of April 2025.
+This comprehensive database will be updated quarterly, and currently contains more than 7.1 million drug-ADE pairs for 4,097 drug ingredients extracted from 51,460 labels, processed from all of the labels available to download from [DailyMed (USA)](https://dailymed.nlm.nih.gov/dailymed/spl-resources-all-drug-labels.cfm), [EMA (EU)](https://www.ema.europa.eu/en/medicines), [EMC (UK)](https://www.medicines.org.uk/emc), and [KEGG (Japan)](https://www.kegg.jp/kegg/drug/) as of April 2026.
 
 ### Citation
 
