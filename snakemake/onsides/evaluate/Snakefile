@@ -29,7 +29,7 @@ rule all:
 rule build_vocabulary:
     input:
         queries = "snakemake/onsides/evaluate/meddra_vocabs.sql",
-        mrconso = "data/mrconso.rrf"
+        mrconso = "data/MRCONSO.RRF"
     output:
         expand(
             "_onsides/vocab/meddra_{language}.parquet",
@@ -115,7 +115,7 @@ rule evaluate_onsides:
 
 rule create_jp_to_eng_meddra_map:
     input:
-        mrconso = "data/mrconso.rrf",
+        mrconso = "data/MRCONSO.RRF",
         queries = "snakemake/onsides/evaluate/meddra_jp_to_eng.sql",
     output:
         "_onsides/vocab/meddra_jp_to_eng.parquet"

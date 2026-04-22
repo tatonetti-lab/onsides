@@ -3,10 +3,11 @@ SELECT
     * EXCLUDE('column18')
 FROM
     read_csv(
-        'data/mrconso.rrf',
+        'data/MRCONSO.RRF',
         delim = '|',
         header = false,
         quote = '',
+        ignore_errors = true,
         NAMES = ['CUI', 'LAT', 'TS', 'LUI', 'STT', 'SUI', 'ISPREF', 'AUI', 'SAUI',
           'SCUI', 'SDUI', 'SAB', 'TTY', 'CODE', 'STR', 'SRL', 'SUPPRESS', 'CVF']
     );
@@ -144,11 +145,22 @@ meddra_from_mrconso AS (
         AND TTY IN ('PT', 'LLT')
 )
 SELECT
-    DISTINCT ids.effect_meddra_id AS meddra_id,
-    COALESCE(omop.meddra_name, mrc.meddra_name, 'Unknown') AS meddra_name,
-    COALESCE(omop.meddra_term_type, mrc.meddra_term_type, 'Unknown') AS meddra_term_type
-FROM
-    (SELECT DISTINCT effect_meddra_id FROM db.product_adverse_effect
-     WHERE effect_meddra_id IS NOT NULL) ids
-    LEFT JOIN meddra_from_omop omop ON ids.effect_meddra_id = omop.meddra_id
-    LEFT JOIN meddra_from_mrconso mrc ON ids.effect_meddra_id = mrc.meddra_id;
+    meddra_id,
+    meddra_name,
+    meddra_term_type
+FROM (
+    SELECT
+        ids.effect_meddra_id AS meddra_id,
+        COALESCE(omop.meddra_name, mrc.meddra_name, 'Unknown') AS meddra_name,
+        COALESCE(omop.meddra_term_type, mrc.meddra_term_type, 'Unknown') AS meddra_term_type,
+        ROW_NUMBER() OVER (
+            PARTITION BY ids.effect_meddra_id
+            ORDER BY CASE WHEN omop.meddra_id IS NOT NULL THEN 0 ELSE 1 END
+        ) AS rn
+    FROM
+        (SELECT DISTINCT effect_meddra_id FROM db.product_adverse_effect
+         WHERE effect_meddra_id IS NOT NULL) ids
+        LEFT JOIN meddra_from_omop omop ON ids.effect_meddra_id = omop.meddra_id
+        LEFT JOIN meddra_from_mrconso mrc ON ids.effect_meddra_id = mrc.meddra_id
+)
+WHERE rn = 1;

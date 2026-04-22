@@ -120,10 +120,17 @@ def pull_side_effects_jp(input_file, output_file) -> None:
 
     header = re.compile("^h[1-6]$")
     start = soup.find(header, {"class": "contents-title", "id": "par-11"})
-    assert isinstance(start, Tag), start
+
+    # Some labels have no side-effects section (par-11); write empty file so
+    # downstream steps can proceed — the label simply won't contribute rows.
+    if not isinstance(start, Tag):
+        output_file.touch()
+        return
 
     end = start.find_next(header, {"class": "contents-title"})
-    assert isinstance(end, Tag)
+    if not isinstance(end, Tag):
+        output_file.touch()
+        return
 
     elements_between = start.find_all_next()
     elements_between = elements_between[: elements_between.index(end)]

@@ -20,7 +20,8 @@ def sanitize_filename(name):
     # If name is too long, truncate and add hash to ensure uniqueness.
     # Use byte length since filesystems (ext4) enforce a 255-byte limit,
     # and multi-byte characters (e.g. Japanese) can be 3+ bytes each.
-    max_bytes = 240  # leave room for hash suffix and file extension
+    # Budget: 255 - len(".side_effects.table.NN.csv") = 228; use 220 for safety.
+    max_bytes = 220  # leave room for hash suffix + longest derived suffix
     if len(clean_name.encode()) > max_bytes:
         name_hash = hashlib.md5(name.encode()).hexdigest()[:8]
         # Truncate by characters until the byte length fits

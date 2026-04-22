@@ -3,10 +3,11 @@ SELECT
     * EXCLUDE('column18')
 FROM
     read_csv(
-        'data/mrconso.rrf',
+        'data/MRCONSO.RRF',
         delim = '|',
         header = false,
         quote = '',
+        ignore_errors = true,
         NAMES = ['CUI', 'LAT', 'TS', 'LUI', 'STT', 'SUI', 'ISPREF', 'AUI', 'SAUI',
           'SCUI', 'SDUI', 'SAB', 'TTY', 'CODE', 'STR', 'SRL', 'SUPPRESS', 'CVF']
     );
