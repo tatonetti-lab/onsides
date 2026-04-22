@@ -12,6 +12,7 @@ Click on the "Releases" tab on the right.
 - [Data generation and metrics](#data-generation-and-metrics)
 - [Versioning](VERSIONING.md)
 - [Developer documentation](#developer-documentation)
+- [Updating the database](#updating-the-database)
 - [Limitations](#limitations)
 - [Contact](#contact)
 
@@ -266,6 +267,19 @@ Here's how the v3.1.0 archive was created.
 ```bash
 build-zip --version v3.1.0
 ```
+
+---
+
+## Updating the database
+
+The OnSIDES database is updated periodically with the latest drug labels from all four regulatory sources. The update pipeline is complex (downloads, parsing, BERT scoring, database export) and can take over a week to run end-to-end. We use an AI coding agent (Claude Code) to assist with error diagnosis, code fixes, and validation during the process.
+
+Two guides are provided:
+
+- **[Human Update Guide](HUMAN_UPDATE_GUIDE.md)** — Start here. Explains the workflow, prerequisites, and how to interact with the AI agent to complete a data release.
+- **[Agent Update Guide](AGENT_UPDATE_GUIDE.md)** — Detailed technical reference for the AI agent. Contains step-by-step pipeline details, known issues, validation checkpoints, and troubleshooting patterns learned from prior releases.
+
+If you are running the pipeline manually without an AI agent, see `UPDATE_INSTRUCTIONS.md` for the raw step-by-step commands.
 
 ---
 
