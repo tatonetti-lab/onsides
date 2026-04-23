@@ -71,8 +71,14 @@ def evaluate(
 
 
 class Dataset(torch.utils.data.Dataset):
-    def __init__(self, texts: list[str], tokenizer_path: Path, max_length: int = 128):
-        self.labels = [0 for _ in texts]
+    def __init__(
+        self,
+        texts: list[str],
+        tokenizer_path: Path,
+        max_length: int = 128,
+        labels: list[int] | None = None,
+    ):
+        self.labels = labels if labels is not None else [0 for _ in texts]
 
         logger.info(f"Loading tokenizer from {tokenizer_path}...")
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)

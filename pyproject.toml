@@ -46,3 +46,4 @@ dev = [
 
 [project.scripts]
 build-zip = "onsides.cli:main"
+onsides-train = "onsides.train:main"
