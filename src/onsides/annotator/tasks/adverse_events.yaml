@@ -1,0 +1,15 @@
+task_id: adverse_events
+name: Adverse Event Annotation
+description: >
+  Mark terms in the label text that describe adverse drug events.
+  Highlighted terms are vocabulary matches — use your judgment to decide
+  which are actual adverse events for this drug.
+vocab_sources:
+  - vocab_id: meddra
+    path: _onsides/vocab/meddra_english.parquet
+    highlight_color: "#fff3cd"
+sections: [AR, BW, WP]
+annotation_schema:
+  entity_type: adverse_event
+  allow_free_text: true
+  fields: []

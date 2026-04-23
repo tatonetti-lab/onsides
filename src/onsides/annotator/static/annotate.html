@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annotate - OnSIDES</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Label list view -->
+    <div id="label-list-view" class="hidden">
+        <div class="app-header">
+            <a href="/" style="text-decoration:none;color:inherit;font-weight:600;">OnSIDES</a>
+            <span class="title" id="list-task-name"></span>
+            <span class="meta" id="list-annotator"></span>
+        </div>
+        <div class="label-list-page">
+            <input type="text" id="list-search" class="search-bar" placeholder="Search labels by drug name...">
+            <table class="label-table">
+                <thead>
+                    <tr>
+                        <th>Drug Label</th>
+                        <th>Sections</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="label-tbody"></tbody>
+            </table>
+            <div class="pagination">
+                <button id="btn-prev" onclick="listPrev()">Prev</button>
+                <span id="list-page-info"></span>
+                <button id="btn-next" onclick="listNext()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Annotation workspace -->
+    <div id="workspace">
+        <div class="app-header">
+            <button onclick="goBack()">Back</button>
+            <span class="title" id="drug-title"></span>
+            <span class="meta">Annotator: <span id="annotator-name"></span></span>
+        </div>
+        <div class="workspace">
+            <div class="main-panel">
+                <div id="section-tabs" class="section-tabs"></div>
+                <div id="section-text" class="section-text"></div>
+            </div>
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h4>Vocab Search</h4>
+                    <input type="text" id="vocab-search" class="sidebar-search" placeholder="Search terms...">
+                    <div id="vocab-results" class="vocab-results"></div>
+                </div>
+                <div class="sidebar-section">
+                    <h4>Annotations</h4>
+                </div>
+                <div id="annotation-list" class="annotation-list"></div>
+                <div class="sidebar-footer">
+                    <textarea id="notes-input" placeholder="Notes about this label..."></textarea>
+                    <button id="btn-complete" class="btn-complete" onclick="toggleComplete()">Mark Complete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/annotate.js"></script>
+</body>
+</html>

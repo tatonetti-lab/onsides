@@ -39,6 +39,13 @@ dependencies = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[project.optional-dependencies]
+annotator = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "pyyaml>=6.0",
+]
+
 [dependency-groups]
 dev = [
     "pytest>=8.3.5",
@@ -49,3 +56,4 @@ build-zip = "onsides.cli:main"
 onsides-construct-ref = "onsides.construct_training_data:main"
 onsides-train = "onsides.train:main"
 onsides-compute-flags = "onsides.compute_annotation_flags:main"
+onsides-annotate = "onsides.annotator.app:main"

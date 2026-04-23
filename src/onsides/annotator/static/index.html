@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnSIDES Annotator</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="landing">
+        <h1>OnSIDES Annotation Tool</h1>
+
+        <div class="setup">
+            <label for="annotator-input">Your name</label>
+            <input type="text" id="annotator-input" placeholder="Enter your name"
+                   autocomplete="off">
+        </div>
+
+        <div id="tasks-container"></div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        const input = document.getElementById('annotator-input');
+        const saved = localStorage.getItem('annotator');
+        if (saved) input.value = saved;
+
+        input.addEventListener('input', () => {
+            localStorage.setItem('annotator', input.value.trim());
+        });
+
+        async function init() {
+            const tasks = await API.getTasks();
+            const container = document.getElementById('tasks-container');
+            container.innerHTML = tasks.map(t => `
+                <div class="task-card" onclick="startTask('${t.task_id}')">
+                    <h3>${t.name}</h3>
+                    <p>${t.description}</p>
+                </div>
+            `).join('');
+        }
+
+        function startTask(taskId) {
+            const name = input.value.trim();
+            if (!name) {
+                input.focus();
+                input.style.borderColor = '#dc3545';
+                return;
+            }
+            localStorage.setItem('annotator', name);
+            window.location.href = `/annotate.html?task_id=${taskId}`;
+        }
+
+        init();
+    </script>
+</body>
+</html>

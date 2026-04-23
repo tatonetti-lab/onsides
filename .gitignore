@@ -22,6 +22,7 @@ models
 train/models
 train/results
 results
+annotations
 database/csv
 log
 database/onsides.db
