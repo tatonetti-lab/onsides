@@ -50,6 +50,31 @@ body {
 .task-card h3 { font-size: 1.05rem; margin-bottom: 4px; }
 .task-card p { color: #555; font-size: 0.9rem; }
 
+/* -- List tabs -- */
+
+.list-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #ddd;
+}
+.list-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+}
+.list-tab.active {
+    color: #1a1a1a;
+    border-bottom-color: #4a90d9;
+}
+.list-tab:hover { color: #1a1a1a; }
+
 /* -- Annotate page layout -- */
 
 .app-header {

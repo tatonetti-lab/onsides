@@ -1,5 +1,6 @@
 import json
 import logging
+import random
 from pathlib import Path
 
 import duckdb
@@ -107,6 +108,8 @@ class LabelStore:
         required = set(required_sections)
         results = []
         for info in self.index.values():
+            if not info["title"]:
+                continue
             if label_pool and info["set_id"] not in label_pool:
                 continue
             avail = set(info["sections_available"])
@@ -114,9 +117,18 @@ class LabelStore:
                 continue
             if search and search.lower() not in info["title"].lower():
                 continue
-            results.append(info)
+            filtered = {
+                **info,
+                "sections_available": [s for s in info["sections_available"] if s in required],
+            }
+            results.append(filtered)
 
-        results.sort(key=lambda x: x["title"].lower())
+        if search:
+            results.sort(key=lambda x: x["title"].lower())
+        else:
+            rng = random.Random(42)
+            rng.shuffle(results)
+
         total = len(results)
         start = (page - 1) * per_page
         page_items = results[start : start + per_page]

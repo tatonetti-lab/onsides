@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // -- Label list view --
 
-let listState = { page: 1, search: '', total: 0, perPage: 50 };
+let listState = { page: 1, search: '', total: 0, perPage: 50, activeTab: 'all' };
 
 async function initLabelList() {
     const params = new URLSearchParams(window.location.search);
@@ -448,34 +448,63 @@ async function initLabelList() {
         }, 300);
     });
 
+    loadMyAnnotations();
     loadLabelList();
+}
+
+function switchListTab(tab) {
+    listState.activeTab = tab;
+    document.getElementById('tab-all').classList.toggle('active', tab === 'all');
+    document.getElementById('tab-mine').classList.toggle('active', tab === 'mine');
+    document.getElementById('panel-all').classList.toggle('hidden', tab !== 'all');
+    document.getElementById('panel-mine').classList.toggle('hidden', tab !== 'mine');
+}
+
+async function loadMyAnnotations() {
+    const myAnnotations = await API.listAnnotations(state.taskId, state.annotator);
+    const countEl = document.getElementById('my-count');
+    countEl.textContent = myAnnotations.length > 0 ? `(${myAnnotations.length})` : '';
+
+    const tbody = document.getElementById('my-tbody');
+    const emptyMsg = document.getElementById('my-empty');
+
+    if (myAnnotations.length === 0) {
+        tbody.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+    }
+    emptyMsg.classList.add('hidden');
+
+    myAnnotations.sort((a, b) => {
+        if (a.status === 'complete' && b.status !== 'complete') return 1;
+        if (a.status !== 'complete' && b.status === 'complete') return -1;
+        return b.updated_at.localeCompare(a.updated_at);
+    });
+
+    tbody.innerHTML = myAnnotations.map(a => {
+        const badge = a.status === 'complete'
+            ? `<span class="badge badge-complete">Complete</span>`
+            : `<span class="badge badge-progress">In progress</span>`;
+        const date = a.updated_at ? new Date(a.updated_at).toLocaleDateString() : '';
+        return `<tr onclick="openLabel('${esc(a.label_id)}')">
+            <td>${escapeHtml(a.label_title)}</td>
+            <td>${a.annotation_count}</td>
+            <td>${badge}</td>
+            <td>${date}</td>
+        </tr>`;
+    }).join('');
 }
 
 async function loadLabelList() {
     const data = await API.getLabels(state.taskId, listState.page, listState.perPage, listState.search);
     listState.total = data.total;
 
-    const myAnnotations = await API.listAnnotations(state.taskId, state.annotator);
-    const statusMap = {};
-    for (const a of myAnnotations) {
-        statusMap[a.label_id] = a;
-    }
-
     const tbody = document.getElementById('label-tbody');
     tbody.innerHTML = data.items.map(item => {
-        const ann = statusMap[item.set_id];
-        let badge = '<span class="badge badge-none">--</span>';
-        if (ann) {
-            if (ann.status === 'complete') {
-                badge = `<span class="badge badge-complete">Complete (${ann.annotation_count})</span>`;
-            } else {
-                badge = `<span class="badge badge-progress">In progress (${ann.annotation_count})</span>`;
-            }
-        }
         return `<tr onclick="openLabel('${esc(item.set_id)}')">
             <td>${escapeHtml(item.title)}</td>
             <td>${item.sections_available.join(', ')}</td>
-            <td>${badge}</td>
+            <td></td>
         </tr>`;
     }).join('');
 

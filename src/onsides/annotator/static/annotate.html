@@ -15,21 +15,45 @@
             <span class="meta" id="list-annotator"></span>
         </div>
         <div class="label-list-page">
-            <input type="text" id="list-search" class="search-bar" placeholder="Search labels by drug name...">
-            <table class="label-table">
-                <thead>
-                    <tr>
-                        <th>Drug Label</th>
-                        <th>Sections</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="label-tbody"></tbody>
-            </table>
-            <div class="pagination">
-                <button id="btn-prev" onclick="listPrev()">Prev</button>
-                <span id="list-page-info"></span>
-                <button id="btn-next" onclick="listNext()">Next</button>
+            <div class="list-tabs">
+                <button class="list-tab active" id="tab-all" onclick="switchListTab('all')">All Labels</button>
+                <button class="list-tab" id="tab-mine" onclick="switchListTab('mine')">My Annotations <span id="my-count"></span></button>
+            </div>
+
+            <!-- All labels tab -->
+            <div id="panel-all">
+                <input type="text" id="list-search" class="search-bar" placeholder="Search labels by drug name...">
+                <table class="label-table">
+                    <thead>
+                        <tr>
+                            <th>Drug Label</th>
+                            <th>Sections</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="label-tbody"></tbody>
+                </table>
+                <div class="pagination">
+                    <button id="btn-prev" onclick="listPrev()">Prev</button>
+                    <span id="list-page-info"></span>
+                    <button id="btn-next" onclick="listNext()">Next</button>
+                </div>
+            </div>
+
+            <!-- My annotations tab -->
+            <div id="panel-mine" class="hidden">
+                <table class="label-table">
+                    <thead>
+                        <tr>
+                            <th>Drug Label</th>
+                            <th>Annotations</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="my-tbody"></tbody>
+                </table>
+                <p id="my-empty" class="hidden" style="color:#999; padding:16px;">No annotations yet. Start by selecting a label from the All Labels tab.</p>
             </div>
         </div>
     </div>
