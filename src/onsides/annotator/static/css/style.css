@@ -216,6 +216,15 @@ body {
     background: #d1e7dd;
 }
 .vocab-match.annotated:hover { background: #a3cfbb; }
+.freetext-match {
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+.freetext-match.annotated {
+    background: #d1e7dd;
+}
+.freetext-match.annotated:hover { background: #a3cfbb; }
 
 /* Popover */
 .popover {
@@ -267,6 +276,17 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
+/* Pending selection indicator */
+.pending-selection {
+    background: #e8f0fe;
+    border: 1px solid #a8c7fa;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    color: #1a73e8;
+}
+
 /* Sidebar sections */
 .sidebar-section {
     padding: 14px 16px;
@@ -314,6 +334,7 @@ body {
 }
 .ann-item .ann-text { flex: 1; }
 .ann-item .ann-pt { color: #666; font-size: 0.8rem; }
+.ann-item .ann-mapped { color: #1a73e8; font-size: 0.8rem; font-style: italic; }
 .ann-item .ann-delete {
     background: none;
     border: none;
