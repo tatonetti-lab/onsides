@@ -17,7 +17,7 @@ class ClinicalBertClassifier(nn.Module):
         super().__init__()
         self.bert = AutoModel.from_pretrained(pretrained_model_path)
         self.dropout = nn.Dropout(dropout)
-        self.linear = nn.Linear(768, 2)
+        self.linear = nn.Linear(self.bert.config.hidden_size, 2)
         self.relu = nn.ReLU()
 
     def forward(self, input_id, mask):

@@ -21,6 +21,7 @@ umls-2024AB-mrconso.zip
 models
 train/models
 train/results
+results
 database/csv
 log
 database/onsides.db

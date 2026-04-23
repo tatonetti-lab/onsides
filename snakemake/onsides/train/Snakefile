@@ -1,0 +1,230 @@
+"""
+Snakemake workflow for training experiments.
+
+Reads experiments.json and expands parameter grids into reference-set
+construction and model training rules.
+
+Usage:
+    # Run a specific experiment
+    snakemake -s snakemake/onsides/train/Snakefile --config experiment=lr_bw
+
+    # Dry-run to see what would execute
+    snakemake -s snakemake/onsides/train/Snakefile --config experiment=lr_bw -n
+
+    # Run with GPU (limits to 1 training job at a time)
+    snakemake -s snakemake/onsides/train/Snakefile --config experiment=lr_bw -j1
+"""
+
+import json
+import itertools
+import math
+from pathlib import Path
+
+import numpy as np
+
+
+# ---------------------------------------------------------------------------
+# Load experiment configuration
+# ---------------------------------------------------------------------------
+
+EXPERIMENTS_FILE = Path("experiments.json")
+
+with open(EXPERIMENTS_FILE) as f:
+    EXPERIMENTS_CONFIG = json.load(f)
+
+DEFAULTS = EXPERIMENTS_CONFIG["defaults"]
+
+NETWORK_CODES = {
+    "Bio_ClinicalBERT": "CB",
+    "BiomedNLP-PubMedBERT": "PMB",
+    "BiomedNLP-BiomedBERT-base": "BMB",
+    "BiomedNLP-BiomedBERT-large": "BMBL",
+    "BioLinkBERT": "BLB",
+    "biobert": "BB",
+    "scibert": "SB",
+    "bert-base": "BERT",
+    "bert-large": "BERTL",
+    "gatortron": "GT",
+}
+
+
+def _resolve_network_code(network_path):
+    """Derive the short network code from a model path."""
+    if network_path.endswith(".pth"):
+        stem = Path(network_path).stem
+        return stem.split("_")[0].split("-")[-1]
+    for key, code in NETWORK_CODES.items():
+        if key in network_path:
+            return code
+    raise ValueError(f"Cannot determine network code from: {network_path}")
+
+
+def _batch_size_estimate(max_length):
+    log_bs = -1.2209302325581395 * np.log(max_length) + 10.437506963898
+    return int(2 ** round(np.log2(np.exp(log_bs))))
+
+
+def _ensure_list(val):
+    return val if isinstance(val, list) else [val]
+
+
+def _expand_experiment(exp_id):
+    """Expand an experiment definition into lists of ref files and model runs."""
+    exp = EXPERIMENTS_CONFIG["experiments"][exp_id]
+
+    methods = _ensure_list(exp.get("method", DEFAULTS["method"]))
+    nwords_list = _ensure_list(exp.get("nwords", DEFAULTS["nwords"]))
+    sections = _ensure_list(exp.get("section", DEFAULTS["section"]))
+    networks = _ensure_list(exp.get("network", DEFAULTS["network"]))
+    epochs_list = _ensure_list(exp.get("epochs", DEFAULTS["epochs"]))
+    lr_list = _ensure_list(exp.get("learning_rate", DEFAULTS["learning_rate"]))
+    sources = _ensure_list(exp.get("refsource", DEFAULTS["refsource"]))
+    splits = _ensure_list(exp.get("split_method", DEFAULTS["split_method"]))
+    batch_size_override = exp.get("batch_size", None)
+
+    ref_files = set()
+    model_runs = []
+
+    for method, nwords, section, network, epochs, lr, refsource, split in itertools.product(
+        methods, nwords_list, sections, networks, epochs_list, lr_list, sources, splits
+    ):
+        ref_path = f"data/refs/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
+        ref_files.add(ref_path)
+
+        max_length = 2 ** int(math.ceil(math.log2(2 * nwords)))
+        batch_size = batch_size_override if batch_size_override else _batch_size_estimate(max_length)
+        code = _resolve_network_code(network)
+
+        params = f"{method}-{section}-{nwords}-{refsource}_222_{split}_{epochs}_{lr}_{max_length}_{batch_size}"
+        bestepoch = f"models/bestepoch-bydrug-{code}_{params}.pth"
+        model_runs.append({
+            "ref_path": ref_path,
+            "bestepoch": bestepoch,
+            "params": params,
+            "code": code,
+            "method": method,
+            "nwords": nwords,
+            "section": section,
+            "network": network,
+            "epochs": epochs,
+            "lr": lr,
+            "refsource": refsource,
+            "split": split,
+            "max_length": max_length,
+            "batch_size": batch_size,
+        })
+
+    return list(ref_files), model_runs
+
+
+# ---------------------------------------------------------------------------
+# Determine targets from --config experiment=...
+# ---------------------------------------------------------------------------
+
+EXPERIMENT_ID = config.get("experiment", None)
+
+ALL_REF_FILES = []
+ALL_MODEL_RUNS = []
+
+if EXPERIMENT_ID:
+    if EXPERIMENT_ID not in EXPERIMENTS_CONFIG["experiments"]:
+        raise ValueError(
+            f"Unknown experiment '{EXPERIMENT_ID}'. "
+            f"Available: {list(EXPERIMENTS_CONFIG['experiments'].keys())}"
+        )
+    refs, runs = _expand_experiment(EXPERIMENT_ID)
+    ALL_REF_FILES = refs
+    ALL_MODEL_RUNS = runs
+
+# Lookup from bestepoch output path → run config (for dependency resolution)
+_RUN_BY_OUTPUT = {run["bestepoch"]: run for run in ALL_MODEL_RUNS}
+
+
+# ---------------------------------------------------------------------------
+# Dependency helpers
+# ---------------------------------------------------------------------------
+
+def _output_key_from_wildcards(wildcards):
+    """Reconstruct the bestepoch output path from wildcards."""
+    params = (
+        f"{wildcards.method}-{wildcards.section}-{wildcards.nwords}-"
+        f"{wildcards.refsource}_{wildcards.seed}_{wildcards.split}_"
+        f"{wildcards.epochs}_{wildcards.lr}_{wildcards.maxlen}_{wildcards.batch}"
+    )
+    return f"models/bestepoch-bydrug-{wildcards.code}_{params}.pth"
+
+
+def _resolve_network_from_wildcards(wildcards):
+    """Find the network path for a given set of wildcards."""
+    run = _RUN_BY_OUTPUT.get(_output_key_from_wildcards(wildcards))
+    if run:
+        return run["network"]
+    from onsides.train import NETWORK_PATHS
+    return str(NETWORK_PATHS.get(wildcards.code, f"models/{wildcards.code}"))
+
+
+def _train_model_inputs(wildcards):
+    """Determine inputs for train_model, including pretrained .pth dependencies."""
+    ref = (
+        f"data/refs/ref{wildcards.method}_nwords{wildcards.nwords}"
+        f"_clinical_bert_reference_set_{wildcards.section}.txt"
+    )
+    inputs = {"ref": ref}
+
+    run = _RUN_BY_OUTPUT.get(_output_key_from_wildcards(wildcards))
+    if run and run["network"].endswith(".pth"):
+        inputs["pretrained"] = run["network"]
+
+    return inputs
+
+
+# ---------------------------------------------------------------------------
+# Rules
+# ---------------------------------------------------------------------------
+
+rule all:
+    input:
+        [r["bestepoch"] for r in ALL_MODEL_RUNS],
+        [r["bestepoch"].replace("bestepoch", "final") for r in ALL_MODEL_RUNS],
+
+
+rule construct_ref:
+    """Build a reference/training CSV from annotations + MedDRA vocab."""
+    output: "data/refs/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
+    log: "log/train/construct_ref_{method}_{nwords}_{section}.log"
+    shell:
+        """
+        uv run onsides-construct-ref \
+            --method {wildcards.method} \
+            --nwords {wildcards.nwords} \
+            --section {wildcards.section} \
+            --output {output} \
+            2>&1 | tee {log}
+        """
+
+
+rule train_model:
+    """Train a single model configuration."""
+    input: unpack(_train_model_inputs)
+    output:
+        bestepoch="models/bestepoch-bydrug-{code}_{method}-{section}-{nwords}-{refsource}_{seed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.pth",
+        final="models/final-bydrug-{code}_{method}-{section}-{nwords}-{refsource}_{seed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.pth",
+        results="results/epoch-results-{code}_{method}-{section}-{nwords}-{refsource}_{seed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.csv",
+    log: "log/train/train_{code}_{method}-{section}-{nwords}-{refsource}_{seed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.log"
+    resources: gpu=1
+    params:
+        network=lambda wc: _resolve_network_from_wildcards(wc)
+    shell:
+        """
+        uv run onsides-train \
+            --ref {input.ref} \
+            --network {params.network} \
+            --refsource {wildcards.refsource} \
+            --split-method {wildcards.split} \
+            --epochs {wildcards.epochs} \
+            --learning-rate {wildcards.lr} \
+            --max-length {wildcards.maxlen} \
+            --batch-size {wildcards.batch} \
+            --ifexists overwrite \
+            2>&1 | tee {log}
+        """

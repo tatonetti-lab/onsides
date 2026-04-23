@@ -36,11 +36,27 @@ LABELS = {"not_event": 0, "is_event": 1}
 NETWORK_CODES = {
     "Bio_ClinicalBERT": "CB",
     "BiomedNLP-PubMedBERT": "PMB",
+    "BiomedNLP-BiomedBERT-base": "BMB",
+    "BiomedNLP-BiomedBERT-large": "BMBL",
+    "BioLinkBERT": "BLB",
+    "biobert": "BB",
+    "scibert": "SB",
+    "bert-base": "BERT",
+    "bert-large": "BERTL",
+    "gatortron": "GT",
 }
 
 NETWORK_PATHS = {
     "CB": Path("models/Bio_ClinicalBERT"),
     "PMB": Path("models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"),
+    "BMB": Path("models/microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext"),
+    "BMBL": Path("models/microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract-fulltext"),
+    "BLB": Path("models/michiyasunaga/BioLinkBERT-base"),
+    "BB": Path("models/dmis-lab/biobert-v1.1"),
+    "SB": Path("models/allenai/scibert_scivocab_uncased"),
+    "BERT": Path("models/google-bert/bert-base-uncased"),
+    "BERTL": Path("models/google-bert/bert-large-uncased"),
+    "GT": Path("models/UFNLP/gatortron-base"),
 }
 
 DEFAULT_RANDOM_SEED = 222

@@ -1,0 +1,127 @@
+{
+  "defaults": {
+    "method": 14,
+    "nwords": 125,
+    "section": "ALL",
+    "network": "models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract",
+    "epochs": 25,
+    "learning_rate": 1e-6,
+    "refsource": "all",
+    "split_method": "24"
+  },
+
+  "experiments": {
+    "smoke_test": {
+      "name": "Quick smoke test (2 epochs, BW only)",
+      "description": "Fast end-to-end validation of the construct → train pipeline.",
+      "section": "BW",
+      "epochs": 2,
+      "learning_rate": 2.5e-5
+    },
+
+    "example_methods": {
+      "name": "Compare example construction methods",
+      "description": "Methods 0, 8, and 14 were the top performers in v2 experiments.",
+      "method": [0, 8, 14],
+      "nwords": 30,
+      "section": "AR"
+    },
+
+    "nwords": {
+      "name": "Compare context window sizes",
+      "description": "How many context words around the event term to include.",
+      "nwords": [6, 15, 30, 60, 125, 250]
+    },
+
+    "lr_explore": {
+      "name": "Learning rate exploration",
+      "description": "Grid search over learning rates with PubMedBERT.",
+      "learning_rate": [1e-4, 7.5e-5, 5e-5, 2.5e-5, 1e-5, 1e-6, 1e-7]
+    },
+
+    "lr_bw": {
+      "name": "Learning rate tuning for Boxed Warnings (issue #25)",
+      "description": "Tune LR for BW section using pretrained ALL model.",
+      "section": "BW",
+      "learning_rate": [7.5e-5, 5e-5, 2.5e-5, 1e-5, 1e-6],
+      "network": "models/bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth"
+    },
+
+    "sections": {
+      "name": "Compare performance across sections",
+      "description": "Train independently on each section and combined.",
+      "section": ["AR", "BW", "WP", "ALL"]
+    },
+
+    "split_method": {
+      "name": "80/10/10 vs TAC split",
+      "description": "Compare random drug split to the original TAC train/test split.",
+      "split_method": ["24", "TAC"]
+    },
+
+    "networks_base": {
+      "name": "Compare base BERT architectures (hidden=768)",
+      "description": "Hold all training parameters fixed at known-good settings and vary only the base model. Includes domain-specific biomedical models and vanilla BERT as a baseline.",
+      "learning_rate": 2.5e-5,
+      "network": [
+        "models/Bio_ClinicalBERT",
+        "models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract",
+        "models/microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext",
+        "models/michiyasunaga/BioLinkBERT-base",
+        "models/dmis-lab/biobert-v1.1",
+        "models/allenai/scibert_scivocab_uncased",
+        "models/google-bert/bert-base-uncased"
+      ]
+    },
+
+    "networks_large": {
+      "name": "Compare large BERT architectures (hidden>=1024)",
+      "description": "Same fixed settings as networks_base but with larger models. Uses smaller batch size to avoid OOM.",
+      "learning_rate": 2.5e-5,
+      "batch_size": 16,
+      "network": [
+        "models/microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract-fulltext",
+        "models/google-bert/bert-large-uncased",
+        "models/UFNLP/gatortron-base"
+      ]
+    }
+  },
+
+  "deployments": {
+    "v2.1.0-AR": {
+      "name": "Adverse Reactions model",
+      "threshold": 0.4633,
+      "model_type": "bestepoch",
+      "method": 14,
+      "nwords": 125,
+      "section": "AR",
+      "epochs": 25,
+      "learning_rate": 2.5e-5,
+      "split_method": "24"
+    },
+    "v2.1.0-BW": {
+      "name": "Boxed Warnings model",
+      "threshold": 3.324,
+      "model_type": "bestepoch",
+      "method": 14,
+      "nwords": 125,
+      "section": "BW",
+      "epochs": 25,
+      "learning_rate": 2.5e-5,
+      "split_method": "24",
+      "network": "models/bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth"
+    },
+    "v2.1.0-WP": {
+      "name": "Warnings and Precautions model",
+      "threshold": 0.7328,
+      "model_type": "final",
+      "method": 14,
+      "nwords": 125,
+      "section": "WP",
+      "epochs": 25,
+      "learning_rate": 2.5e-5,
+      "split_method": "24",
+      "network": "models/bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth"
+    }
+  }
+}
