@@ -47,10 +47,10 @@ NETWORK_CODES = {
 }
 
 NETWORK_PATHS = {
-    "CB": Path("models/Bio_ClinicalBERT"),
+    "CB": Path("models/emilyalsentzer/Bio_ClinicalBERT"),
     "PMB": Path("models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"),
     "BMB": Path("models/microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext"),
-    "BMBL": Path("models/microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract-fulltext"),
+    "BMBL": Path("models/microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract"),
     "BLB": Path("models/michiyasunaga/BioLinkBERT-base"),
     "BB": Path("models/dmis-lab/biobert-v1.1"),
     "SB": Path("models/allenai/scibert_scivocab_uncased"),
@@ -82,6 +82,7 @@ class TrainingConfig(BaseModel):
     max_length: int
     batch_size: int
     pretrained_state: str | None = None
+    flag_label: str = ""
 
 
 class EpochMetrics(BaseModel):
@@ -195,8 +196,10 @@ def split_train_val_test(
 
 def build_filename_params(config: TrainingConfig) -> str:
     """Build the parameter portion of model filename for compatibility."""
+    flag_part = f"{config.flag_label}_" if config.flag_label else ""
     return (
         f"{config.refset}-{config.refsection}-{config.refnwords}-{config.refsource}_"
+        f"{flag_part}"
         f"{config.np_random_seed}_{config.split_method}_{config.epochs}_"
         f"{config.learning_rate}_{config.max_length}_{config.batch_size}"
     )
@@ -540,6 +543,12 @@ def main() -> None:
         default=None,
         help="Path to checkpoint file to resume training from",
     )
+    parser.add_argument(
+        "--flag-label",
+        type=str,
+        default="",
+        help="Label for annotation flag filtering (included in model filename).",
+    )
 
     args = parser.parse_args()
     logging.basicConfig(
@@ -659,6 +668,7 @@ def _run_fresh(args: argparse.Namespace) -> None:
         max_length=max_length,
         batch_size=batch_size,
         pretrained_state=str(pretrained_state) if pretrained_state else None,
+        flag_label=args.flag_label,
     )
 
     # Build file paths

@@ -64,7 +64,7 @@
       "description": "Hold all training parameters fixed at known-good settings and vary only the base model. Includes domain-specific biomedical models and vanilla BERT as a baseline.",
       "learning_rate": 2.5e-5,
       "network": [
-        "models/Bio_ClinicalBERT",
+        "models/emilyalsentzer/Bio_ClinicalBERT",
         "models/microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract",
         "models/microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext",
         "models/michiyasunaga/BioLinkBERT-base",
@@ -80,10 +80,42 @@
       "learning_rate": 2.5e-5,
       "batch_size": 16,
       "network": [
-        "models/microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract-fulltext",
+        "models/microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract",
         "models/google-bert/bert-large-uncased",
         "models/UFNLP/gatortron-base"
       ]
+    },
+
+    "flag_baseline": {
+      "name": "Baseline for flag experiments (no filtering)",
+      "description": "Same settings as flag experiments but no annotation filtering. Comparison baseline for Hypotheses 1-3.",
+      "learning_rate": 2.5e-5,
+      "section": ["AR", "BW", "WP"]
+    },
+
+    "flag1_clean": {
+      "name": "Exclude noisy annotations (Hypothesis 1)",
+      "description": "Remove duplicate and unmapped annotations from training data to reduce label noise. Expects ~2% of events to be excluded.",
+      "learning_rate": 2.5e-5,
+      "section": ["AR", "BW", "WP"],
+      "exclude_flag1": "duplicate,unmapped"
+    },
+
+    "flag2_human_only": {
+      "name": "Exclude class/animal inferred events (Hypothesis 2)",
+      "description": "Remove DrugClass and Animal annotations, keeping only drug-specific human data. Effect should be strongest in WP (~10% DrugClass) and BW (higher Animal).",
+      "learning_rate": 2.5e-5,
+      "section": ["AR", "BW", "WP"],
+      "exclude_flag2": "drug_class,animal"
+    },
+
+    "flag_both": {
+      "name": "Exclude noisy + inferred annotations (Hypothesis 3)",
+      "description": "Combine Flag 1 and Flag 2 filtering for cleanest training signal. Tests whether combined filtering helps more than either alone.",
+      "learning_rate": 2.5e-5,
+      "section": ["AR", "BW", "WP"],
+      "exclude_flag1": "duplicate,unmapped",
+      "exclude_flag2": "drug_class,animal"
     }
   },
 

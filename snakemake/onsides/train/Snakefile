@@ -68,6 +68,22 @@ def _ensure_list(val):
     return val if isinstance(val, list) else [val]
 
 
+def _flag_label(exclude_flag1, exclude_flag2):
+    """Build a short label for the flag filter configuration.
+
+    Uses '+' within a flag group and '.' between groups. Underscores in
+    flag values are replaced with hyphens to avoid filename ambiguity.
+    """
+    parts = []
+    if exclude_flag1:
+        vals = sorted(v.replace("_", "-") for v in exclude_flag1.split(","))
+        parts.append("f1" + "+".join(vals))
+    if exclude_flag2:
+        vals = sorted(v.replace("_", "-") for v in exclude_flag2.split(","))
+        parts.append("f2" + "+".join(vals))
+    return ".".join(parts) if parts else ""
+
+
 def _expand_experiment(exp_id):
     """Expand an experiment definition into lists of ref files and model runs."""
     exp = EXPERIMENTS_CONFIG["experiments"][exp_id]
@@ -82,21 +98,32 @@ def _expand_experiment(exp_id):
     splits = _ensure_list(exp.get("split_method", DEFAULTS["split_method"]))
     batch_size_override = exp.get("batch_size", None)
 
+    exclude_flag1 = exp.get("exclude_flag1", None)
+    exclude_flag2 = exp.get("exclude_flag2", None)
+    flaglabel = _flag_label(exclude_flag1, exclude_flag2)
+
     ref_files = set()
     model_runs = []
 
     for method, nwords, section, network, epochs, lr, refsource, split in itertools.product(
         methods, nwords_list, sections, networks, epochs_list, lr_list, sources, splits
     ):
-        ref_path = f"data/refs/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
+        if flaglabel:
+            ref_path = f"data/refs/ref{method}_nwords{nwords}_{flaglabel}_clinical_bert_reference_set_{section}.txt"
+        else:
+            ref_path = f"data/refs/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
         ref_files.add(ref_path)
 
         max_length = 2 ** int(math.ceil(math.log2(2 * nwords)))
         batch_size = batch_size_override if batch_size_override else _batch_size_estimate(max_length)
         code = _resolve_network_code(network)
 
-        params = f"{method}-{section}-{nwords}-{refsource}_222_{split}_{epochs}_{lr}_{max_length}_{batch_size}"
+        # flagseed encodes the optional flag label + random seed
+        flagseed = f"{flaglabel}_222" if flaglabel else "222"
+
+        params = f"{method}-{section}-{nwords}-{refsource}_{flagseed}_{split}_{epochs}_{lr}_{max_length}_{batch_size}"
         bestepoch = f"models/bestepoch-bydrug-{code}_{params}.pth"
+
         model_runs.append({
             "ref_path": ref_path,
             "bestepoch": bestepoch,
@@ -112,6 +139,7 @@ def _expand_experiment(exp_id):
             "split": split,
             "max_length": max_length,
             "batch_size": batch_size,
+            "flaglabel": flaglabel,
         })
 
     return list(ref_files), model_runs
@@ -148,7 +176,7 @@ def _output_key_from_wildcards(wildcards):
     """Reconstruct the bestepoch output path from wildcards."""
     params = (
         f"{wildcards.method}-{wildcards.section}-{wildcards.nwords}-"
-        f"{wildcards.refsource}_{wildcards.seed}_{wildcards.split}_"
+        f"{wildcards.refsource}_{wildcards.flagseed}_{wildcards.split}_"
         f"{wildcards.epochs}_{wildcards.lr}_{wildcards.maxlen}_{wildcards.batch}"
     )
     return f"models/bestepoch-bydrug-{wildcards.code}_{params}.pth"
@@ -169,18 +197,62 @@ def _train_model_inputs(wildcards):
         f"data/refs/ref{wildcards.method}_nwords{wildcards.nwords}"
         f"_clinical_bert_reference_set_{wildcards.section}.txt"
     )
-    inputs = {"ref": ref}
+    inputs = {}
 
     run = _RUN_BY_OUTPUT.get(_output_key_from_wildcards(wildcards))
-    if run and run["network"].endswith(".pth"):
-        inputs["pretrained"] = run["network"]
+    if run:
+        ref = run["ref_path"]
+        if run["network"].endswith(".pth"):
+            inputs["pretrained"] = run["network"]
 
+    inputs["ref"] = ref
     return inputs
+
+
+def _get_flag_label(wildcards):
+    """Extract flag label from run config or return empty string."""
+    run = _RUN_BY_OUTPUT.get(_output_key_from_wildcards(wildcards))
+    if run:
+        return run["flaglabel"]
+    return ""
+
+
+# ---------------------------------------------------------------------------
+# Construct-ref helpers
+# ---------------------------------------------------------------------------
+
+def _build_flag_cli_args(flaglabel):
+    """Convert a flaglabel like 'f1duplicate+unmapped.f2animal+drug-class' back to CLI args."""
+    parts = flaglabel.split(".")
+    args = []
+    for part in parts:
+        if part.startswith("f1"):
+            values = part[2:].replace("+", ",").replace("-", "_")
+            args.append(f"--exclude-flag1 {values}")
+        elif part.startswith("f2"):
+            values = part[2:].replace("+", ",").replace("-", "_")
+            args.append(f"--exclude-flag2 {values}")
+    return " ".join(args)
 
 
 # ---------------------------------------------------------------------------
 # Rules
 # ---------------------------------------------------------------------------
+
+# Wildcard constraints ensure unambiguous pattern matching.
+# flagseed must start with 'f' (flag label) or be purely numeric (seed only).
+wildcard_constraints:
+    code = r"[A-Z]+",
+    method = r"\d+",
+    section = r"[A-Z]+",
+    nwords = r"\d+",
+    refsource = r"[a-z]+",
+    flagseed = r"(?:f[12][a-z0-9+.\-]+(?:\.[a-z0-9+.\-]+)*_)?\d+",
+    split = r"\d+|TAC",
+    epochs = r"\d+",
+    maxlen = r"\d+",
+    batch = r"\d+",
+    flaglabel = r"f[12][a-z0-9+.\-]+(?:\.[a-z0-9+.\-]+)*",
 
 rule all:
     input:
@@ -188,8 +260,8 @@ rule all:
         [r["bestepoch"].replace("bestepoch", "final") for r in ALL_MODEL_RUNS],
 
 
-rule construct_ref:
-    """Build a reference/training CSV from annotations + MedDRA vocab."""
+rule construct_ref_nofilter:
+    """Build a reference/training CSV from annotations + MedDRA vocab (no flag filtering)."""
     output: "data/refs/ref{method}_nwords{nwords}_clinical_bert_reference_set_{section}.txt"
     log: "log/train/construct_ref_{method}_{nwords}_{section}.log"
     shell:
@@ -203,17 +275,36 @@ rule construct_ref:
         """
 
 
+rule construct_ref_flagged:
+    """Build a reference/training CSV with flag-based annotation filtering."""
+    output: "data/refs/ref{method}_nwords{nwords}_{flaglabel}_clinical_bert_reference_set_{section}.txt"
+    log: "log/train/construct_ref_{method}_{nwords}_{flaglabel}_{section}.log"
+    params:
+        flag_args=lambda wc: _build_flag_cli_args(wc.flaglabel)
+    shell:
+        """
+        uv run onsides-construct-ref \
+            --method {wildcards.method} \
+            --nwords {wildcards.nwords} \
+            --section {wildcards.section} \
+            --output {output} \
+            {params.flag_args} \
+            2>&1 | tee {log}
+        """
+
+
 rule train_model:
     """Train a single model configuration."""
     input: unpack(_train_model_inputs)
     output:
-        bestepoch="models/bestepoch-bydrug-{code}_{method}-{section}-{nwords}-{refsource}_{seed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.pth",
-        final="models/final-bydrug-{code}_{method}-{section}-{nwords}-{refsource}_{seed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.pth",
-        results="results/epoch-results-{code}_{method}-{section}-{nwords}-{refsource}_{seed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.csv",
-    log: "log/train/train_{code}_{method}-{section}-{nwords}-{refsource}_{seed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.log"
+        bestepoch="models/bestepoch-bydrug-{code}_{method}-{section}-{nwords}-{refsource}_{flagseed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.pth",
+        final="models/final-bydrug-{code}_{method}-{section}-{nwords}-{refsource}_{flagseed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.pth",
+        results="results/epoch-results-{code}_{method}-{section}-{nwords}-{refsource}_{flagseed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.csv",
+    log: "log/train/train_{code}_{method}-{section}-{nwords}-{refsource}_{flagseed}_{split}_{epochs}_{lr}_{maxlen}_{batch}.log"
     resources: gpu=1
     params:
-        network=lambda wc: _resolve_network_from_wildcards(wc)
+        network=lambda wc: _resolve_network_from_wildcards(wc),
+        flag_label=lambda wc: _get_flag_label(wc),
     shell:
         """
         uv run onsides-train \
@@ -225,6 +316,7 @@ rule train_model:
             --learning-rate {wildcards.lr} \
             --max-length {wildcards.maxlen} \
             --batch-size {wildcards.batch} \
+            --flag-label '{params.flag_label}' \
             --ifexists overwrite \
             2>&1 | tee {log}
         """

@@ -48,3 +48,4 @@ dev = [
 build-zip = "onsides.cli:main"
 onsides-construct-ref = "onsides.construct_training_data:main"
 onsides-train = "onsides.train:main"
+onsides-compute-flags = "onsides.compute_annotation_flags:main"

@@ -17,6 +17,7 @@ import argparse
 import csv
 import json
 import logging
+import math
 import random
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -280,15 +281,32 @@ class AnnotationRecord:
     tac: str = "train"
 
 
+def _is_valid_id(val) -> bool:
+    if val is None:
+        return False
+    if isinstance(val, float) and math.isnan(val):
+        return False
+    return True
+
+
 def load_annotations(
     sections: list[str],
     annotation_dir: Path = ANNOTATION_DIR,
+    exclude_flag1: set[str] | None = None,
+    exclude_flag2: set[str] | None = None,
 ) -> list[AnnotationRecord]:
     """Load Demner-Fushman annotation JSONs for the requested sections.
 
     Args:
         sections: List of section codes (AR, BW, WP).
         annotation_dir: Directory containing the annotation JSON files.
+        exclude_flag1: Flag 1 values to exclude (e.g. {"duplicate", "unmapped"}).
+            Flag 1 is auto-computed: "unmapped" if pt_id is missing,
+            "duplicate" if the same PT appears multiple times for a
+            drug+section, otherwise "clean".
+        exclude_flag2: Flag 2 values to exclude (e.g. {"drug_class", "animal"}).
+            Flag 2 is read from event[7] in extended annotation format.
+            Defaults to "human" when not present.
 
     Returns:
         List of AnnotationRecord, one per drug-section combination.
@@ -296,6 +314,9 @@ def load_annotations(
     section_names = {SECTION_NAMES[s].lower() for s in sections}
 
     records: list[AnnotationRecord] = []
+    total_events = 0
+    excluded_f1 = 0
+    excluded_f2 = 0
 
     for tac_label, filename in [
         ("train", "demner-fushman-train-labels.json"),
@@ -319,15 +340,44 @@ def load_annotations(
 
             drug = entry["label_id"].upper()
             text = entry.get("section_text", "")
+            events = entry.get("adverse_events", [])
+            total_events += len(events)
 
+            # First pass: count PT occurrences for duplicate detection
+            pt_counts: dict[str, int] = {}
+            for event in events:
+                pt_id = event[2]
+                if _is_valid_id(pt_id):
+                    pt_key = str(int(float(pt_id)))
+                    pt_counts[pt_key] = pt_counts.get(pt_key, 0) + 1
+
+            # Second pass: apply flag filters
             annotated_codes: set[str] = set()
-            for event in entry.get("adverse_events", []):
-                # event: [found_term, pt_term, pt_id, llt_term, llt_id, start, len]
+            for event in events:
                 pt_id = event[2]
                 llt_id = event[4]
-                if pt_id is not None:
+
+                # Compute Flag 1
+                if not _is_valid_id(pt_id):
+                    flag1 = "unmapped"
+                elif pt_counts.get(str(int(float(pt_id))), 0) > 1:
+                    flag1 = "duplicate"
+                else:
+                    flag1 = "clean"
+
+                # Read Flag 2 from extended event format
+                flag2 = event[7] if len(event) > 7 else "human"
+
+                if exclude_flag1 and flag1 in exclude_flag1:
+                    excluded_f1 += 1
+                    continue
+                if exclude_flag2 and flag2 in exclude_flag2:
+                    excluded_f2 += 1
+                    continue
+
+                if _is_valid_id(pt_id):
                     annotated_codes.add(str(int(float(pt_id))))
-                if llt_id is not None:
+                if _is_valid_id(llt_id):
                     annotated_codes.add(str(int(float(llt_id))))
 
             records.append(AnnotationRecord(
@@ -340,8 +390,12 @@ def load_annotations(
 
     logger.info(
         f"Loaded {len(records)} annotation records "
-        f"for sections {sections}"
+        f"for sections {sections} ({total_events} events)"
     )
+    if excluded_f1:
+        logger.info(f"Excluded {excluded_f1} events by Flag 1 filter")
+    if excluded_f2:
+        logger.info(f"Excluded {excluded_f2} events by Flag 2 filter")
     return records
 
 
@@ -483,6 +537,16 @@ def main() -> None:
         "--annotations", type=Path, default=ANNOTATION_DIR,
         help="Annotation JSON directory.",
     )
+    parser.add_argument(
+        "--exclude-flag1", type=str, default=None,
+        help="Comma-separated Flag 1 values to exclude (e.g. 'duplicate,unmapped'). "
+        "Flag 1 is auto-computed from annotations.",
+    )
+    parser.add_argument(
+        "--exclude-flag2", type=str, default=None,
+        help="Comma-separated Flag 2 values to exclude (e.g. 'drug_class,animal'). "
+        "Flag 2 is read from extended annotation format (event[7]).",
+    )
 
     args = parser.parse_args()
     logging.basicConfig(
@@ -497,6 +561,9 @@ def main() -> None:
 
     sections = _resolve_sections(args.section)
 
+    exclude_flag1 = set(args.exclude_flag1.split(",")) if args.exclude_flag1 else None
+    exclude_flag2 = set(args.exclude_flag2.split(",")) if args.exclude_flag2 else None
+
     output_path = args.output
     if output_path is None:
         output_path = (
@@ -506,9 +573,17 @@ def main() -> None:
         )
 
     logger.info(f"Method: {args.method}, nwords: {args.nwords}, sections: {sections}")
+    if exclude_flag1:
+        logger.info(f"Excluding Flag 1: {exclude_flag1}")
+    if exclude_flag2:
+        logger.info(f"Excluding Flag 2: {exclude_flag2}")
 
     vocab = load_meddra_vocab(args.vocab)
-    records = load_annotations(sections, args.annotations)
+    records = load_annotations(
+        sections, args.annotations,
+        exclude_flag1=exclude_flag1,
+        exclude_flag2=exclude_flag2,
+    )
     rows = construct_reference_set(records, vocab, args.method, args.nwords)
     write_reference_csv(output_path, rows)
 
