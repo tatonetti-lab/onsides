@@ -131,7 +131,7 @@ function renderSectionText() {
     container.querySelectorAll('.vocab-match').forEach(el => {
         el.addEventListener('click', (e) => {
             e.stopPropagation();
-            showPopover(el);
+            toggleTerm(el);
         });
     });
 }
@@ -144,60 +144,62 @@ function esc(str) {
     return (str || '').replace(/"/g, '&quot;');
 }
 
-// -- Popover --
+// -- Toggle vocab term (click = immediate add/remove for ALL occurrences) --
 
-function showPopover(el) {
-    closePopover();
-
-    const start = parseInt(el.dataset.start);
-    const end = parseInt(el.dataset.end);
+function toggleTerm(el) {
+    dismissSelectionBtn();
     const term = el.dataset.term;
     const code = el.dataset.code;
     const ptCode = el.dataset.ptCode;
     const ptName = el.dataset.ptName;
+    const section = state.currentSection;
 
-    const annotations = state.doc.sections[state.currentSection] || [];
+    if (!state.doc.sections[section]) state.doc.sections[section] = [];
+    const annotations = state.doc.sections[section];
+
+    const start = parseInt(el.dataset.start);
+    const end = parseInt(el.dataset.end);
     const existing = annotations.find(a => a.start === start && a.end === end);
 
-    const pop = document.createElement('div');
-    pop.className = 'popover';
-    pop.id = 'active-popover';
-
-    let actionsHtml;
     if (existing) {
-        actionsHtml = `
-            <button class="btn-remove" onclick="removeAnnotation(${start}, ${end})">Remove</button>
-            <button class="btn-dismiss" onclick="closePopover()">Close</button>
-        `;
+        // Remove ALL occurrences of this term in this section
+        state.doc.sections[section] = annotations.filter(a => a.term_text !== term);
     } else {
-        const entityLabel = state.task.annotation_schema.entity_type.replace(/_/g, ' ');
-        actionsHtml = `
-            <button class="btn-confirm" onclick="addAnnotation(${start}, ${end}, '${esc(term)}', '${esc(code)}', '${esc(ptCode)}', '${esc(ptName)}', 'vocab_click')">Mark as ${entityLabel}</button>
-            <button class="btn-dismiss" onclick="closePopover()">Close</button>
-        `;
+        // Add ALL occurrences of this term in this section
+        const allSpans = document.querySelectorAll(`.vocab-match[data-term="${CSS.escape(term)}"]`);
+        for (const span of allSpans) {
+            const s = parseInt(span.dataset.start);
+            const e = parseInt(span.dataset.end);
+            const dup = annotations.find(a => a.start === s && a.end === e);
+            if (!dup) {
+                annotations.push({
+                    id: crypto.randomUUID(),
+                    entity_type: state.task.annotation_schema.entity_type,
+                    term_text: term,
+                    term_code: code || null,
+                    pt_code: ptCode || null,
+                    pt_name: ptName || null,
+                    start: s,
+                    end: e,
+                    section_code: section,
+                    source: 'vocab_click',
+                    extra_fields: {},
+                });
+            }
+        }
     }
 
-    pop.innerHTML = `
-        <div class="term">${escapeHtml(el.textContent)}</div>
-        <div class="code">${ptName ? escapeHtml(ptName) : escapeHtml(term)} (${ptCode || code})</div>
-        <div class="actions">${actionsHtml}</div>
-    `;
-
-    document.body.appendChild(pop);
-
-    const rect = el.getBoundingClientRect();
-    pop.style.top = (rect.bottom + window.scrollY + 6) + 'px';
-    pop.style.left = Math.max(10, rect.left + window.scrollX - 20) + 'px';
+    renderSectionText();
+    renderAnnotationList();
+    scheduleSave();
 }
 
-function closePopover() {
-    const pop = document.getElementById('active-popover');
-    if (pop) pop.remove();
+function dismissSelectionBtn() {
     const btn = document.getElementById('selection-btn');
     if (btn) btn.remove();
 }
 
-// -- Annotations CRUD --
+// -- Annotations CRUD (for free-text selections) --
 
 function addAnnotation(start, end, term, code, ptCode, ptName, source) {
     const section = state.currentSection;
@@ -220,7 +222,17 @@ function addAnnotation(start, end, term, code, ptCode, ptName, source) {
         extra_fields: {},
     });
 
-    closePopover();
+    dismissSelectionBtn();
+    renderSectionText();
+    renderAnnotationList();
+    scheduleSave();
+}
+
+function removeAnnotationByTerm(term) {
+    const section = state.currentSection;
+    state.doc.sections[section] = (state.doc.sections[section] || []).filter(
+        a => a.term_text !== term
+    );
     renderSectionText();
     renderAnnotationList();
     scheduleSave();
@@ -231,7 +243,6 @@ function removeAnnotation(start, end) {
     state.doc.sections[section] = (state.doc.sections[section] || []).filter(
         a => !(a.start === start && a.end === end)
     );
-    closePopover();
     renderSectionText();
     renderAnnotationList();
     scheduleSave();
@@ -248,16 +259,33 @@ function renderAnnotationList() {
         return;
     }
 
-    const sorted = [...annotations].sort((a, b) => a.start - b.start);
-    container.innerHTML = sorted.map(a => `
+    // Group by term text, show count for multi-occurrence terms
+    const byTerm = new Map();
+    for (const a of annotations) {
+        const key = a.term_text.toLowerCase();
+        if (!byTerm.has(key)) {
+            byTerm.set(key, { repr: a, count: 1 });
+        } else {
+            byTerm.get(key).count++;
+        }
+    }
+
+    const groups = [...byTerm.values()].sort((a, b) =>
+        a.repr.term_text.toLowerCase().localeCompare(b.repr.term_text.toLowerCase())
+    );
+
+    container.innerHTML = groups.map(g => {
+        const a = g.repr;
+        const countLabel = g.count > 1 ? ` <span style="color:#666">&times;${g.count}</span>` : '';
+        return `
         <div class="ann-item">
             <div>
-                <div class="ann-text">${escapeHtml(a.term_text)}</div>
+                <div class="ann-text">${escapeHtml(a.term_text)}${countLabel}</div>
                 <div class="ann-pt">${a.pt_name ? escapeHtml(a.pt_name) : ''} ${a.pt_code ? '(' + a.pt_code + ')' : ''}</div>
             </div>
-            <button class="ann-delete" onclick="removeAnnotation(${a.start}, ${a.end})" title="Remove">&times;</button>
+            <button class="ann-delete" onclick="removeAnnotationByTerm('${esc(a.term_text)}')" title="Remove">&times;</button>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 // -- Free text selection --
@@ -265,8 +293,14 @@ function renderAnnotationList() {
 document.addEventListener('mouseup', (e) => {
     if (!state.task || !state.task.annotation_schema.allow_free_text) return;
 
+    // Don't interfere if clicking the selection button itself
+    if (e.target.id === 'selection-btn') return;
+
     const sel = window.getSelection();
-    if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+    if (!sel || sel.isCollapsed || !sel.rangeCount) {
+        dismissSelectionBtn();
+        return;
+    }
 
     const range = sel.getRangeAt(0);
     const container = document.getElementById('section-text');
@@ -278,17 +312,18 @@ document.addEventListener('mouseup', (e) => {
     const textOffset = getTextOffset(container, range.startContainer, range.startOffset);
     const endOffset = textOffset + selectedText.length;
 
-    closePopover();
+    dismissSelectionBtn();
 
     const btn = document.createElement('button');
     btn.className = 'selection-btn';
     btn.id = 'selection-btn';
     const entityLabel = state.task.annotation_schema.entity_type.replace(/_/g, ' ');
     btn.textContent = `Mark "${selectedText.slice(0, 30)}${selectedText.length > 30 ? '...' : ''}" as ${entityLabel}`;
-    btn.onclick = () => {
+    btn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
         addAnnotation(textOffset, endOffset, selectedText, null, null, null, 'text_select');
         sel.removeAllRanges();
-    };
+    });
 
     const rect = range.getBoundingClientRect();
     btn.style.top = (rect.bottom + window.scrollY + 6) + 'px';
