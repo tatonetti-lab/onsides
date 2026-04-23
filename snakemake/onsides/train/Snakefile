@@ -6,13 +6,16 @@ construction and model training rules.
 
 Usage:
     # Run a specific experiment
-    snakemake -s snakemake/onsides/train/Snakefile --config experiment=lr_bw
+    snakemake -s snakemake/onsides/train/Snakefile --config experiment=lr_bw -j1
+
+    # Run all experiments
+    snakemake -s snakemake/onsides/train/Snakefile --config experiment=all -j1
+
+    # Run a subset of experiments (comma-separated)
+    snakemake -s snakemake/onsides/train/Snakefile --config experiment=flag_baseline,flag1_clean -j1
 
     # Dry-run to see what would execute
-    snakemake -s snakemake/onsides/train/Snakefile --config experiment=lr_bw -n
-
-    # Run with GPU (limits to 1 training job at a time)
-    snakemake -s snakemake/onsides/train/Snakefile --config experiment=lr_bw -j1
+    snakemake -s snakemake/onsides/train/Snakefile --config experiment=all -n
 """
 
 import json
@@ -155,14 +158,31 @@ ALL_REF_FILES = []
 ALL_MODEL_RUNS = []
 
 if EXPERIMENT_ID:
-    if EXPERIMENT_ID not in EXPERIMENTS_CONFIG["experiments"]:
-        raise ValueError(
-            f"Unknown experiment '{EXPERIMENT_ID}'. "
-            f"Available: {list(EXPERIMENTS_CONFIG['experiments'].keys())}"
-        )
-    refs, runs = _expand_experiment(EXPERIMENT_ID)
-    ALL_REF_FILES = refs
-    ALL_MODEL_RUNS = runs
+    if EXPERIMENT_ID == "all":
+        exp_ids = list(EXPERIMENTS_CONFIG["experiments"].keys())
+    else:
+        exp_ids = [e.strip() for e in EXPERIMENT_ID.split(",")]
+        unknown = [e for e in exp_ids if e not in EXPERIMENTS_CONFIG["experiments"]]
+        if unknown:
+            raise ValueError(
+                f"Unknown experiment(s): {unknown}. "
+                f"Available: {list(EXPERIMENTS_CONFIG['experiments'].keys())}"
+            )
+
+    for eid in exp_ids:
+        refs, runs = _expand_experiment(eid)
+        ALL_REF_FILES.extend(refs)
+        ALL_MODEL_RUNS.extend(runs)
+
+    # Deduplicate — overlapping experiments may produce identical model targets
+    ALL_REF_FILES = list(set(ALL_REF_FILES))
+    _seen = set()
+    _deduped = []
+    for run in ALL_MODEL_RUNS:
+        if run["bestepoch"] not in _seen:
+            _seen.add(run["bestepoch"])
+            _deduped.append(run)
+    ALL_MODEL_RUNS = _deduped
 
 # Lookup from bestepoch output path → run config (for dependency resolution)
 _RUN_BY_OUTPUT = {run["bestepoch"]: run for run in ALL_MODEL_RUNS}
