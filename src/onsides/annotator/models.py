@@ -43,6 +43,7 @@ class VocabMatch(BaseModel):
 class LabelSummary(BaseModel):
     set_id: str
     title: str
+    drug_name: str = ""
     date: str
     sections_available: list[str]
     annotation_status: str = "not_started"
@@ -57,6 +58,7 @@ class LabelSection(BaseModel):
 class LabelDetail(BaseModel):
     set_id: str
     title: str
+    drug_name: str = ""
     sections: list[LabelSection]
 
 
@@ -89,6 +91,7 @@ class AnnotationDocument(BaseModel):
 class AnnotationListItem(BaseModel):
     label_id: str
     label_title: str
+    drug_name: str = ""
     status: str
     updated_at: str
     annotation_count: int

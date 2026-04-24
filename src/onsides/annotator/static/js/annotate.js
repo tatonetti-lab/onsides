@@ -35,7 +35,7 @@ async function initAnnotatePage() {
     state.task = task;
     state.label = label;
 
-    document.getElementById('drug-title').textContent = label.title;
+    document.getElementById('drug-title').textContent = label.drug_name || label.title;
 
     if (existingDoc) {
         state.doc = existingDoc;
@@ -101,36 +101,63 @@ function renderSectionText() {
     const text = sec.text;
     const vocabMatches = sec.vocab_matches;
     const annotations = state.doc.sections[state.currentSection] || [];
-    const annotatedKeys = new Set(annotations.map(a => `${a.start}-${a.end}`));
-
     // Build a unified list of highlight regions: vocab matches + free-text annotations
     const regions = [];
+
+    // Check if a position range is covered by any annotation (exact match or contained within)
+    function isAnnotated(start, end) {
+        return annotations.some(a =>
+            (a.start === start && a.end === end) ||
+            (a.start <= start && a.end >= end)
+        );
+    }
 
     for (const m of vocabMatches) {
         const end = m.start + m.length;
         regions.push({
             start: m.start, end,
             type: 'vocab',
-            annotated: annotatedKeys.has(`${m.start}-${end}`),
+            annotated: isAnnotated(m.start, end),
             code: m.code, ptCode: m.pt_code || '', ptName: m.pt_name || '',
             term: m.term, vocabId: m.vocab_id,
         });
     }
 
-    // Add free-text annotations that don't overlap with any vocab match
+    // Add free-text annotation spans for parts that don't overlap vocab matches
     for (const a of annotations) {
         if (a.source !== 'text_select') continue;
-        const overlapsVocab = regions.some(r =>
-            r.type === 'vocab' && !(a.end <= r.start || a.start >= r.end)
-        );
-        if (!overlapsVocab) {
+        // Find gaps in this annotation range not covered by vocab regions
+        const overlapping = regions
+            .filter(r => r.type === 'vocab' && !(a.end <= r.start || a.start >= r.end))
+            .sort((x, y) => x.start - y.start);
+        if (overlapping.length === 0) {
             regions.push({
                 start: a.start, end: a.end,
-                type: 'freetext',
-                annotated: true,
+                type: 'freetext', annotated: true,
                 code: '', ptCode: '', ptName: '',
                 term: a.term_text, vocabId: '',
             });
+        } else {
+            let cursor = a.start;
+            for (const r of overlapping) {
+                if (r.start > cursor) {
+                    regions.push({
+                        start: cursor, end: r.start,
+                        type: 'freetext', annotated: true,
+                        code: '', ptCode: '', ptName: '',
+                        term: a.term_text, vocabId: '',
+                    });
+                }
+                cursor = Math.max(cursor, r.end);
+            }
+            if (cursor < a.end) {
+                regions.push({
+                    start: cursor, end: a.end,
+                    type: 'freetext', annotated: true,
+                    code: '', ptCode: '', ptName: '',
+                    term: a.term_text, vocabId: '',
+                });
+            }
         }
     }
 
@@ -417,17 +444,19 @@ document.addEventListener('mouseup', (e) => {
     const selectedText = sel.toString().trim();
     if (!selectedText || selectedText.length < 2) return;
 
-    // Find unannotated vocab matches whose DOM elements are fully inside the selection
+    // Compute text offsets from both ends of the range independently
+    const textOffset = getTextOffset(container, range.startContainer, range.startOffset);
+    const endOffset = getTextOffset(container, range.endContainer, range.endOffset);
+
+    // Find unannotated vocab matches fully inside the selection using text offsets
     const containedTerms = [];
     container.querySelectorAll('.vocab-match:not(.annotated)').forEach(el => {
-        if (sel.containsNode(el, false)) {
+        const s = parseInt(el.dataset.start);
+        const e = parseInt(el.dataset.end);
+        if (s >= textOffset && e <= endOffset) {
             containedTerms.push(el);
         }
     });
-
-    // Compute text offset for free-text annotation
-    const textOffset = getTextOffset(container, range.startContainer, range.startOffset);
-    const endOffset = textOffset + selectedText.length;
 
     // Store the pending selection so vocab search can assign a term to it
     state.pendingSelection = { start: textOffset, end: endOffset, text: selectedText };
@@ -449,7 +478,8 @@ document.addEventListener('mouseup', (e) => {
     group.style.left = (rect.left + window.scrollX) + 'px';
     group.style.zIndex = '200';
     group.style.display = 'flex';
-    group.style.gap = '6px';
+    group.style.flexDirection = 'column';
+    group.style.gap = '4px';
 
     // "Add All Events" button if multiple vocab terms are in the selection
     if (containedTerms.length > 1) {
@@ -684,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // -- Label list view --
 
-let listState = { page: 1, search: '', total: 0, perPage: 50, activeTab: 'all' };
+let listState = { page: 1, search: '', total: 0, perPage: 50, activeTab: 'all', seed: 42 };
 
 async function initLabelList() {
     const params = new URLSearchParams(window.location.search);
@@ -752,8 +782,10 @@ async function loadMyAnnotations() {
             ? `<span class="badge badge-complete">Complete</span>`
             : `<span class="badge badge-progress">In progress</span>`;
         const date = a.updated_at ? new Date(a.updated_at).toLocaleDateString() : '';
+        const name = a.drug_name || a.label_title;
         return `<tr onclick="openLabel('${esc(a.label_id)}')">
-            <td>${escapeHtml(a.label_title)}</td>
+            <td>${escapeHtml(name)}</td>
+            <td style="font-size:0.8rem;color:#666;font-family:monospace;">${escapeHtml(a.label_id.slice(0, 8))}</td>
             <td>${a.annotation_count}</td>
             <td>${badge}</td>
             <td>${date}</td>
@@ -762,13 +794,15 @@ async function loadMyAnnotations() {
 }
 
 async function loadLabelList() {
-    const data = await API.getLabels(state.taskId, listState.page, listState.perPage, listState.search);
+    const data = await API.getLabels(state.taskId, listState.page, listState.perPage, listState.search, listState.seed);
     listState.total = data.total;
 
     const tbody = document.getElementById('label-tbody');
     tbody.innerHTML = data.items.map(item => {
+        const name = item.drug_name || item.title;
         return `<tr onclick="openLabel('${esc(item.set_id)}')">
-            <td>${escapeHtml(item.title)}</td>
+            <td>${escapeHtml(name)}</td>
+            <td style="font-size:0.8rem;color:#666;font-family:monospace;">${escapeHtml(item.set_id.slice(0, 8))}</td>
             <td>${item.sections_available.join(', ')}</td>
             <td></td>
         </tr>`;
@@ -782,6 +816,7 @@ async function loadLabelList() {
 
 function listPrev() { listState.page--; loadLabelList(); }
 function listNext() { listState.page++; loadLabelList(); }
+function shuffleLabels() { listState.seed = Math.floor(Math.random() * 100000); listState.page = 1; loadLabelList(); }
 
 function openLabel(setId) {
     window.location.href = `/annotate.html?task_id=${state.taskId}&label_id=${setId}`;

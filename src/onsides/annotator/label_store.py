@@ -1,6 +1,7 @@
 import json
 import logging
 import random
+import re
 from pathlib import Path
 
 import duckdb
@@ -11,6 +12,35 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_LABELS_DIR = Path("_onsides/us/labels")
 DEFAULT_PARQUET_PATH = Path("_onsides/us/label_text.parquet")
+
+_DOSAGE_FORM_RE = re.compile(
+    r"([\s,]+(USP|tablets?|capsules?|injection|solution|oral|for|"
+    r"extended[- ]release|delayed[- ]release))+\s*$",
+    re.IGNORECASE,
+)
+
+
+def extract_drug_name(title: str) -> str:
+    if not title:
+        return ""
+    m = re.search(r"to use\s+(.+?)\s+safely", title, re.IGNORECASE)
+    if m:
+        name = _DOSAGE_FORM_RE.sub("", m.group(1).strip()).rstrip(" ,")
+        if name:
+            return name
+    m = re.search(r"prescribing information for\s+(.+?)[.\n]", title, re.IGNORECASE)
+    if m:
+        name = _DOSAGE_FORM_RE.sub("", m.group(1).strip()).rstrip(" ,")
+        if name:
+            return name
+    first = title.split("\n")[0].strip()
+    first = re.sub(
+        r"^HIGHLIGHTS OF PRESCRIBING INFORMATION\s*", "", first, flags=re.IGNORECASE
+    ).strip()
+    first = re.sub(r"^These highlights.*", "", first, flags=re.IGNORECASE).strip()
+    if first:
+        return first[:80]
+    return title[:80]
 
 
 class LabelStore:
@@ -55,9 +85,11 @@ class LabelStore:
                 code: bool(row[2 + i]) for i, code in enumerate(section_codes)
             }
             avail = [c for c, v in has_sections.items() if v]
+            clean_title = " ".join((title or "").split())
             index[set_id] = {
                 "set_id": set_id,
-                "title": " ".join((title or "").split()),
+                "title": clean_title,
+                "drug_name": extract_drug_name(title or ""),
                 "date": "",
                 "sections_available": avail,
             }
@@ -80,9 +112,11 @@ class LabelStore:
                     for code, text in data.get("sections", {}).items()
                     if text and text.strip()
                 ]
+                clean_title = " ".join((title or "").split())
                 index[set_id] = {
                     "set_id": set_id,
-                    "title": " ".join((title or "").split()),
+                    "title": clean_title,
+                    "drug_name": extract_drug_name(title or ""),
                     "date": date,
                     "sections_available": avail,
                 }
@@ -104,6 +138,7 @@ class LabelStore:
         per_page: int = 50,
         search: str = "",
         label_pool: list[str] | None = None,
+        seed: int = 42,
     ) -> tuple[list[LabelSummary], int]:
         required = set(required_sections)
         results = []
@@ -115,8 +150,10 @@ class LabelStore:
             avail = set(info["sections_available"])
             if not required.intersection(avail):
                 continue
-            if search and search.lower() not in info["title"].lower():
-                continue
+            if search:
+                q = search.lower()
+                if q not in info["title"].lower() and q not in info["drug_name"].lower():
+                    continue
             filtered = {
                 **info,
                 "sections_available": [s for s in info["sections_available"] if s in required],
@@ -126,7 +163,7 @@ class LabelStore:
         if search:
             results.sort(key=lambda x: x["title"].lower())
         else:
-            rng = random.Random(42)
+            rng = random.Random(seed)
             rng.shuffle(results)
 
         total = len(results)

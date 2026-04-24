@@ -9,8 +9,8 @@ const API = {
         return r.json();
     },
 
-    async getLabels(taskId, page = 1, perPage = 50, search = '') {
-        const params = new URLSearchParams({ task_id: taskId, page, per_page: perPage, search });
+    async getLabels(taskId, page = 1, perPage = 50, search = '', seed = 42) {
+        const params = new URLSearchParams({ task_id: taskId, page, per_page: perPage, search, seed });
         const r = await fetch(`/api/labels?${params}`);
         return r.json();
     },

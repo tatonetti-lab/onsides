@@ -289,6 +289,82 @@ def _is_valid_id(val) -> bool:
     return True
 
 
+def load_onsides_annotations(
+    sections: list[str],
+    annotations_dir: Path = Path("annotations/adverse_events"),
+    labels_parquet: Path = Path("_onsides/us/label_text.parquet"),
+) -> list[AnnotationRecord]:
+    """Load annotations produced by the OnSIDES annotation tool.
+
+    Reads JSON files from the annotation tool's output directory and
+    converts them into AnnotationRecord objects for the reference set
+    construction pipeline.
+
+    Args:
+        sections: List of section codes (AR, BW, WP).
+        annotations_dir: Root directory of annotation tool output.
+        labels_parquet: Path to label text parquet for section text lookup.
+
+    Returns:
+        List of AnnotationRecord, one per drug-section combination.
+    """
+    con = duckdb.connect()
+    label_texts = {}
+    for row in con.execute(
+        "SELECT set_id, " + ", ".join(sections)
+        + " FROM read_parquet(?)",
+        [str(labels_parquet)],
+    ).fetchall():
+        label_texts[row[0]] = {
+            sec: row[1 + i] or "" for i, sec in enumerate(sections)
+        }
+    con.close()
+
+    records: list[AnnotationRecord] = []
+    total_events = 0
+
+    for annotator_dir in sorted(annotations_dir.iterdir()):
+        if not annotator_dir.is_dir():
+            continue
+        for path in sorted(annotator_dir.glob("*.json")):
+            with open(path) as f:
+                doc = json.load(f)
+
+            set_id = doc["label_id"]
+            texts = label_texts.get(set_id, {})
+
+            for sec_code in sections:
+                anns = doc.get("sections", {}).get(sec_code, [])
+                if not anns:
+                    continue
+
+                text = texts.get(sec_code, "")
+                if not text.strip():
+                    continue
+
+                annotated_codes: set[str] = set()
+                for a in anns:
+                    if a.get("pt_code"):
+                        annotated_codes.add(str(a["pt_code"]))
+                    if a.get("term_code"):
+                        annotated_codes.add(str(a["term_code"]))
+
+                total_events += len(anns)
+                records.append(AnnotationRecord(
+                    drug=set_id.upper(),
+                    section_code=sec_code,
+                    text=text,
+                    annotated_codes=annotated_codes,
+                    tac="test",
+                ))
+
+    logger.info(
+        f"Loaded {len(records)} OnSIDES annotation records "
+        f"for sections {sections} ({total_events} events)"
+    )
+    return records
+
+
 def load_annotations(
     sections: list[str],
     annotation_dir: Path = ANNOTATION_DIR,
@@ -547,6 +623,12 @@ def main() -> None:
         help="Comma-separated Flag 2 values to exclude (e.g. 'drug_class,animal'). "
         "Flag 2 is read from extended annotation format (event[7]).",
     )
+    parser.add_argument(
+        "--onsides-annotations", type=Path, default=None,
+        help="Path to OnSIDES annotation tool output directory "
+        "(e.g. 'annotations/adverse_events'). "
+        "These annotations are added as test-split records.",
+    )
 
     args = parser.parse_args()
     logging.basicConfig(
@@ -579,11 +661,18 @@ def main() -> None:
         logger.info(f"Excluding Flag 2: {exclude_flag2}")
 
     vocab = load_meddra_vocab(args.vocab)
-    records = load_annotations(
-        sections, args.annotations,
-        exclude_flag1=exclude_flag1,
-        exclude_flag2=exclude_flag2,
-    )
+
+    if args.onsides_annotations:
+        records = load_onsides_annotations(
+            sections, args.onsides_annotations,
+        )
+    else:
+        records = load_annotations(
+            sections, args.annotations,
+            exclude_flag1=exclude_flag1,
+            exclude_flag2=exclude_flag2,
+        )
+
     rows = construct_reference_set(records, vocab, args.method, args.nwords)
     write_reference_csv(output_path, rows)
 

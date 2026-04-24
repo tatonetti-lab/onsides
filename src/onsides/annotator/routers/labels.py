@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from ..label_store import LabelStore
+from ..label_store import LabelStore, extract_drug_name
 from ..models import LabelDetail, LabelSection, LabelSummary, TaskDefinition
 from ..vocab_service import VocabService
 
@@ -28,6 +28,7 @@ def list_labels(
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=200),
     search: str = Query(""),
+    seed: int = Query(42),
 ) -> dict:
     task = _tasks.get(task_id)
     if not task:
@@ -39,6 +40,7 @@ def list_labels(
         per_page=per_page,
         search=search,
         label_pool=task.label_pool,
+        seed=seed,
     )
     return {
         "items": items,
@@ -75,8 +77,10 @@ def get_label(set_id: str, task_id: str = Query(...)) -> LabelDetail:
             LabelSection(section_code=code, text=text, vocab_matches=all_matches)
         )
 
+    title = label.get("title", "")
     return LabelDetail(
         set_id=label.get("set_id", set_id),
-        title=label.get("title", ""),
+        title=title,
+        drug_name=extract_drug_name(title),
         sections=sections,
     )

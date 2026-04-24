@@ -22,11 +22,15 @@
 
             <!-- All labels tab -->
             <div id="panel-all">
-                <input type="text" id="list-search" class="search-bar" placeholder="Search labels by drug name...">
+                <div style="display:flex;gap:8px;margin-bottom:16px;">
+                    <input type="text" id="list-search" class="search-bar" placeholder="Search labels by drug name..." style="margin-bottom:0;">
+                    <button onclick="shuffleLabels()" style="padding:8px 14px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;white-space:nowrap;font-size:0.9rem;">Shuffle</button>
+                </div>
                 <table class="label-table">
                     <thead>
                         <tr>
-                            <th>Drug Label</th>
+                            <th>Drug Name</th>
+                            <th>Set ID</th>
                             <th>Sections</th>
                             <th>Status</th>
                         </tr>
@@ -45,7 +49,8 @@
                 <table class="label-table">
                     <thead>
                         <tr>
-                            <th>Drug Label</th>
+                            <th>Drug Name</th>
+                            <th>Set ID</th>
                             <th>Annotations</th>
                             <th>Status</th>
                             <th>Last Updated</th>

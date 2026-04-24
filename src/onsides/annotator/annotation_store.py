@@ -3,6 +3,7 @@ import logging
 import tempfile
 from pathlib import Path
 
+from .label_store import extract_drug_name
 from .models import AnnotationDocument, AnnotationListItem
 
 logger = logging.getLogger(__name__)
@@ -55,10 +56,12 @@ class AnnotationStore:
                 count = sum(
                     len(anns) for anns in data.get("sections", {}).values()
                 )
+                title = data.get("label_title", "")
                 items.append(
                     AnnotationListItem(
                         label_id=data["label_id"],
-                        label_title=data.get("label_title", ""),
+                        label_title=title,
+                        drug_name=extract_drug_name(title),
                         status=data.get("status", "in_progress"),
                         updated_at=data.get("updated_at", ""),
                         annotation_count=count,
