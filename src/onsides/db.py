@@ -91,11 +91,11 @@ class MedDraAdverseEffect(SQLModel, table=True):
 class RxNormIngredientToProduct(SQLModel, table=True):
     __tablename__: str = "vocab_rxnorm_ingredient_to_product"  # type: ignore
 
-    ingredient_id: str | None = Field(
-        default=None, foreign_key="vocab_rxnorm_ingredient.rxnorm_id", primary_key=True
-    )
     product_id: str | None = Field(
         default=None, foreign_key="vocab_rxnorm_product.rxnorm_id", primary_key=True
+    )
+    ingredient_id: str | None = Field(
+        default=None, foreign_key="vocab_rxnorm_ingredient.rxnorm_id", primary_key=True
     )
 
 
