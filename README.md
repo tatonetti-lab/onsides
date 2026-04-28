@@ -172,24 +172,32 @@ OnSIDES is generated through the following steps:
 
 ## Model accuracy
 
-The fine-tuned PubMedBERT model used for OnSIDES achieved the following performance on 200 manually annotated FDA labels:
+A single fine-tuned PubMedBERT model trained on all sections is used for OnSIDES. Performance on the held-out test set (80/10/10 drug-level split of 200 manually annotated FDA labels):
 
 | Section   |       F1 |   Precision |   Recall |    AUROC |     N |
 |:----------|---------:|------------:|---------:|---------:|------:|
-| Boxed Warning        | 0.964 |    0.971 | 0.957 | 0.977  |   686 |
-| Warnings and Precautions        | 0.882  |    0.883 | 0.881 | 0.933 | 10254 |
-| Adverse Reactions        | 0.935 |    0.946 | 0.924 | 0.956 | 12122 |
+| Adverse Reactions        | 0.942 |    0.962 | 0.922 | 0.996 | 10604 |
+| Boxed Warning        | 0.901 |    0.977 | 0.835 | 0.996 |   894 |
+| Warnings and Precautions        | 0.880  |    0.851 | 0.911 | 0.995 | 9702 |
 
+
+Performance on an independent hold-out set of 30 manually annotated FDA labels (not used in training or threshold tuning):
+
+| Section   |       F1 |   Precision |   Recall |    AUROC |     N |
+|:----------|---------:|------------:|---------:|---------:|------:|
+| Adverse Reactions        | 0.847 |    0.871 | 0.825 | 0.965 | 7782 |
+| Boxed Warning        | 0.736 |    1.000 | 0.582 | 0.988 |   597 |
+| Warnings and Precautions        | 0.756  |    0.789 | 0.725 | 0.973 | 2209 |
 
 In a separate comparison, this modeling approach was compared to the TAC 2017 dataset, and achieved the following performance:
 
 **Performance metrics evaluated against the TAC gold standard**
 
-| Metric      | TAC (Best Model<sup>†</sup>) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2/3.0.0 |
-| ----------- | ---------------------------- | --------- | -------------- | -------------- |
-| F1 Score    | 82.19                        | 74.36     | 82.01          | **87.54**      |
-| Precision   | 80.69                        | 43.49     | 88.76          | **91.29**      |
-| Recall      | **85.05**                    | 52.89     | 77.12          | 84.08          |
+| Metric      | TAC (Best Model<sup>†</sup>) | SIDER 4.1 | OnSIDES v1.0.0 | OnSIDES v2/3.0.0 | OnSIDES v3.2.0 |
+| ----------- | ---------------------------- | --------- | -------------- | -------------- | -------------- |
+| F1 Score    | 82.19                        | 74.36     | 82.01          | 87.54          | **89.87**      |
+| Precision   | 80.69                        | 43.49     | 88.76          | **91.29**      | 85.52          |
+| Recall      | 85.05                        | 52.89     | 77.12          | 84.08          | **94.68**      |
 
 
 ---

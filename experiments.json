@@ -59,6 +59,14 @@
       "split_method": ["24", "TAC"]
     },
 
+    "blb_sections": {
+      "name": "BioLinkBERT per-section evaluation",
+      "description": "BLB slightly outperformed PMB on ALL (0.9772 vs 0.9756). Test whether the edge holds on individual sections.",
+      "learning_rate": 2.5e-5,
+      "section": ["AR", "BW", "WP"],
+      "network": "models/michiyasunaga/BioLinkBERT-base"
+    },
+
     "networks_base": {
       "name": "Compare base BERT architectures (hidden=768)",
       "description": "Hold all training parameters fixed at known-good settings and vary only the base model. Includes domain-specific biomedical models and vanilla BERT as a baseline.",
@@ -154,6 +162,22 @@
       "learning_rate": 2.5e-5,
       "split_method": "24",
       "network": "models/bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth"
+    },
+    "v3.2.0": {
+      "name": "Unified PubMedBERT model for all sections",
+      "model": "models/bestepoch-bydrug-PMB_14-ALL-125-all_222_24_25_1e-06_256_32.pth",
+      "model_type": "bestepoch",
+      "method": 14,
+      "nwords": 125,
+      "section": "ALL",
+      "epochs": 25,
+      "learning_rate": 1e-6,
+      "split_method": "24",
+      "thresholds": {
+        "AR": 0.6926,
+        "BW": 0.8713,
+        "WP": 0.5878
+      }
     }
   }
 }
