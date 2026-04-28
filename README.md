@@ -267,6 +267,25 @@ To run everything, you'll want to download each source, then parse, then evaluat
 To be transparent, the reason I didn't package everything into a single command is because these scripts will inevitably become stale in various ways (source URLs change, etc.), and this makes debugging significantly easier for the inheritors of this project.
 
 
+### Annotation Tool
+
+OnSIDES includes a web-based annotation tool for manually labeling adverse events in drug labels. This is used to create independent reference sets for model evaluation. The tool highlights MedDRA vocabulary matches in label text and supports both click-to-annotate and free-text selection workflows.
+
+```bash
+# Install annotator dependencies
+uv sync --extra annotator
+
+# Start the annotation server (requires parsed labels in _onsides/us/labels/)
+uv run onsides-annotate
+```
+
+The server runs at `http://localhost:8000` by default. Options:
+
+- `--host` / `--port` to change the bind address
+- `--annotations-dir` to set where annotation JSON files are stored (default: `annotations/`)
+
+Task definitions are YAML files in `src/onsides/annotator/tasks/`. The included `adverse_events.yaml` task highlights MedDRA terms across the AR, BW, and WP sections.
+
 ### Releasing
 
 Once everything above has been run, create the final release ZIP archive.
